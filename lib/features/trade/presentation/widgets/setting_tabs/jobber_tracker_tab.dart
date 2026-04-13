@@ -1,0 +1,52 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../../../core/widget/custom_input_field.dart';
+import '../../../../../core/widget/table/view_data_table.dart';
+
+class JobberTrackerTab extends StatelessWidget {
+  const JobberTrackerTab({super.key});
+
+  final List<String> exchanges = const [
+    'NSE', 'MCX', 'CE/PE', 'OTHERS', 'COMEX FUTURE', 'COMEX SPOT', 'CRYPTO', 'GIFT', 'FOREX', 'CDS'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return ViewDataTable<String>(
+      columns: const [
+        ViewTableColumn(id: 'exchange', label: 'EXCHANGE', width: 350),
+        ViewTableColumn(id: 'frequency', label: 'Trade frequency', width: 500),
+      ],
+      data: exchanges,
+      idExtractor: (item) => item,
+      autoFit: true,
+      isDarkMode: false,
+      cellBuilder: _buildCell,
+    );
+  }
+
+  Widget _buildCell(String exchange, ViewTableColumn col) {
+    if (col.id == 'exchange') {
+      return Text(
+        exchange,
+        style: GoogleFonts.openSans(fontSize: 13, color: Colors.black87),
+      );
+    } else if (col.id == 'qty') {
+      return CustomInputField(
+        hintText: 'Type here',
+        height: 30,
+        width: double.infinity,
+        borderColor: Colors.grey.shade400,
+      );
+    }
+    
+    return CustomInputField(
+      hintText: 'Time',
+      height: 30,
+      width: double.infinity,
+      borderColor: Colors.grey.shade400,
+      fillColor: const Color(0xFFF9F9F9),
+      suffixIcon: Icons.access_time,
+    );
+  }
+}

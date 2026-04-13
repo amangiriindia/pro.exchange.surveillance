@@ -1,0 +1,32 @@
+import re
+
+with open('lib/core/constants/app_colors.dart', 'r') as f:
+    content = f.read()
+
+# Light Theme Changes
+content = re.sub(r'static const Color primaryColor = Color\(0xFF1F4A66\);', 'static const Color primaryColor = Color(0xFF202D3B);', content, count=1)
+content = re.sub(r'static const Color secondaryColor = Color\(0xFFFF0000\);', 'static const Color secondaryColor = Color(0xFFFF0000);', content, count=1)
+content = re.sub(r'static const Color textColor = Color\(0xFF1F4A66\);', 'static const Color textColor = Color(0xFF202D3B);', content, count=1)
+content = re.sub(r'static const Color tableBackground = Color\(0xFFEDEDED\);', 'static const Color tableBackground = Color(0xFFFFFFFF);', content, count=1)
+content = re.sub(r'static const Color tableColumnHeadColor = Color\(0xFFC6DBE8\);', 'static const Color tableColumnHeadColor = Color(0xFFF1F5F9);', content, count=1)
+content = re.sub(r'static const Color tableAlternateRowBackground = Color\(0xFFF5F5F5\);', 'static const Color tableAlternateRowBackground = Color(0xFFF8FAFC);', content, count=1)
+content = re.sub(r'static const Color chipTextBlueColor = Color\(0xFF0051FF\);', 'static const Color chipTextBlueColor = Color(0xFF202D3B);', content, count=1)
+
+# Dark Theme Changes
+content = re.sub(r'static const Color primaryColor = Color\(0xFF1F4A66\);', 'static const Color primaryColor = Color(0xFF202D3B);', content, count=1) # Note count 1 will hit dark theme after light theme is changed if light was first
+# Hmm, let's just do a mass replace for 1F4A66 to 202D3B since it's the primary color
+content = content.replace('0xFF1F4A66', '0xFF202D3B')
+content = content.replace('0xFFE05E50', '0xFFFF0000') # secondary color in dark mode
+
+# Replace more specific colors
+content = content.replace('tableBackground = Color(0xFF282829)', 'tableBackground = Color(0xFF111827)')
+content = content.replace('tableColumnHeadColor = Color(0xFF232E3D)', 'tableColumnHeadColor = Color(0xFF1E293B)')
+content = content.replace('tableRowBackground = Color(0xFF1C1C1C)', 'tableRowBackground = Color(0xFF111827)')
+content = content.replace('tableAlternateRowBackground = Color(0xFF282829)', 'tableAlternateRowBackground = Color(0xFF1F293B)')
+
+# Make AppColors general ones match
+content = content.replace('primaryBlue = Color(0xFF1F4A66)', 'primaryBlue = Color(0xFF202D3B)')
+content = content.replace('tableHeaderBackground = Color(0xFFC6DBE8)', 'tableHeaderBackground = Color(0xFFF1F5F9)')
+
+with open('lib/core/constants/app_colors.dart', 'w') as f:
+    f.write(content)
