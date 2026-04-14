@@ -242,6 +242,12 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
   Color get _textColor => widget.isDarkMode
       ? DarkThemeColors.textColor
       : LightThemeColors.textColor;
+  /// Header text is always white when the header background is the brand navy.
+  Color get _headerTextColor {
+    final bg = _headerBgColor;
+    final luminance = bg.computeLuminance();
+    return luminance < 0.4 ? Colors.white : _textColor;
+  }
   @override
   Widget build(BuildContext context) {
     final rowHeight = widget.rowHeight ?? 30.h;
@@ -606,7 +612,12 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
       height: headerHeight,
       decoration: BoxDecoration(
         color: _headerBgColor,
-        border: Border(bottom: BorderSide(color: _dividerColor, width: 1)),
+        border: Border(
+          bottom: BorderSide(
+            color: _headerTextColor.withOpacity(0.15),
+            width: 1,
+          ),
+        ),
       ),
       child: Row(
         children: _activeColumns.asMap().entries.map((entry) {
@@ -651,7 +662,7 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
               Flexible(
                 child: Text(
                   column.label,
-                  style: GoogleFonts.openSans(
+                  style: GoogleFonts.inter(
                     fontSize: effectiveLines >= 3
                         ? (widget.headerTextSize != null
                               ? widget.headerTextSize! - 2.sp
@@ -660,10 +671,11 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
                         ? (widget.headerTextSize != null
                               ? widget.headerTextSize! - 1.sp
                               : 11.sp)
-                        : (widget.headerTextSize ?? 12.sp),
-                    fontWeight: FontWeight.w500,
+                        : (widget.headerTextSize ?? 11.sp),
+                    fontWeight: FontWeight.w600,
                     decoration: TextDecoration.none,
-                    color: _textColor,
+                    color: _headerTextColor,
+                    letterSpacing: 0.5,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: effectiveLines > 1 ? effectiveLines : 1,
@@ -676,7 +688,9 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
                   assetPath: AppImages.sortIcon,
                   isActive: isSorted,
                   size: 12.sp,
-                  activeColor: isSorted ? AppColors.primaryBlue : null,
+                  activeColor: isSorted
+                      ? _headerTextColor
+                      : _headerTextColor.withOpacity(0.5),
                 ),
               ],
             ],
@@ -769,11 +783,11 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
               alignment: Alignment.center,
               child: Text(
                 column.label,
-                style: GoogleFonts.openSans(
-                  fontSize: (widget.headerTextSize ?? 12.sp) - 2.sp,
-                  fontWeight: FontWeight.w500,
+                style: GoogleFonts.inter(
+                  fontSize: (widget.headerTextSize ?? 11.sp) - 1.sp,
+                  fontWeight: FontWeight.w600,
                   decoration: TextDecoration.none,
-                  color: _textColor,
+                  color: _headerTextColor,
                 ),
               ),
             ),

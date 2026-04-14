@@ -1,8 +1,9 @@
+import 'package:surveillance/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../domain/entities/same_ip_entity.dart';
-import '../../../../core/widget/custom_action_button.dart';
+import '../../../../core/widget/table_action_button.dart';
 
 class SameIPTable extends StatelessWidget {
   final List<SameIPEntity> data;
@@ -17,13 +18,13 @@ class SameIPTable extends StatelessWidget {
         ViewTableColumn(id: 'time', label: 'Time', width: 220),
         ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 600),
         ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 200),
-        ViewTableColumn(id: 'action', label: 'Action', width: 200),
+        ViewTableColumn(id: 'action', label: 'Action', width: 240),
       ],
       data: data,
       idExtractor: (item) => '${item.ipAddress}_${item.uName}_${item.time}',
       autoFit: true,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: AppColors.isDarkMode(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) => _buildCell(context, item, col),
     );
   }
@@ -33,25 +34,8 @@ class SameIPTable extends StatelessWidget {
     Color textColor = const Color(0xFF616161);
 
     if (col.id == 'action') {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomActionButton(
-            text: 'View',
-            onPressed: () => onViewSelected(item.uName),
-            width: 65,
-            height: 26,
-            fontSize: 11,
-          ),
-          const SizedBox(width: 8),
-          CustomActionButton(
-            text: 'Investigate',
-            onPressed: () {},
-            width: 85,
-            height: 26,
-            fontSize: 11,
-          ),
-        ],
+      return TableActionRow(
+        onView: () => onViewSelected(item.uName),
       );
     }
 

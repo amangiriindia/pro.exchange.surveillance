@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../domain/entities/jobber_tracker_entity.dart';
-import '../../../../core/widget/custom_action_button.dart';
+import '../../../../core/widget/table_action_button.dart';
 
 class JobberTrackerTable extends StatelessWidget {
   final List<JobberTrackerEntity> data;
@@ -23,13 +23,13 @@ class JobberTrackerTable extends StatelessWidget {
         ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 140),
         ViewTableColumn(id: 'trade_frequency', label: 'Trade frequency', width: 160, isNumeric: true),
         ViewTableColumn(id: 'pnl', label: 'P/L', width: 140, isNumeric: true),
-        ViewTableColumn(id: 'action', label: 'Action', width: 200),
+        ViewTableColumn(id: 'action', label: 'Action', width: 240),
       ],
       data: data,
       idExtractor: (item) => '${item.uName}_${item.tradeFrequency}_${item.pnl}',
       autoFit: true,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: AppColors.isDarkMode(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) => _buildCell(context, item, col),
     );
   }
@@ -40,25 +40,8 @@ class JobberTrackerTable extends StatelessWidget {
     Color textColor = const Color(0xFF616161);
 
     if (col.id == 'action') {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomActionButton(
-            text: 'View',
-            onPressed: () => onViewSelected(item.uName),
-            width: 65,
-            height: 26,
-            fontSize: 11,
-          ),
-          const SizedBox(width: 8),
-          CustomActionButton(
-            text: 'Investigate',
-            onPressed: () {},
-            width: 85,
-            height: 26,
-            fontSize: 11,
-          ),
-        ],
+      return TableActionRow(
+        onView: () => onViewSelected(item.uName),
       );
     }
 

@@ -12,7 +12,11 @@ class SameIPDetailsView extends StatelessWidget {
   final String clusterId;
   final VoidCallback onBack;
 
-  const SameIPDetailsView({super.key, required this.clusterId, required this.onBack});
+  const SameIPDetailsView({
+    super.key,
+    required this.clusterId,
+    required this.onBack,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +33,14 @@ class SameIPDetailsView extends StatelessWidget {
                 if (state is SameIPDetailsLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is SameIPDetailsLoaded) {
-                  return _buildTable(state.details,context);
+                  return _buildTable(state.details, context);
                 } else if (state is SameIPDetailsError) {
-                  return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
                 }
                 return const SizedBox();
               },
@@ -57,7 +66,11 @@ class SameIPDetailsView extends StatelessWidget {
         Expanded(
           child: Text(
             clusterId,
-            style: GoogleFonts.openSans(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.bold),
+            style: GoogleFonts.openSans(
+              fontSize: 18,
+              color: Colors.black87,
+              fontWeight: FontWeight.bold,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -65,7 +78,7 @@ class SameIPDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildTable(List<SameIPDetailEntity> data,BuildContext context) {
+  Widget _buildTable(List<SameIPDetailEntity> data, BuildContext context) {
     return ViewDataTable<SameIPDetailEntity>(
       columns: const [
         ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 100),
@@ -74,47 +87,83 @@ class SameIPDetailsView extends StatelessWidget {
         ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 110),
         ViewTableColumn(id: 'order_time', label: 'ORDER D/T', width: 180),
         ViewTableColumn(id: 'buy_sell', label: 'B/S', width: 180),
-        ViewTableColumn(id: 'quantity', label: 'QTY', width: 110, isNumeric: true),
+        ViewTableColumn(
+          id: 'quantity',
+          label: 'QTY',
+          width: 110,
+          isNumeric: true,
+        ),
         ViewTableColumn(id: 'lot', label: 'LOT', width: 80, isNumeric: true),
         ViewTableColumn(id: 'type', label: 'TYPE', width: 80),
         ViewTableColumn(id: 'pl', label: 'P/L', width: 100, isNumeric: true),
-        ViewTableColumn(id: 't_price', label: 'T. PRICE', width: 100, isNumeric: true),
+        ViewTableColumn(
+          id: 't_price',
+          label: 'T. PRICE',
+          width: 100,
+          isNumeric: true,
+        ),
         ViewTableColumn(id: 'brk', label: 'BRK', width: 80, isNumeric: true),
-        ViewTableColumn(id: 'r_price', label: 'R. PRICE', width: 80, isNumeric: true),
+        ViewTableColumn(
+          id: 'r_price',
+          label: 'R. PRICE',
+          width: 80,
+          isNumeric: true,
+        ),
       ],
       data: data,
       idExtractor: (item) => '${item.uName}_${item.orderTime}_${item.quantity}',
       autoFit: true,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: AppColors.isDarkMode(context),
+      rowBackgroundBuilder: (item, index) =>
+          index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) => _buildCell(context, item, col),
     );
   }
 
-  Widget _buildCell(BuildContext context, SameIPDetailEntity item, ViewTableColumn col) {
+  Widget _buildCell(
+    BuildContext context,
+    SameIPDetailEntity item,
+    ViewTableColumn col,
+  ) {
     final currencyFormat = NumberFormat('#,##0.00');
     String text = '';
     Color textColor = const Color(0xFF616161);
 
     switch (col.id) {
-      case 'u_name': text = item.uName; break;
-      case 'p_user': text = item.pUser; break;
-      case 'exch': text = item.exch; break;
+      case 'u_name':
+        text = item.uName;
+        break;
+      case 'p_user':
+        text = item.pUser;
+        break;
+      case 'exch':
+        text = item.exch;
+        break;
       case 'symbol':
         text = item.symbol;
         textColor = const Color(0xFFE27C00);
         break;
-      case 'order_time': text = item.orderTime; break;
+      case 'order_time':
+        text = item.orderTime;
+        break;
       case 'buy_sell':
         text = item.buySell;
-        textColor = text.contains('SELL') ? AppColors.errorColor : AppColors.primaryBlue;
+        textColor = text.contains('SELL')
+            ? AppColors.errorColor
+            : AppColors.primaryBlue;
         break;
       case 'quantity':
         text = currencyFormat.format(item.quantity);
-        textColor = item.quantity < 0 ? AppColors.errorColor : AppColors.primaryBlue;
+        textColor = item.quantity < 0
+            ? AppColors.errorColor
+            : AppColors.primaryBlue;
         break;
-      case 'lot': text = currencyFormat.format(item.lot); break;
-      case 'type': text = item.type; break;
+      case 'lot':
+        text = currencyFormat.format(item.lot);
+        break;
+      case 'type':
+        text = item.type;
+        break;
       case 'pl':
         text = currencyFormat.format(item.pl);
         textColor = AppColors.errorColor;
@@ -123,8 +172,12 @@ class SameIPDetailsView extends StatelessWidget {
         text = currencyFormat.format(item.tPrice);
         textColor = AppColors.errorColor;
         break;
-      case 'brk': text = currencyFormat.format(item.brk); break;
-      case 'r_price': text = currencyFormat.format(item.rPrice); break;
+      case 'brk':
+        text = currencyFormat.format(item.brk);
+        break;
+      case 'r_price':
+        text = currencyFormat.format(item.rPrice);
+        break;
     }
 
     return Text(

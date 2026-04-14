@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class LightThemeColors {
   LightThemeColors._();
-  static const Color backgroundColor = Color(0xFFFFFFFF);
+  static const Color backgroundColor = Color(0xFFF4F6FA);
 
   static const Color inputFieldBackground = Color(0xFFFFFFFF);
   static const Color cardBackground = Color(0xFFFFFFFF);
@@ -10,21 +10,22 @@ class LightThemeColors {
   static const Color secondaryColor = Color(0xFFFF0000);
   static const Color textColor = Color(0xFF202D3B);
   static const Color supportiveTextColor = Color(0xFF788088);
-  static const Color cardBorderColor = Color(0xFFE9E9E9);
-  static const Color dividerColor = Color(0xFFE9E9E9);
+  static const Color cardBorderColor = Color(0xFFE2E8F0);
+  static const Color dividerColor = Color(0xFFE2E8F0);
   static const Color tableBackground = Color(0xFFFFFFFF);
-  static const Color tableColumnHeadColor = Color(0xFFF1F5F9);
+  /// Modern dark-navy header matching BazaarPro brand
+  static const Color tableColumnHeadColor = Color(0xFF202D3B);
   static const Color tableRowBackground = Color(0xFFFFFFFF);
   static const Color tableAlternateRowBackground = Color(0xFFF8FAFC);
   static const Color chipTextBlueColor = Color(0xFF202D3B);
   static const Color chipBgBlue = Color(0xFFDFECFE);
   static const Color chipTextRedColor = Color(0xFFFF0000);
   static const Color chipBgRed = Color(0xFFFBE7E4);
-  static const Color selectedRowBackground = Color(0xFFB3D9FF);
+  static const Color selectedRowBackground = Color(0xFFDBEAFF);
   static const Color highlightColor = Color(0xFFBBDEFB);
   static const Color selectedRowBorder = Color(0xFF0066FF);
   static const Color contextMenuBackground = Color(0xFFFFFFFF);
-  static const Color contextMenuHover = Color(0xFFE3F2FD);
+  static const Color contextMenuHover = Color(0xFFEEF2FF);
   static const Color positiveTextColor = AppColors.buyColor;
   static const Color negativeTextColor = AppColors.sellColor;
   static const Color gradientPrimaryColor = Color(0xFF368AE9);
@@ -33,32 +34,32 @@ class LightThemeColors {
 
 class DarkThemeColors {
   DarkThemeColors._();
-  static const Color backgroundColor = Color(0xFF0D0D0D);
-  static const Color inputFieldBackground = Color(0xFF0D0D0D);
-  static const Color cardBackground = Color(0xFF1C1C1C);
+  static const Color backgroundColor = Color(0xFF0F1623);
+  static const Color inputFieldBackground = Color(0xFF151E2D);
+  static const Color cardBackground = Color(0xFF1A2535);
   static const Color primaryColor = Color(0xFF202D3B);
   static const Color secondaryColor = Color(0xFFFF0000);
-  static const Color textColor = Color(0xFFFFFFFF);
-  static const Color supportiveTextColor = Color(0xFFA1A9B1);
-  static const Color cardBorderColor = Color(0xFF494949);
-  static const Color dividerColor = Color(0xFF494949);
-  static const Color tableBackground = Color(0xFF111827);
-  static const Color tableColumnHeadColor = Color(0xFF1E293B);
-  static const Color tableRowBackground = Color(0xFF111827);
-  static const Color tableAlternateRowBackground = Color(0xFF1F293B);
-  static const Color chipTextBlueColor = Color(0xFF202D3B);
+  static const Color textColor = Color(0xFFE8EDF4);
+  static const Color supportiveTextColor = Color(0xFF8B96A7);
+  static const Color cardBorderColor = Color(0xFF2A3A50);
+  static const Color dividerColor = Color(0xFF2A3A50);
+  static const Color tableBackground = Color(0xFF151E2D);
+  static const Color tableColumnHeadColor = Color(0xFF1A2535);
+  static const Color tableRowBackground = Color(0xFF151E2D);
+  static const Color tableAlternateRowBackground = Color(0xFF1A2535);
+  static const Color chipTextBlueColor = Color(0xFF90C4FF);
   static const Color chipBgBlue = Color(0xFF162032);
-  static const Color chipTextRedColor = Color(0xFFFF0000);
+  static const Color chipTextRedColor = Color(0xFFFF6B6B);
   static const Color chipBgRed = Color(0xFF2B1A1A);
-  static const Color selectedRowBackground = Color.fromARGB(255, 18, 73, 151);
-  static const Color highlightColor = Color(0xFF232E3D);
-  static const Color selectedRowBorder = Color.fromARGB(255, 2, 20, 31);
-  static const Color contextMenuBackground = Color(0xFF1C1C1C);
-  static const Color contextMenuHover = Color(0xFF162032);
+  static const Color selectedRowBackground = Color(0xFF1B3A6B);
+  static const Color highlightColor = Color(0xFF1E3045);
+  static const Color selectedRowBorder = Color(0xFF0066FF);
+  static const Color contextMenuBackground = Color(0xFF1A2535);
+  static const Color contextMenuHover = Color(0xFF1E3045);
   static const Color positiveTextColor = AppColors.buyColor;
   static const Color negativeTextColor = AppColors.sellColor;
   static const Color gradientPrimaryColor = Color(0xFF202D3B);
-  static const Color gradientBaseColor = Color(0xFF0D0D0D);
+  static const Color gradientBaseColor = Color(0xFF0F1623);
 }
 
 class AppColors {
@@ -316,24 +317,27 @@ class AppColors {
 
   static LinearGradient pageBackgroundGradient(BuildContext context) {
     if (isDarkMode(context)) {
-      return LinearGradient(
+      return const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          DarkThemeColors.backgroundColor,
-          DarkThemeColors.backgroundColor,
+          Color(0xFF0F1623), // deep dark-navy base
+          Color(0xFF121A28), // slightly lighter
+          Color(0xFF0F1623), // back to base
         ],
+        stops: [0.0, 0.5, 1.0],
       );
     }
-    return LinearGradient(
+    // Light mode: cool slate-blue wash
+    return const LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: [
-        const Color(0xFFEAF0F6), // Soft modern light blue from logo theme
-        const Color(0xFFFFFFFF), // pure white for clean look
-        const Color(0xFFF1F5F9), // modern slate gray-blue
+        Color(0xFFF0F4F8), // soft blue-gray
+        Color(0xFFFFFFFF), // pure white at centre
+        Color(0xFFF4F7FB), // subtle blue tint
       ],
-      stops: const [0.0, 0.4, 1.0],
+      stops: [0.0, 0.45, 1.0],
     );
   }
 }

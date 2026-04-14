@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../domain/entities/btst_entity.dart';
-import '../../../../core/widget/custom_action_button.dart';
+import '../../../../core/widget/table_action_button.dart';
 
 class BTSTTable extends StatelessWidget {
   final List<BTSTEntity> data;
@@ -24,13 +24,13 @@ class BTSTTable extends StatelessWidget {
         ViewTableColumn(id: 'in_time', label: 'In Time', width: 200),
         ViewTableColumn(id: 'out_time', label: 'Out Time', width: 200),
         ViewTableColumn(id: 'order_duration', label: 'ORDER DURATION', width: 180),
-        ViewTableColumn(id: 'action', label: 'Action', width: 200),
+        ViewTableColumn(id: 'action', label: 'Action', width: 240),
       ],
       data: data,
       idExtractor: (item) => '${item.uName}_${item.inTime}_${item.pnl}',
       autoFit: true,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: AppColors.isDarkMode(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) => _buildCell(context, item, col),
     );
   }
@@ -41,25 +41,8 @@ class BTSTTable extends StatelessWidget {
     Color textColor = const Color(0xFF616161);
 
     if (col.id == 'action') {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomActionButton(
-            text: 'View',
-            onPressed: () => onViewSelected(item.uName),
-            width: 65,
-            height: 26,
-            fontSize: 11,
-          ),
-          const SizedBox(width: 8),
-          CustomActionButton(
-            text: 'Investigate',
-            onPressed: () {},
-            width: 85,
-            height: 26,
-            fontSize: 11,
-          ),
-        ],
+      return TableActionRow(
+        onView: () => onViewSelected(item.uName),
       );
     }
 

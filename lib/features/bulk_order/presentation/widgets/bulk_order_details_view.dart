@@ -50,7 +50,7 @@ class BulkOrderDetailsView extends StatelessWidget {
                 if (state is BulkOrderDetailsLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is BulkOrderDetailsLoaded) {
-                  return _buildTable(state.details);
+                  return _buildTable(context, state.details);
                 } else if (state is BulkOrderDetailsError) {
                   return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
                 }
@@ -63,7 +63,7 @@ class BulkOrderDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildTable(List<BulkOrderDetailsEntity> data) {
+  Widget _buildTable(BuildContext context, List<BulkOrderDetailsEntity> data) {
     return ViewDataTable<BulkOrderDetailsEntity>(
       columns: const [
         ViewTableColumn(id: 'uName', label: 'U. NAME', width: 100),
@@ -85,10 +85,10 @@ class BulkOrderDetailsView extends StatelessWidget {
         ViewTableColumn(id: 'city', label: 'CITY', width: 100),
       ],
       data: data,
-      idExtractor: (item) => '${item.uName}_${item.orderTime}', // Mock unique key
+      idExtractor: (item) => '${item.uName}_${item.orderTime}',
       autoFit: true,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: AppColors.isDarkMode(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) {
         String text = '';
         Color textColor = const Color(0xFF616161);

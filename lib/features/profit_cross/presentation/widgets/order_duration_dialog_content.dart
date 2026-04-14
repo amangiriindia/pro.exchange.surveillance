@@ -1,3 +1,4 @@
+import 'package:surveillance/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,10 +14,7 @@ class OrderDurationDialogContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 1000,
-      height: 400,
-      child: BlocBuilder<ProfitCrossBloc, ProfitCrossState>(
+    return BlocBuilder<ProfitCrossBloc, ProfitCrossState>(
         builder: (context, state) {
           if (state is OrderDurationLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -34,14 +32,14 @@ class OrderDurationDialogContent extends StatelessWidget {
               data: state.details,
               idExtractor: (item) => item.executionDT + item.symbol,
               autoFit: true,
-              isDarkMode: false,
+              isDarkMode: AppColors.isDarkMode(context),
               cellBuilder: (item, col) => _buildCell(context, item, col),
             );
           }
           return const Center(child: Text('No details available'));
         },
-      ),
-    );
+      );
+  
   }
 
   Widget _buildCell(BuildContext context, OrderDurationEntity item, ViewTableColumn col) {

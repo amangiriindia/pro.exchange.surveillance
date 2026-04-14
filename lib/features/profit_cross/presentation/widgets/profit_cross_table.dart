@@ -29,8 +29,8 @@ class ProfitCrossTable extends StatelessWidget {
       data: data,
       idExtractor: (item) => item.time + item.symbol + item.pnlPercentage.toString(),
       autoFit: true,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: AppColors.isDarkMode(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) => _buildCell(context, item, col),
     );
   }
@@ -96,11 +96,11 @@ class ProfitCrossTable extends StatelessWidget {
     CommonDialog.show(
       context: context,
       title: 'Order Duration',
-      width: 1100,
-      height: 500,
+      width: 1200,
+      height: 600,
       showButtons: false,
       backgroundColor: Colors.white,
-      headerColor: Colors.white,
+      headerColor: const Color.fromARGB(255, 2, 12, 28),
       titleActions: [], // Can add icons here if needed to match screenshot exactly
       content: BlocProvider.value(
         value: bloc,

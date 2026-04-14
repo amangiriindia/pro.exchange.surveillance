@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../injection_container.dart';
+import '../../../../core/widget/page_header.dart';
 import '../bloc/trade_bloc.dart';
 import '../bloc/trade_event.dart';
 import '../bloc/trade_state.dart';
 import '../widgets/trade_table.dart';
-import '../../../../core/widget/custom_outlined_button.dart';
 
 class TradePage extends StatelessWidget {
   final VoidCallback? onSettingsTap;
@@ -28,12 +27,17 @@ class TradeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.transparent, // Allow dashboard gradient to show
+      color: Colors.transparent,
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(context),
+          PageHeader(
+            title: 'Trade',
+            subtitle: 'Monitor users who exceeded configured trade quantity limits',
+            onRefresh: () => context.read<TradeBloc>().add(LoadTrades()),
+            onSettingsTap: onSettingsTap,
+          ),
           const SizedBox(height: 24),
           Expanded(
             child: BlocBuilder<TradeBloc, TradeState>(
@@ -48,73 +52,9 @@ class TradeView extends StatelessWidget {
                 return const SizedBox();
               },
             ),
-          )
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Trade',
-              style: GoogleFonts.openSans(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Monitor users who exceeded configured trade quantity limits',
-              style: GoogleFonts.openSans(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.white,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.refresh, color: Colors.black54, size: 20),
-                onPressed: () {
-                  context.read<TradeBloc>().add(LoadTrades());
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.white,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.settings, color: Colors.black54, size: 20),
-                onPressed: onSettingsTap,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.white,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.black54, size: 20),
-                onPressed: () {},
-              ),
-            ),
-          ],
-        )
-      ],
     );
   }
 }

@@ -16,8 +16,8 @@ class TradeTable extends StatelessWidget {
       data: trades,
       idExtractor: (item) => item.uName + item.orderDateTime, // Dummy composite ID
       autoFit: false,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: AppColors.isDarkMode(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: _buildCell,
     );
   }

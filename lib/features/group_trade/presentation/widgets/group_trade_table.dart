@@ -11,13 +11,16 @@ class GroupTradeTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDarkMode(context);
     return ViewDataTable<GroupTradeEntity>(
       columns: _buildColumns(),
       data: trades,
-      idExtractor: (item) => item.uName + item.orderDateTime, // Dummy composite ID
+      idExtractor: (item) => item.uName + item.orderDateTime,
       autoFit: false,
-      isDarkMode: false,
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? Colors.white : const Color(0xFFF5F6F8),
+      isDarkMode: isDark,
+      rowBackgroundBuilder: (item, index) => index % 2 == 0
+          ? AppColors.getTableRowBackground(context)
+          : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: _buildCell,
     );
   }
