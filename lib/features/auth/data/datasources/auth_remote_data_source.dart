@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/auth_constants.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../models/profile_details_model.dart';
 import '../models/user_model.dart';
 
@@ -24,6 +25,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final Dio dio;
   AuthRemoteDataSourceImpl({required this.dio});
 
+  String _extractMessage(dynamic data, String fallback) {
+    if (data is Map) {
+      final message = data['message'];
+      if (message is String && message.trim().isNotEmpty) {
+        return message;
+      }
+    }
+    return fallback;
+  }
+
   @override
   Future<LoginUserModel> login({
     required String username,
@@ -32,7 +43,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await dio.post(
         AuthConstants.loginEndpoint,
-        data: {'username': username, 'password': password},
+        data: {'userName': username, 'password': password},
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
       if (response.statusCode == 200) {
@@ -45,13 +56,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         );
       }
     } on DioException catch (e) {
-      final data = e.response?.data;
-      final message = data is Map
-          ? data['message'] ?? 'Login failed'
-          : 'Login failed';
-      throw Exception(message);
+      throw ServerException(_extractMessage(e.response?.data, 'Login failed'));
     } catch (e) {
-      throw Exception('Unexpected error: $e');
+      throw ServerException('Unexpected error: $e');
     }
   }
 
@@ -69,10 +76,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'new_password': newPassword,
         },
         options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
+          headers: {'Content-Type': 'application/json', 'authorization': token},
         ),
       );
 
@@ -88,13 +92,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         error: 'Change password failed',
       );
     } on DioException catch (e) {
-      final data = e.response?.data;
-      final message = data is Map
-          ? data['message'] ?? 'Change password failed'
-          : 'Change password failed';
-      throw Exception(message);
+      throw ServerException(
+        _extractMessage(e.response?.data, 'Change password failed'),
+      );
     } catch (e) {
-      throw Exception('Unexpected error: $e');
+      throw ServerException('Unexpected error: $e');
     }
   }
 
@@ -103,7 +105,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await dio.get(
         AuthConstants.profileEndpoint,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: Options(headers: {'authorization': token}),
       );
 
       if (response.statusCode == 200) {
@@ -118,13 +120,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         error: 'Failed to fetch profile',
       );
     } on DioException catch (e) {
-      final data = e.response?.data;
-      final message = data is Map
-          ? data['message'] ?? 'Failed to fetch profile'
-          : 'Failed to fetch profile';
-      throw Exception(message);
+      throw ServerException(
+        _extractMessage(e.response?.data, 'Failed to fetch profile'),
+      );
     } catch (e) {
-      throw Exception('Unexpected error: $e');
+      throw ServerException('Unexpected error: $e');
     }
   }
 
@@ -133,7 +133,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await dio.post(
         AuthConstants.logoutEndpoint,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: Options(headers: {'authorization': token}),
       );
 
       if (response.statusCode == 200) {
@@ -147,13 +147,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         error: 'Logout failed',
       );
     } on DioException catch (e) {
-      final data = e.response?.data;
-      final message = data is Map
-          ? data['message'] ?? 'Logout failed'
-          : 'Logout failed';
-      throw Exception(message);
+      throw ServerException(_extractMessage(e.response?.data, 'Logout failed'));
     } catch (e) {
-      throw Exception('Unexpected error: $e');
+      throw ServerException('Unexpected error: $e');
     }
   }
 }

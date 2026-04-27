@@ -8,7 +8,13 @@ class GetJobberTrackerData {
 
   GetJobberTrackerData(this.repository);
 
-  Future<Either<Failure, List<JobberTrackerEntity>>> call() async {
-    return await repository.getJobberTrackerData();
+  Future<Either<Failure, List<JobberTrackerEntity>>> call({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    return await repository.getJobberTrackerData(
+      page: page,
+      sizePerPage: sizePerPage,
+    );
   }
 }

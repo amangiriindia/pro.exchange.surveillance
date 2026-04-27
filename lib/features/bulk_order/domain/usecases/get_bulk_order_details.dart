@@ -7,7 +7,9 @@ class GetBulkOrderDetails {
 
   GetBulkOrderDetails(this.repository);
 
-  Future<Either<dynamic, List<BulkOrderDetailsEntity>>> call(String symbol) async {
-    return await repository.getDetails(symbol);
+  Future<Either<dynamic, List<BulkOrderDetailsEntity>>> call(
+    int alertId,
+  ) async {
+    return await repository.getDetails(alertId);
   }
 }

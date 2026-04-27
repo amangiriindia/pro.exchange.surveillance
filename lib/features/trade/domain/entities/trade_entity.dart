@@ -1,25 +1,31 @@
 import 'package:equatable/equatable.dart';
 
 class TradeEntity extends Equatable {
-  final String uName;
-  final String pUser;
-  final String exchange;
-  final String symbol;
+  final int id;
+  final String uName; // userName
+  final String pUser; // parentUserName
+  final String exchange; // exchangeName
+  final String symbol; // symbolName
   final String orderDateTime;
-  final String buySell;
-  final double quantity;
-  final double lot;
-  final String type;
+  final String buySell; // constructed: "SELL - L Market"
+  final double quantity; // totalQuantity
+  final double lot; // lotSize
+  final String type; // mainOrderType (Market/Limit)
   final double profitLoss;
-  final double tradePrice;
-  final double? brk;
-  final double? rPrice;
+  final double tradePrice; // price
+  final double? brk; // brokerageAmount
+  final double? rPrice; // referencePrice
   final String? executionDateTime;
   final String? deviceId;
   final String? ipAddress;
   final String? city;
+  final String? comment;
+  final String? status;
+  final String? productType;
+  final int? userId;
 
   const TradeEntity({
+    required this.id,
     required this.uName,
     required this.pUser,
     required this.exchange,
@@ -37,26 +43,35 @@ class TradeEntity extends Equatable {
     this.deviceId,
     this.ipAddress,
     this.city,
+    this.comment,
+    this.status,
+    this.productType,
+    this.userId,
   });
 
   @override
   List<Object?> get props => [
-        uName,
-        pUser,
-        exchange,
-        symbol,
-        orderDateTime,
-        buySell,
-        quantity,
-        lot,
-        type,
-        profitLoss,
-        tradePrice,
-        brk,
-        rPrice,
-        executionDateTime,
-        deviceId,
-        ipAddress,
-        city,
-      ];
+    id,
+    uName,
+    pUser,
+    exchange,
+    symbol,
+    orderDateTime,
+    buySell,
+    quantity,
+    lot,
+    type,
+    profitLoss,
+    tradePrice,
+    brk,
+    rPrice,
+    executionDateTime,
+    deviceId,
+    ipAddress,
+    city,
+    comment,
+    status,
+    productType,
+    userId,
+  ];
 }

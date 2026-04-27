@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import 'app_dropdown.dart';
 
-
 /// The standard list of exchanges shown across all feature pages.
 const kExchangeItems = [
   'ALL',
@@ -40,12 +39,38 @@ const kSymbolItems = [
 /// - Gradient "Apply Filter" button
 class PageFiltersBar extends StatelessWidget {
   final VoidCallback? onApply;
+  final VoidCallback? onReset;
   final List<Widget> extraFilters;
+  final String? selectedDate;
+  final String? selectedExchange;
+  final String? selectedSymbol;
+  final ValueChanged<String?>? onDateChanged;
+  final ValueChanged<String?>? onExchangeChanged;
+  final ValueChanged<String?>? onSymbolChanged;
+  final List<String> dateItems;
+  final List<String> exchangeItems;
+  final List<String> symbolItems;
+  final bool showDateFilter;
+  final bool showExchangeFilter;
+  final bool showSymbolFilter;
 
   const PageFiltersBar({
     super.key,
     this.onApply,
+    this.onReset,
     this.extraFilters = const [],
+    this.selectedDate,
+    this.selectedExchange,
+    this.selectedSymbol,
+    this.onDateChanged,
+    this.onExchangeChanged,
+    this.onSymbolChanged,
+    this.dateItems = const ['Today', 'Yesterday'],
+    this.exchangeItems = kExchangeItems,
+    this.symbolItems = kSymbolItems,
+    this.showDateFilter = true,
+    this.showExchangeFilter = true,
+    this.showSymbolFilter = true,
   });
 
   @override
@@ -116,6 +141,8 @@ class PageFiltersBar extends StatelessWidget {
                       : const Color(0xFFE2E8F0),
                 ),
               ),
+              const SizedBox(width: 8),
+              _ResetFiltersButton(onPressed: onReset),
             ],
           ),
 
@@ -124,48 +151,57 @@ class PageFiltersBar extends StatelessWidget {
           // ── Filter controls row ──
           Row(
             children: [
-              // Date
-              _FilterDropdownSlot(
-                child: AppDropdown(
-                  hintText: 'Select Date',
-                  height: 36,
-                  items: const ['Today', 'Yesterday', 'Custom Date Range'],
-                  borderColor: isDark
-                      ? Colors.white.withOpacity(0.15)
-                      : const Color(0xFFCBD5E1),
-                  isDarkMode: isDark,
+              if (showDateFilter) ...[
+                _FilterDropdownSlot(
+                  child: AppDropdown(
+                    hintText: 'Select Date',
+                    height: 36,
+                    value: selectedDate,
+                    onChanged: onDateChanged,
+                    items: dateItems,
+                    borderColor: isDark
+                        ? Colors.white.withOpacity(0.15)
+                        : const Color(0xFFCBD5E1),
+                    isDarkMode: isDark,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
+                const SizedBox(width: 10),
+              ],
 
-              // Exchange
-              _FilterDropdownSlot(
-                child: AppDropdown(
-                  hintText: 'Exchange',
-                  height: 36,
-                  items: kExchangeItems,
-                  showAllOption: true,
-                  borderColor: isDark
-                      ? Colors.white.withOpacity(0.15)
-                      : const Color(0xFFCBD5E1),
-                  isDarkMode: isDark,
+              if (showExchangeFilter) ...[
+                _FilterDropdownSlot(
+                  child: AppDropdown(
+                    hintText: 'Exchange',
+                    height: 36,
+                    value: selectedExchange,
+                    onChanged: onExchangeChanged,
+                    items: exchangeItems,
+                    showAllOption: true,
+                    borderColor: isDark
+                        ? Colors.white.withOpacity(0.15)
+                        : const Color(0xFFCBD5E1),
+                    isDarkMode: isDark,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
+                const SizedBox(width: 10),
+              ],
 
-              // Symbol
-              _FilterDropdownSlot(
-                child: AppDropdown(
-                  type: AppDropdownType.search,
-                  hintText: 'Symbol',
-                  height: 36,
-                  items: kSymbolItems,
-                  borderColor: isDark
-                      ? Colors.white.withOpacity(0.15)
-                      : const Color(0xFFCBD5E1),
-                  isDarkMode: isDark,
+              if (showSymbolFilter) ...[
+                _FilterDropdownSlot(
+                  child: AppDropdown(
+                    type: AppDropdownType.search,
+                    hintText: 'Symbol',
+                    height: 36,
+                    value: selectedSymbol,
+                    onChanged: onSymbolChanged,
+                    items: symbolItems,
+                    borderColor: isDark
+                        ? Colors.white.withOpacity(0.15)
+                        : const Color(0xFFCBD5E1),
+                    isDarkMode: isDark,
+                  ),
                 ),
-              ),
+              ],
 
               // Extra feature-specific filter slots
               for (final extra in extraFilters) ...[
@@ -180,6 +216,48 @@ class PageFiltersBar extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ResetFiltersButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+
+  const _ResetFiltersButton({this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = AppColors.isDarkMode(context);
+
+    return Tooltip(
+      message: 'Reset filters',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(8),
+          child: Ink(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.06)
+                  : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : const Color(0xFFE2E8F0),
+              ),
+            ),
+            child: Icon(
+              Icons.refresh_rounded,
+              size: 18,
+              color: isDark ? Colors.white70 : const Color(0xFF475569),
+            ),
+          ),
+        ),
       ),
     );
   }

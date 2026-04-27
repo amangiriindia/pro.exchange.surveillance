@@ -8,41 +8,68 @@ import '../bloc/profit_cross_bloc.dart';
 import '../../domain/entities/order_duration_entity.dart';
 
 class OrderDurationDialogContent extends StatelessWidget {
+  final int alertId;
   final String symbol;
 
-  const OrderDurationDialogContent({super.key, required this.symbol});
+  const OrderDurationDialogContent({
+    super.key,
+    required this.alertId,
+    required this.symbol,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfitCrossBloc, ProfitCrossState>(
-        builder: (context, state) {
-          if (state is OrderDurationLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is OrderDurationLoaded) {
-            return ViewDataTable<OrderDurationEntity>(
-              columns: const [
-                ViewTableColumn(id: 'duration', label: 'DURATION', width: 140),
-                ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 180),
-                ViewTableColumn(id: 'type', label: 'TYPE', width: 100),
-                ViewTableColumn(id: 'qty', label: 'QTY', width: 100, isNumeric: true),
-                ViewTableColumn(id: 'price', label: 'PRICE', width: 120, isNumeric: true),
-                ViewTableColumn(id: 'execution_dt', label: 'EXECUTION D/T', width: 180),
-                ViewTableColumn(id: 'pnl', label: 'P/L', width: 120, isNumeric: true),
-              ],
-              data: state.details,
-              idExtractor: (item) => item.executionDT + item.symbol,
-              autoFit: true,
-              isDarkMode: AppColors.isDarkMode(context),
-              cellBuilder: (item, col) => _buildCell(context, item, col),
-            );
-          }
-          return const Center(child: Text('No details available'));
-        },
-      );
-  
+      builder: (context, state) {
+        if (state is OrderDurationLoading) {
+          return const SizedBox.shrink();
+        } else if (state is OrderDurationLoaded) {
+          return ViewDataTable<OrderDurationEntity>(
+            columns: const [
+              ViewTableColumn(id: 'duration', label: 'DURATION', width: 140),
+              ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 180),
+              ViewTableColumn(id: 'type', label: 'TYPE', width: 100),
+              ViewTableColumn(
+                id: 'qty',
+                label: 'QTY',
+                width: 100,
+                isNumeric: true,
+              ),
+              ViewTableColumn(
+                id: 'price',
+                label: 'PRICE',
+                width: 120,
+                isNumeric: true,
+              ),
+              ViewTableColumn(
+                id: 'execution_dt',
+                label: 'EXECUTION D/T',
+                width: 180,
+              ),
+              ViewTableColumn(
+                id: 'pnl',
+                label: 'P/L',
+                width: 120,
+                isNumeric: true,
+              ),
+            ],
+            data: state.details,
+            idExtractor: (item) => item.id.toString(),
+            autoFit: true,
+            isDarkMode: AppColors.isDarkMode(context),
+            cellBuilder: (item, col) => _buildCell(context, item, col),
+          );
+        }
+        return const Center(child: Text('No details available'));
+      },
+    );
   }
 
-  Widget _buildCell(BuildContext context, OrderDurationEntity item, ViewTableColumn col) {
+  Widget _buildCell(
+    BuildContext context,
+    OrderDurationEntity item,
+    ViewTableColumn col,
+  ) {
     final currencyFormat = NumberFormat('#,##0');
     String text = '';
     Color textColor = Colors.black87;
@@ -57,7 +84,9 @@ class OrderDurationDialogContent extends StatelessWidget {
         break;
       case 'type':
         text = item.type;
-        textColor = item.type.toLowerCase().contains('sell') ? Colors.red : const Color(0xFF2E6BFF);
+        textColor = item.type.toLowerCase().contains('sell')
+            ? Colors.red
+            : const Color(0xFF2E6BFF);
         break;
       case 'qty':
         text = currencyFormat.format(item.qty);

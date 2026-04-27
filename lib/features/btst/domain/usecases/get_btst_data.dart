@@ -8,7 +8,10 @@ class GetBTSTData {
 
   GetBTSTData(this.repository);
 
-  Future<Either<Failure, List<BTSTEntity>>> call() async {
-    return await repository.getBTSTData();
+  Future<Either<Failure, List<BTSTEntity>>> call({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    return await repository.getBTSTData(page: page, sizePerPage: sizePerPage);
   }
 }

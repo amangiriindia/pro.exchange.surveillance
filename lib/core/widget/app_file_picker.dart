@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
@@ -28,16 +29,31 @@ class AppFilePickerState extends State<AppFilePicker> {
   PlatformFile? get pickedFile => _pickedFile;
 
   Future<void> pickFile() async {
-    final result = await FilePicker.pickFiles(
-      type: widget.allowedExtensions != null ? FileType.custom : FileType.any,
-      allowedExtensions: widget.allowedExtensions,
-      withData: true,
-    );
-    if (result != null && result.files.isNotEmpty) {
-      setState(() {
-        _pickedFile = result.files.first;
-      });
-      widget.onFilePicked?.call(_pickedFile);
+    try {
+      final result = await FilePicker.pickFiles(
+        type: widget.allowedExtensions != null ? FileType.custom : FileType.any,
+        allowedExtensions: widget.allowedExtensions,
+        withData: true,
+      );
+      if (result != null && result.files.isNotEmpty) {
+        setState(() {
+          _pickedFile = result.files.first;
+        });
+        widget.onFilePicked?.call(_pickedFile);
+      }
+    } on PlatformException catch (error) {
+      if (!mounted) return;
+      final message = error.code == 'ENTITLEMENT_NOT_FOUND'
+          ? 'File access permission is not enabled for this macOS app build.'
+          : 'Unable to open file picker.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to open file picker.')),
+      );
     }
   }
 

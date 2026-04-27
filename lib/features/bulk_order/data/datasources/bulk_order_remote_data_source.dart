@@ -1,33 +1,33 @@
+import 'package:dio/dio.dart';
+import '../../../../core/constants/auth_constants.dart';
 import '../models/bulk_order_model.dart';
-import 'package:dartz/dartz.dart';
 
 abstract class BulkOrderRemoteDataSource {
-  Future<List<BulkOrderModel>> getBulkOrders();
+  Future<List<BulkOrderModel>> getBulkOrders({
+    int page = 1,
+    int sizePerPage = 20,
+  });
 }
 
 class BulkOrderRemoteDataSourceImpl implements BulkOrderRemoteDataSource {
+  final Dio dio;
+
+  BulkOrderRemoteDataSourceImpl({required this.dio});
+
   @override
-  Future<List<BulkOrderModel>> getBulkOrders() async {
-    await Future.delayed(const Duration(seconds: 1));
-    
-    return List.generate(15, (index) {
-      final isReliance = index % 2 == 0;
-      final qty = index == 0 ? 5000.0 : 
-                  index == 1 ? 7000.0 : 
-                  index == 2 ? 9501.0 : 
-                  index == 3 ? 10000.0 : 
-                  index == 4 ? 205000.0 : 
-                  3200.0;
-                  
-      // Negative value implies Red in our simple mockup logic
-      final finalQty = index % 2 == 0 ? -qty : qty;
-      
-      return BulkOrderModel(
-        time: '13/03/2026 | 10:22:02 AM',
-        exchange: 'NSE',
-        symbol: isReliance ? 'TCS' : 'RELIANCE',
-        quantity: finalQty,
-      );
-    });
+  Future<List<BulkOrderModel>> getBulkOrders({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    final response = await dio.get(
+      AuthConstants.bulkOrderListEndpoint,
+      queryParameters: {'page': page, 'sizePerPage': sizePerPage},
+    );
+    final data = response.data as Map<String, dynamic>;
+    final body = data['data'] as Map<String, dynamic>;
+    final items = body['items'] as List<dynamic>;
+    return items
+        .map((e) => BulkOrderModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

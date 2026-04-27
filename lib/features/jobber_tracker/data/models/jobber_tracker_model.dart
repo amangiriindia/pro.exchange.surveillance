@@ -2,6 +2,7 @@ import '../../domain/entities/jobber_tracker_entity.dart';
 
 class JobberTrackerModel extends JobberTrackerEntity {
   const JobberTrackerModel({
+    required super.id,
     required super.time,
     required super.uName,
     required super.pUser,
@@ -9,29 +10,26 @@ class JobberTrackerModel extends JobberTrackerEntity {
     required super.symbol,
     required super.tradeFrequency,
     required super.pnl,
+    required super.clientIds,
+    required super.tradeIds,
+    required super.investigateStatus,
+    required super.isRead,
   });
 
   factory JobberTrackerModel.fromJson(Map<String, dynamic> json) {
     return JobberTrackerModel(
-      time: json['time'],
-      uName: json['u_name'],
-      pUser: json['p_user'],
-      exchange: json['exchange'],
-      symbol: json['symbol'],
-      tradeFrequency: json['trade_frequency'],
-      pnl: (json['pnl'] as num).toDouble(),
+      id: (json['id'] ?? 0) as int,
+      time: json['time'] ?? '',
+      uName: json['userName'] ?? '',
+      pUser: json['parentUserName'] ?? '',
+      exchange: json['exchange'] ?? '',
+      symbol: json['symbol'] ?? '',
+      tradeFrequency: (json['tradeFrequency'] ?? 0) as int,
+      pnl: (json['profitLoss'] as num? ?? 0).toDouble(),
+      clientIds: (json['clientIds'] as List<dynamic>? ?? []).cast<int>(),
+      tradeIds: (json['tradeIds'] as List<dynamic>? ?? []).cast<int>(),
+      investigateStatus: json['investigateStatus'] ?? '',
+      isRead: json['isRead'] ?? false,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'time': time,
-      'u_name': uName,
-      'p_user': pUser,
-      'exchange': exchange,
-      'symbol': symbol,
-      'trade_frequency': tradeFrequency,
-      'pnl': pnl,
-    };
   }
 }

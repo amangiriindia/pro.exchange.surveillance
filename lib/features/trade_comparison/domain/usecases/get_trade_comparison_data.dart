@@ -8,7 +8,13 @@ class GetTradeComparisonData {
 
   GetTradeComparisonData(this.repository);
 
-  Future<Either<Failure, List<TradeComparisonEntity>>> call() async {
-    return await repository.getTradeComparisonData();
+  Future<Either<Failure, List<TradeComparisonEntity>>> call({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    return await repository.getTradeComparisonData(
+      page: page,
+      sizePerPage: sizePerPage,
+    );
   }
 }

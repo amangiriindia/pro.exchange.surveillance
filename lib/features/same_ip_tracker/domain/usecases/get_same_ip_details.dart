@@ -8,7 +8,7 @@ class GetSameIPDetails {
 
   GetSameIPDetails(this.repository);
 
-  Future<Either<Failure, List<SameIPDetailEntity>>> call(String clusterId) async {
-    return await repository.getSameIPDetails(clusterId);
+  Future<Either<Failure, List<SameIPDetailEntity>>> call(int alertId) async {
+    return await repository.getSameIPDetails(alertId);
   }
 }

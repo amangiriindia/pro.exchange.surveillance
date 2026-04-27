@@ -10,10 +10,10 @@ abstract class BTSTDetailsEvent extends Equatable {
 }
 
 class LoadBTSTDetails extends BTSTDetailsEvent {
-  final String uName;
-  LoadBTSTDetails(this.uName);
+  final int alertId;
+  LoadBTSTDetails(this.alertId);
   @override
-  List<Object?> get props => [uName];
+  List<Object?> get props => [alertId];
 }
 
 // States
@@ -44,10 +44,11 @@ class BTSTDetailsError extends BTSTDetailsState {
 class BTSTDetailsBloc extends Bloc<BTSTDetailsEvent, BTSTDetailsState> {
   final GetBTSTDetails getBTSTDetails;
 
-  BTSTDetailsBloc({required this.getBTSTDetails}) : super(BTSTDetailsInitial()) {
+  BTSTDetailsBloc({required this.getBTSTDetails})
+    : super(BTSTDetailsInitial()) {
     on<LoadBTSTDetails>((event, emit) async {
       emit(BTSTDetailsLoading());
-      final result = await getBTSTDetails(event.uName);
+      final result = await getBTSTDetails(event.alertId);
       result.fold(
         (failure) => emit(BTSTDetailsError('Server Failure')),
         (details) => emit(BTSTDetailsLoaded(details)),

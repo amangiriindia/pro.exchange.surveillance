@@ -14,11 +14,48 @@ class TradeLoading extends TradeState {}
 
 class TradeLoaded extends TradeState {
   final List<TradeEntity> trades;
+  final int totalRecords;
+  final int totalPages;
+  final int currentPage;
+  final bool isLoadingMore;
+  final bool hasMore;
 
-  const TradeLoaded({required this.trades});
+  const TradeLoaded({
+    required this.trades,
+    required this.totalRecords,
+    required this.totalPages,
+    required this.currentPage,
+    this.isLoadingMore = false,
+    this.hasMore = true,
+  });
+
+  TradeLoaded copyWith({
+    List<TradeEntity>? trades,
+    int? totalRecords,
+    int? totalPages,
+    int? currentPage,
+    bool? isLoadingMore,
+    bool? hasMore,
+  }) {
+    return TradeLoaded(
+      trades: trades ?? this.trades,
+      totalRecords: totalRecords ?? this.totalRecords,
+      totalPages: totalPages ?? this.totalPages,
+      currentPage: currentPage ?? this.currentPage,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasMore: hasMore ?? this.hasMore,
+    );
+  }
 
   @override
-  List<Object> get props => [trades];
+  List<Object> get props => [
+    trades,
+    totalRecords,
+    totalPages,
+    currentPage,
+    isLoadingMore,
+    hasMore,
+  ];
 }
 
 class TradeError extends TradeState {

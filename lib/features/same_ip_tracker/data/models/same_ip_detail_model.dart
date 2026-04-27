@@ -2,12 +2,15 @@ import '../../domain/entities/same_ip_detail_entity.dart';
 
 class SameIPDetailModel extends SameIPDetailEntity {
   const SameIPDetailModel({
+    required super.id,
     required super.uName,
     required super.pUser,
     required super.exch,
     required super.symbol,
     required super.orderTime,
     required super.buySell,
+    required super.tradeType,
+    required super.mainOrderType,
     required super.quantity,
     required super.lot,
     required super.type,
@@ -15,41 +18,34 @@ class SameIPDetailModel extends SameIPDetailEntity {
     required super.tPrice,
     required super.brk,
     required super.rPrice,
+    required super.executionTime,
+    required super.deviceId,
+    required super.ipAddress,
+    required super.city,
   });
 
   factory SameIPDetailModel.fromJson(Map<String, dynamic> json) {
     return SameIPDetailModel(
-      uName: json['u_name'],
-      pUser: json['p_user'],
-      exch: json['exch'],
-      symbol: json['symbol'],
-      orderTime: json['order_time'],
-      buySell: json['buy_sell'],
-      quantity: (json['quantity'] as num).toDouble(),
-      lot: (json['lot'] as num).toDouble(),
-      type: json['type'],
-      pl: (json['pl'] as num).toDouble(),
-      tPrice: (json['t_price'] as num).toDouble(),
-      brk: (json['brk'] as num).toDouble(),
-      rPrice: (json['r_price'] as num).toDouble(),
+      id: (json['id'] ?? 0) as int,
+      uName: json['userName'] ?? '',
+      pUser: json['parentUserName'] ?? '',
+      exch: json['exchange'] ?? '',
+      symbol: json['symbol'] ?? '',
+      orderTime: json['orderDateTime'] ?? '',
+      buySell: json['buySell'] ?? '',
+      tradeType: json['tradeType'] ?? '',
+      mainOrderType: json['mainOrderType'] ?? '',
+      quantity: double.tryParse(json['quantity']?.toString() ?? '0') ?? 0,
+      lot: double.tryParse(json['lot']?.toString() ?? '0') ?? 0,
+      type: json['type'] ?? '',
+      pl: double.tryParse(json['profitLoss']?.toString() ?? '0') ?? 0,
+      tPrice: double.tryParse(json['tradePrice']?.toString() ?? '0') ?? 0,
+      brk: double.tryParse(json['brokerage']?.toString() ?? '0') ?? 0,
+      rPrice: double.tryParse(json['referencePrice']?.toString() ?? '0') ?? 0,
+      executionTime: json['executionDateTime'] ?? '',
+      deviceId: json['deviceId'] ?? '',
+      ipAddress: json['ipAddress'] ?? '',
+      city: json['city'] ?? '',
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'u_name': uName,
-      'p_user': pUser,
-      'exch': exch,
-      'symbol': symbol,
-      'order_time': orderTime,
-      'buy_sell': buySell,
-      'quantity': quantity,
-      'lot': lot,
-      'type': type,
-      'pl': pl,
-      't_price': tPrice,
-      'brk': brk,
-      'r_price': rPrice,
-    };
   }
 }

@@ -11,9 +11,15 @@ class SameDeviceRepositoryImpl implements SameDeviceRepository {
   SameDeviceRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<SameDeviceEntity>>> getSameDeviceData() async {
+  Future<Either<Failure, List<SameDeviceEntity>>> getSameDeviceData({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
     try {
-      final remoteData = await remoteDataSource.getSameDeviceData();
+      final remoteData = await remoteDataSource.getSameDeviceData(
+        page: page,
+        sizePerPage: sizePerPage,
+      );
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());
@@ -21,9 +27,11 @@ class SameDeviceRepositoryImpl implements SameDeviceRepository {
   }
 
   @override
-  Future<Either<Failure, List<SameDeviceDetailEntity>>> getSameDeviceDetails(String clusterId) async {
+  Future<Either<Failure, List<SameDeviceDetailEntity>>> getSameDeviceDetails(
+    int alertId,
+  ) async {
     try {
-      final remoteData = await remoteDataSource.getSameDeviceDetails(clusterId);
+      final remoteData = await remoteDataSource.getSameDeviceDetails(alertId);
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());

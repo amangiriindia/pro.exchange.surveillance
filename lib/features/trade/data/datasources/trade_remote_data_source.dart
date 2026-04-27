@@ -1,36 +1,50 @@
 import '../models/trade_model.dart';
-import 'package:dartz/dartz.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/constants/auth_constants.dart';
+
+class TradePaginatedResult {
+  final List<TradeModel> trades;
+  final int totalRecords;
+  final int totalPages;
+  final int currentPage;
+
+  const TradePaginatedResult({
+    required this.trades,
+    required this.totalRecords,
+    required this.totalPages,
+    required this.currentPage,
+  });
+}
 
 abstract class TradeRemoteDataSource {
-  Future<List<TradeModel>> getTrades();
+  Future<TradePaginatedResult> getTrades({int page = 1, int sizePerPage = 20});
 }
 
 class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
+  final ApiClient _apiClient = ApiClient();
+
   @override
-  Future<List<TradeModel>> getTrades() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    return List.generate(20, (index) {
-      return TradeModel(
-        uName: index % 2 == 0 ? 'DEMO56' : 'DEMO4',
-        pUser: index % 3 == 0 ? 'DEMO' : 'DEMO49',
-        exchange: 'MCX',
-        symbol: 'RELIANCE',
-        orderDateTime: '22/11/25 03:06:34 PM',
-        buySell: index % 3 == 0 ? 'SELL - L Market' : (index % 2 == 0 ? 'BUY - SL Add Trade' : 'SELL - SL Add Trade'),
-        quantity: index % 2 == 0 ? -500.00 : 100000.0,
-        lot: 1.00,
-        type: 'Market',
-        profitLoss: 36200.00,
-        tradePrice: 124191.00,
-        brk: 0.00,
-        rPrice: 0.00,
-        executionDateTime: '22/11/25 03:06:34 PM',
-        deviceId: 'E621E1F8-C36C-495A-93FC-0C247A3E6E5F',
-        ipAddress: '192.0.2.1',
-        city: 'Bhuj',
-      );
-    });
+  Future<TradePaginatedResult> getTrades({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    final response = await _apiClient.client.get(
+      AuthConstants.tradeListEndpoint,
+      queryParameters: {'page': page, 'sizePerPage': sizePerPage},
+    );
+
+    final data = response.data as Map<String, dynamic>;
+    final body = data['data'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final tradesJson =
+        (body['items'] ?? body['trades']) as List<dynamic>? ?? <dynamic>[];
+
+    return TradePaginatedResult(
+      trades: tradesJson
+          .map((e) => TradeModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      totalRecords: (body['totalRecords'] as num?)?.toInt() ?? 0,
+      totalPages: (body['totalPages'] as num?)?.toInt() ?? 1,
+      currentPage: (body['currentPage'] as num?)?.toInt() ?? page,
+    );
   }
 }

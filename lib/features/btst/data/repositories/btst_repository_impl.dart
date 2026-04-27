@@ -11,9 +11,15 @@ class BTSTRepositoryImpl implements BTSTRepository {
   BTSTRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<BTSTEntity>>> getBTSTData() async {
+  Future<Either<Failure, List<BTSTEntity>>> getBTSTData({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
     try {
-      final remoteData = await remoteDataSource.getBTSTData();
+      final remoteData = await remoteDataSource.getBTSTData(
+        page: page,
+        sizePerPage: sizePerPage,
+      );
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());
@@ -21,9 +27,11 @@ class BTSTRepositoryImpl implements BTSTRepository {
   }
 
   @override
-  Future<Either<Failure, List<BTSTDetailEntity>>> getBTSTDetails(String uName) async {
+  Future<Either<Failure, List<BTSTDetailEntity>>> getBTSTDetails(
+    int alertId,
+  ) async {
     try {
-      final remoteData = await remoteDataSource.getBTSTDetails(uName);
+      final remoteData = await remoteDataSource.getBTSTDetails(alertId);
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());

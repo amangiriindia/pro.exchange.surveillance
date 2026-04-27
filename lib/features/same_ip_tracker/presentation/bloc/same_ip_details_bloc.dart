@@ -10,10 +10,10 @@ abstract class SameIPDetailsEvent extends Equatable {
 }
 
 class LoadSameIPDetails extends SameIPDetailsEvent {
-  final String clusterId;
-  LoadSameIPDetails(this.clusterId);
+  final int alertId;
+  LoadSameIPDetails(this.alertId);
   @override
-  List<Object?> get props => [clusterId];
+  List<Object?> get props => [alertId];
 }
 
 // States
@@ -44,10 +44,11 @@ class SameIPDetailsError extends SameIPDetailsState {
 class SameIPDetailsBloc extends Bloc<SameIPDetailsEvent, SameIPDetailsState> {
   final GetSameIPDetails getSameIPDetails;
 
-  SameIPDetailsBloc({required this.getSameIPDetails}) : super(SameIPDetailsInitial()) {
+  SameIPDetailsBloc({required this.getSameIPDetails})
+    : super(SameIPDetailsInitial()) {
     on<LoadSameIPDetails>((event, emit) async {
       emit(SameIPDetailsLoading());
-      final result = await getSameIPDetails(event.clusterId);
+      final result = await getSameIPDetails(event.alertId);
       result.fold(
         (failure) => emit(SameIPDetailsError('Server Failure')),
         (details) => emit(SameIPDetailsLoaded(details)),

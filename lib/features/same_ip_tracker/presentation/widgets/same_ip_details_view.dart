@@ -9,11 +9,13 @@ import '../bloc/same_ip_details_bloc.dart';
 import '../../domain/entities/same_ip_detail_entity.dart';
 
 class SameIPDetailsView extends StatelessWidget {
+  final int alertId;
   final String clusterId;
   final VoidCallback onBack;
 
   const SameIPDetailsView({
     super.key,
+    required this.alertId,
     required this.clusterId,
     required this.onBack,
   });
@@ -21,7 +23,7 @@ class SameIPDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<SameIPDetailsBloc>()..add(LoadSameIPDetails(clusterId)),
+      create: (_) => sl<SameIPDetailsBloc>()..add(LoadSameIPDetails(alertId)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -31,7 +33,7 @@ class SameIPDetailsView extends StatelessWidget {
             child: BlocBuilder<SameIPDetailsBloc, SameIPDetailsState>(
               builder: (context, state) {
                 if (state is SameIPDetailsLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SizedBox.shrink();
                 } else if (state is SameIPDetailsLoaded) {
                   return _buildTable(state.details, context);
                 } else if (state is SameIPDetailsError) {
@@ -109,13 +111,22 @@ class SameIPDetailsView extends StatelessWidget {
           width: 80,
           isNumeric: true,
         ),
+        ViewTableColumn(
+          id: 'execution_time',
+          label: 'EXECUTION D/T',
+          width: 180,
+        ),
+        ViewTableColumn(id: 'device_id', label: 'DEVICE ID', width: 280),
+        ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 150),
+        ViewTableColumn(id: 'city', label: 'CITY', width: 120),
       ],
       data: data,
-      idExtractor: (item) => '${item.uName}_${item.orderTime}_${item.quantity}',
+      idExtractor: (item) => item.id.toString(),
       autoFit: true,
       isDarkMode: AppColors.isDarkMode(context),
-      rowBackgroundBuilder: (item, index) =>
-          index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0
+          ? AppColors.getTableRowBackground(context)
+          : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) => _buildCell(context, item, col),
     );
   }
@@ -144,11 +155,17 @@ class SameIPDetailsView extends StatelessWidget {
         textColor = const Color(0xFFE27C00);
         break;
       case 'order_time':
-        text = item.orderTime;
+        try {
+          final dt = DateTime.parse(item.orderTime).toLocal();
+          text =
+              '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+        } catch (_) {
+          text = item.orderTime;
+        }
         break;
       case 'buy_sell':
         text = item.buySell;
-        textColor = text.contains('SELL')
+        textColor = text.toLowerCase().contains('sell')
             ? AppColors.errorColor
             : AppColors.primaryBlue;
         break;
@@ -177,6 +194,24 @@ class SameIPDetailsView extends StatelessWidget {
         break;
       case 'r_price':
         text = currencyFormat.format(item.rPrice);
+        break;
+      case 'execution_time':
+        try {
+          final dt = DateTime.parse(item.executionTime).toLocal();
+          text =
+              '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+        } catch (_) {
+          text = item.executionTime;
+        }
+        break;
+      case 'device_id':
+        text = item.deviceId;
+        break;
+      case 'ip_address':
+        text = item.ipAddress;
+        break;
+      case 'city':
+        text = item.city;
         break;
     }
 

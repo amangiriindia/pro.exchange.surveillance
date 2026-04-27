@@ -4,6 +4,11 @@ import '../entities/jobber_tracker_entity.dart';
 import '../entities/jobber_detail_entity.dart';
 
 abstract class JobberTrackerRepository {
-  Future<Either<Failure, List<JobberTrackerEntity>>> getJobberTrackerData();
-  Future<Either<Failure, List<JobberDetailEntity>>> getJobberDetails(String uName);
+  Future<Either<Failure, List<JobberTrackerEntity>>> getJobberTrackerData({
+    int page = 1,
+    int sizePerPage = 20,
+  });
+  Future<Either<Failure, List<JobberDetailEntity>>> getJobberDetails(
+    int alertId,
+  );
 }

@@ -11,6 +11,8 @@ abstract class TradeComparisonEvent extends Equatable {
 
 class LoadTradeComparisonData extends TradeComparisonEvent {}
 
+class LoadMoreTradeComparisonData extends TradeComparisonEvent {}
+
 // States
 abstract class TradeComparisonState extends Equatable {
   @override
@@ -23,9 +25,33 @@ class TradeComparisonLoading extends TradeComparisonState {}
 
 class TradeComparisonLoaded extends TradeComparisonState {
   final List<TradeComparisonEntity> data;
-  TradeComparisonLoaded(this.data);
+  final int currentPage;
+  final bool isLoadingMore;
+  final bool hasMore;
+
+  TradeComparisonLoaded(
+    this.data, {
+    required this.currentPage,
+    this.isLoadingMore = false,
+    this.hasMore = true,
+  });
+
+  TradeComparisonLoaded copyWith({
+    List<TradeComparisonEntity>? data,
+    int? currentPage,
+    bool? isLoadingMore,
+    bool? hasMore,
+  }) {
+    return TradeComparisonLoaded(
+      data ?? this.data,
+      currentPage: currentPage ?? this.currentPage,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasMore: hasMore ?? this.hasMore,
+    );
+  }
+
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props => [data, currentPage, isLoadingMore, hasMore];
 }
 
 class TradeComparisonError extends TradeComparisonState {
@@ -36,16 +62,55 @@ class TradeComparisonError extends TradeComparisonState {
 }
 
 // Bloc
-class TradeComparisonBloc extends Bloc<TradeComparisonEvent, TradeComparisonState> {
+class TradeComparisonBloc
+    extends Bloc<TradeComparisonEvent, TradeComparisonState> {
   final GetTradeComparisonData getTradeComparisonData;
+  static const int _pageSize = 20;
 
-  TradeComparisonBloc({required this.getTradeComparisonData}) : super(TradeComparisonInitial()) {
+  TradeComparisonBloc({required this.getTradeComparisonData})
+    : super(TradeComparisonInitial()) {
     on<LoadTradeComparisonData>((event, emit) async {
       emit(TradeComparisonLoading());
-      final result = await getTradeComparisonData();
+      final result = await getTradeComparisonData(
+        page: 1,
+        sizePerPage: _pageSize,
+      );
       result.fold(
         (failure) => emit(TradeComparisonError('Server Failure')),
-        (data) => emit(TradeComparisonLoaded(data)),
+        (data) => emit(
+          TradeComparisonLoaded(
+            data,
+            currentPage: 1,
+            hasMore: data.length >= _pageSize,
+          ),
+        ),
+      );
+    });
+
+    on<LoadMoreTradeComparisonData>((event, emit) async {
+      final current = state;
+      if (current is! TradeComparisonLoaded ||
+          current.isLoadingMore ||
+          !current.hasMore) {
+        return;
+      }
+
+      emit(current.copyWith(isLoadingMore: true));
+      final nextPage = current.currentPage + 1;
+      final result = await getTradeComparisonData(
+        page: nextPage,
+        sizePerPage: _pageSize,
+      );
+      result.fold(
+        (failure) => emit(current.copyWith(isLoadingMore: false)),
+        (data) => emit(
+          current.copyWith(
+            data: [...current.data, ...data],
+            currentPage: nextPage,
+            isLoadingMore: false,
+            hasMore: data.length >= _pageSize,
+          ),
+        ),
       );
     });
   }

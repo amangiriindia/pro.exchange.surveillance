@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import '../entities/group_trade_entity.dart';
 import '../repositories/group_trade_repository.dart';
 
 class GetGroupTrades {
@@ -7,7 +6,10 @@ class GetGroupTrades {
 
   GetGroupTrades(this.repository);
 
-  Future<Either<dynamic, List<GroupTradeEntity>>> call() async {
-    return await repository.getGroupTrades();
+  Future<Either<String, GroupTradePaginatedResult>> call({
+    int page = 1,
+    int sizePerPage = 100,
+  }) async {
+    return await repository.getGroupTrades(page: page, sizePerPage: sizePerPage);
   }
 }

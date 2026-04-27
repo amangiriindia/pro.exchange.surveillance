@@ -7,6 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'core/routes/navigator_key.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:window_manager/window_manager.dart';
+import 'features/dashboard/presentation/bloc/alert_bloc.dart';
+import 'features/dashboard/presentation/bloc/alert_event.dart';
+import 'features/dashboard/presentation/bloc/alert_state.dart';
+import 'features/dashboard/presentation/widgets/alert_overlay_manager.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
 import 'injection_container.dart' as di;
@@ -30,7 +34,7 @@ void main() async {
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      title: 'BAZAAR Pro',
+      title: 'pro.exchange.surveillance',
     );
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
@@ -62,25 +66,49 @@ class MyApp extends StatelessWidget {
             return MultiBlocProvider(
               providers: [
                 BlocProvider(create: (_) => di.sl<AuthBloc>()),
+                BlocProvider(
+                  create: (context) {
+                    final alertBloc = di.sl<AlertBloc>();
+                    final authState = context.read<AuthBloc>().state;
+                    if (authState is AuthAuthenticated) {
+                      alertBloc.add(const AlertConnectEvent());
+                    }
+                    return alertBloc;
+                  },
+                ),
               ],
               child: BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthAuthenticated) {
+                    final alertBloc = context.read<AlertBloc>();
+                    alertBloc.add(const AlertDisconnectEvent());
+                    alertBloc.add(const AlertConnectEvent());
                     return;
                   }
-
                   if (state is AuthUnauthenticated) {
+                    context.read<AlertBloc>().add(const AlertDisconnectEvent());
                   }
                 },
+                child: BlocListener<AlertBloc, AlertState>(
+                  listener: (context, state) {
+                    if (state is AlertNewNotificationState) {
+                      final overlay = globalNavigatorKey.currentState?.overlay;
+                      if (overlay != null) {
+                        AlertOverlayManager.instance.attach(overlay);
+                        AlertOverlayManager.instance.show(state.alert);
+                      }
+                    }
+                  },
                   child: MaterialApp(
                     navigatorKey: globalNavigatorKey,
-                    title: 'Bazaar Pro Feeder - Real-Time Market Insights',
+                    title: 'pro.exchange.surveillance',
                     debugShowCheckedModeBanner: false,
                     themeMode: ThemeMode.system,
                     navigatorObservers: [DialogNavigatorObserver()],
                     initialRoute: AppRoutes.login,
                     routes: AppRoutes.getRoutes(),
                   ),
+                ),
               ),
             );
           },

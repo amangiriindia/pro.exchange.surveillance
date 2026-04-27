@@ -5,7 +5,6 @@ import 'dart:math' as math;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_images.dart';
 
 enum AppDropdownType { simple, search, multiSelect, multiSelectRightNoSearch }
 
@@ -84,6 +83,17 @@ class _AppDropdownState extends State<AppDropdown>
   bool _returnFocusOnClose = false;
   bool _suppressAutoOpen = false;
   static bool _keyboardNavigating = false;
+
+  List<String> get _itemsForList {
+    if (!widget.showAllOption || widget.type != AppDropdownType.simple) {
+      return widget.items;
+    }
+    final normalizedAll = widget.allOptionText.trim().toLowerCase();
+    return widget.items
+        .where((item) => item.trim().toLowerCase() != normalizedAll)
+        .toList();
+  }
+
   bool get _hasSearchField =>
       widget.type != AppDropdownType.simple &&
       widget.type != AppDropdownType.multiSelectRightNoSearch;
@@ -99,7 +109,7 @@ class _AppDropdownState extends State<AppDropdown>
       duration: const Duration(milliseconds: 200),
     );
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _filteredItems = List.from(widget.items);
+    _filteredItems = List.from(_itemsForList);
     if (widget.selectedValues != null) {
       _selectedSet = Set.from(widget.selectedValues!);
     }
@@ -109,7 +119,7 @@ class _AppDropdownState extends State<AppDropdown>
   void didUpdateWidget(AppDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.items != widget.items) {
-      _filteredItems = List.from(widget.items);
+      _filteredItems = List.from(_itemsForList);
     }
     if (widget.selectedValues != null) {
       _selectedSet = Set.from(widget.selectedValues!);
@@ -132,7 +142,7 @@ class _AppDropdownState extends State<AppDropdown>
   void _toggle() => _isOpen ? _close() : _open();
   void _open() {
     _searchController.clear();
-    _filteredItems = List.from(widget.items);
+    _filteredItems = List.from(_itemsForList);
     _highlightedIndex = _getCurrentValueIndex();
     _overlayScopeNode?.dispose();
     _overlayScopeNode = FocusScopeNode(debugLabel: 'AppDropdown-overlay');
@@ -203,9 +213,9 @@ class _AppDropdownState extends State<AppDropdown>
   void _onSearch(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredItems = List.from(widget.items);
+        _filteredItems = List.from(_itemsForList);
       } else {
-        _filteredItems = widget.items
+        _filteredItems = _itemsForList
             .where((item) => item.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
@@ -244,7 +254,11 @@ class _AppDropdownState extends State<AppDropdown>
     _overlayEntry?.markNeedsBuild();
   }
 
-  Color get _borderColor => widget.borderColor ?? AppColors.primaryBlue;
+  Color get _borderColor =>
+      widget.borderColor ??
+      (widget.isDarkMode
+          ? Colors.white.withOpacity(0.15)
+          : const Color(0xFFCBD5E1));
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {

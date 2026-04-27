@@ -24,13 +24,25 @@ class ApiClient {
         },
       ),
     );
-    dio.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true, error: true),
-    );
+    // API response logging disabled — uncomment to re-enable verbose HTTP logs.
+    // dio.interceptors.add(
+    //   LogInterceptor(requestBody: true, responseBody: true, error: true),
+    // );
     dio.interceptors.add(
       InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await AuthLocalDataSource.instance.getAuthToken();
+          if (token != null &&
+              token.isNotEmpty &&
+              options.headers['authorization'] == null) {
+            options.headers['authorization'] = token;
+          }
+          handler.next(options);
+        },
         onError: (error, handler) {
-          if (_shouldRedirectToLogin(error)) {
+          final hadToken =
+              error.requestOptions.headers['authorization'] != null;
+          if (hadToken && _shouldRedirectToLogin(error)) {
             _redirectToLogin();
           }
           handler.next(error);
@@ -43,8 +55,6 @@ class ApiClient {
 
   bool _shouldRedirectToLogin(DioException error) {
     final statusCode = error.response?.statusCode;
-
-
 
     if (statusCode == 401) {
       return true;

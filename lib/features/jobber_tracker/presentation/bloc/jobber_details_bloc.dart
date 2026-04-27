@@ -10,10 +10,10 @@ abstract class JobberDetailsEvent extends Equatable {
 }
 
 class LoadJobberDetails extends JobberDetailsEvent {
-  final String uName;
-  LoadJobberDetails(this.uName);
+  final int alertId;
+  LoadJobberDetails(this.alertId);
   @override
-  List<Object?> get props => [uName];
+  List<Object?> get props => [alertId];
 }
 
 // States
@@ -44,10 +44,11 @@ class JobberDetailsError extends JobberDetailsState {
 class JobberDetailsBloc extends Bloc<JobberDetailsEvent, JobberDetailsState> {
   final GetJobberDetails getJobberDetails;
 
-  JobberDetailsBloc({required this.getJobberDetails}) : super(JobberDetailsInitial()) {
+  JobberDetailsBloc({required this.getJobberDetails})
+    : super(JobberDetailsInitial()) {
     on<LoadJobberDetails>((event, emit) async {
       emit(JobberDetailsLoading());
-      final result = await getJobberDetails(event.uName);
+      final result = await getJobberDetails(event.alertId);
       result.fold(
         (failure) => emit(JobberDetailsError('Server Failure')),
         (details) => emit(JobberDetailsLoaded(details)),

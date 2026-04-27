@@ -7,10 +7,10 @@ abstract class BulkOrderDetailsEvent extends Equatable {
 }
 
 class LoadBulkOrderDetails extends BulkOrderDetailsEvent {
-  final String symbol;
+  final int alertId;
 
-  const LoadBulkOrderDetails({required this.symbol});
+  const LoadBulkOrderDetails({required this.alertId});
 
   @override
-  List<Object> get props => [symbol];
+  List<Object> get props => [alertId];
 }

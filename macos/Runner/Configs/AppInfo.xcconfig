@@ -8,7 +8,7 @@
 PRODUCT_NAME = surveillance
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.bazaarpro.surveillance.surveillance
+PRODUCT_BUNDLE_IDENTIFIER = pro.exchange.surveillance
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.bazaarpro.surveillance. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 pro.exchange.surveillance. All rights reserved.

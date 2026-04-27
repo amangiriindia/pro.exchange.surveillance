@@ -58,25 +58,16 @@ class CustomButton extends StatelessWidget {
           elevation: 0,
           padding: EdgeInsets.all(AppDimensions.paddingM),
         ),
-        child: isLoading
-            ? SizedBox(
-                width: AppDimensions.iconSizeM,
-                height: AppDimensions.iconSizeM,
-                child: CircularProgressIndicator(
-                  color: effectiveTextColor,
-                  strokeWidth: AppDimensions.borderWidthMedium,
-                ),
-              )
-            : Text(
-                text,
-                style: GoogleFonts.openSans(
-                  fontSize: fontSize ?? AppDimensions.fontSizeL,
-                  fontWeight: fontWeight ?? FontWeight.w600,
-                  color: effectiveTextColor,
-                  letterSpacing: 0.1,
-                  height: 1.0,
-                ),
-              ),
+        child: Text(
+          text,
+          style: GoogleFonts.openSans(
+            fontSize: fontSize ?? AppDimensions.fontSizeL,
+            fontWeight: fontWeight ?? FontWeight.w600,
+            color: effectiveTextColor,
+            letterSpacing: 0.1,
+            height: 1.0,
+          ),
+        ),
       ),
     );
   }

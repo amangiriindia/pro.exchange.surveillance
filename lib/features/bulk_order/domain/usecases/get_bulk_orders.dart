@@ -7,7 +7,10 @@ class GetBulkOrders {
 
   GetBulkOrders(this.repository);
 
-  Future<Either<dynamic, List<BulkOrderEntity>>> call() async {
-    return await repository.getBulkOrders();
+  Future<Either<dynamic, List<BulkOrderEntity>>> call({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    return await repository.getBulkOrders(page: page, sizePerPage: sizePerPage);
   }
 }

@@ -11,9 +11,15 @@ class ProfitCrossRepositoryImpl implements ProfitCrossRepository {
   ProfitCrossRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<ProfitCrossEntity>>> getProfitCrossData() async {
+  Future<Either<Failure, List<ProfitCrossEntity>>> getProfitCrossData({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
     try {
-      final remoteData = await remoteDataSource.getProfitCrossData();
+      final remoteData = await remoteDataSource.getProfitCrossData(
+        page: page,
+        sizePerPage: sizePerPage,
+      );
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());
@@ -21,9 +27,13 @@ class ProfitCrossRepositoryImpl implements ProfitCrossRepository {
   }
 
   @override
-  Future<Either<Failure, List<OrderDurationEntity>>> getOrderDurationDetails(String symbol) async {
+  Future<Either<Failure, List<OrderDurationEntity>>> getOrderDurationDetails(
+    int alertId,
+  ) async {
     try {
-      final remoteData = await remoteDataSource.getOrderDurationDetails(symbol);
+      final remoteData = await remoteDataSource.getOrderDurationDetails(
+        alertId,
+      );
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());

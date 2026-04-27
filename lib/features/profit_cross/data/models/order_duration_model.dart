@@ -2,9 +2,13 @@ import '../../domain/entities/order_duration_entity.dart';
 
 class OrderDurationModel extends OrderDurationEntity {
   const OrderDurationModel({
+    required super.id,
     required super.duration,
     required super.symbol,
+    required super.exchange,
+    required super.symbolName,
     required super.type,
+    required super.tradeType,
     required super.qty,
     required super.price,
     required super.executionDT,
@@ -13,25 +17,17 @@ class OrderDurationModel extends OrderDurationEntity {
 
   factory OrderDurationModel.fromJson(Map<String, dynamic> json) {
     return OrderDurationModel(
-      duration: json['duration'],
-      symbol: json['symbol'],
-      type: json['type'],
-      qty: (json['qty'] as num).toDouble(),
-      price: (json['price'] as num).toDouble(),
-      executionDT: json['execution_dt'],
-      pnl: (json['pnl'] as num).toDouble(),
+      id: (json['id'] ?? 0) as int,
+      duration: json['duration'] ?? '',
+      symbol: json['symbol'] ?? '',
+      exchange: json['exchange'] ?? '',
+      symbolName: json['symbolName'] ?? '',
+      type: json['type'] ?? '',
+      tradeType: json['tradeType'] ?? '',
+      qty: double.tryParse(json['quantity']?.toString() ?? '0') ?? 0,
+      price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
+      executionDT: json['executionDateTime'] ?? '',
+      pnl: double.tryParse(json['profitLoss']?.toString() ?? '0') ?? 0,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'duration': duration,
-      'symbol': symbol,
-      'type': type,
-      'qty': qty,
-      'price': price,
-      'execution_dt': executionDT,
-      'pnl': pnl,
-    };
   }
 }

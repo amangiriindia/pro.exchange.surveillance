@@ -10,10 +10,10 @@ abstract class SameDeviceDetailsEvent extends Equatable {
 }
 
 class LoadSameDeviceDetails extends SameDeviceDetailsEvent {
-  final String clusterId;
-  LoadSameDeviceDetails(this.clusterId);
+  final int alertId;
+  LoadSameDeviceDetails(this.alertId);
   @override
-  List<Object?> get props => [clusterId];
+  List<Object?> get props => [alertId];
 }
 
 // States
@@ -41,13 +41,15 @@ class SameDeviceDetailsError extends SameDeviceDetailsState {
 }
 
 // Bloc
-class SameDeviceDetailsBloc extends Bloc<SameDeviceDetailsEvent, SameDeviceDetailsState> {
+class SameDeviceDetailsBloc
+    extends Bloc<SameDeviceDetailsEvent, SameDeviceDetailsState> {
   final GetSameDeviceDetails getSameDeviceDetails;
 
-  SameDeviceDetailsBloc({required this.getSameDeviceDetails}) : super(SameDeviceDetailsInitial()) {
+  SameDeviceDetailsBloc({required this.getSameDeviceDetails})
+    : super(SameDeviceDetailsInitial()) {
     on<LoadSameDeviceDetails>((event, emit) async {
       emit(SameDeviceDetailsLoading());
-      final result = await getSameDeviceDetails(event.clusterId);
+      final result = await getSameDeviceDetails(event.alertId);
       result.fold(
         (failure) => emit(SameDeviceDetailsError('Server Failure')),
         (details) => emit(SameDeviceDetailsLoaded(details)),

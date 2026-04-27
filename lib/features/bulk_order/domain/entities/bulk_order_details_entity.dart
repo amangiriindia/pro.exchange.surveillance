@@ -1,12 +1,15 @@
 import 'package:equatable/equatable.dart';
 
 class BulkOrderDetailsEntity extends Equatable {
+  final int id;
   final String uName;
   final String pUser;
   final String exch;
   final String symbol;
   final String orderTime;
   final String buySell;
+  final String tradeType;
+  final String mainOrderType;
   final double quantity;
   final double lot;
   final String type;
@@ -20,12 +23,15 @@ class BulkOrderDetailsEntity extends Equatable {
   final String city;
 
   const BulkOrderDetailsEntity({
+    required this.id,
     required this.uName,
     required this.pUser,
     required this.exch,
     required this.symbol,
     required this.orderTime,
     required this.buySell,
+    required this.tradeType,
+    required this.mainOrderType,
     required this.quantity,
     required this.lot,
     required this.type,
@@ -41,7 +47,25 @@ class BulkOrderDetailsEntity extends Equatable {
 
   @override
   List<Object> get props => [
-        uName, pUser, exch, symbol, orderTime, buySell, quantity, lot, type, 
-        pl, tPrice, brk, rPrice, executionTime, deviceId, ipAddress, city
-      ];
+    id,
+    uName,
+    pUser,
+    exch,
+    symbol,
+    orderTime,
+    buySell,
+    tradeType,
+    mainOrderType,
+    quantity,
+    lot,
+    type,
+    pl,
+    tPrice,
+    brk,
+    rPrice,
+    executionTime,
+    deviceId,
+    ipAddress,
+    city,
+  ];
 }

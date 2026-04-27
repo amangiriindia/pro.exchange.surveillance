@@ -9,9 +9,15 @@ class BulkOrderRepositoryImpl implements BulkOrderRepository {
   BulkOrderRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<dynamic, List<BulkOrderEntity>>> getBulkOrders() async {
+  Future<Either<dynamic, List<BulkOrderEntity>>> getBulkOrders({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
     try {
-      final remoteData = await remoteDataSource.getBulkOrders();
+      final remoteData = await remoteDataSource.getBulkOrders(
+        page: page,
+        sizePerPage: sizePerPage,
+      );
       return Right(remoteData);
     } catch (e) {
       return Left('Error fetching bulk orders');

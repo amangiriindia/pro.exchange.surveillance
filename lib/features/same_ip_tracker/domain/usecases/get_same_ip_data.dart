@@ -8,7 +8,10 @@ class GetSameIPData {
 
   GetSameIPData(this.repository);
 
-  Future<Either<Failure, List<SameIPEntity>>> call() async {
-    return await repository.getSameIPData();
+  Future<Either<Failure, List<SameIPEntity>>> call({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    return await repository.getSameIPData(page: page, sizePerPage: sizePerPage);
   }
 }

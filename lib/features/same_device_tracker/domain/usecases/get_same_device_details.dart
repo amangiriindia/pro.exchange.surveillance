@@ -8,7 +8,9 @@ class GetSameDeviceDetails {
 
   GetSameDeviceDetails(this.repository);
 
-  Future<Either<Failure, List<SameDeviceDetailEntity>>> call(String clusterId) async {
-    return await repository.getSameDeviceDetails(clusterId);
+  Future<Either<Failure, List<SameDeviceDetailEntity>>> call(
+    int alertId,
+  ) async {
+    return await repository.getSameDeviceDetails(alertId);
   }
 }

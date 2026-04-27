@@ -1,6 +1,9 @@
 import 'package:dartz/dartz.dart';
-import '../entities/trade_entity.dart';
+import '../../data/datasources/trade_remote_data_source.dart';
 
 abstract class TradeRepository {
-  Future<Either<dynamic, List<TradeEntity>>> getTrades();
+  Future<Either<String, TradePaginatedResult>> getTrades({
+    int page = 1,
+    int sizePerPage = 20,
+  });
 }

@@ -9,12 +9,14 @@ class BulkOrderDetailsRepositoryImpl implements BulkOrderDetailsRepository {
   BulkOrderDetailsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<dynamic, List<BulkOrderDetailsEntity>>> getDetails(String symbol) async {
+  Future<Either<dynamic, List<BulkOrderDetailsEntity>>> getDetails(
+    int alertId,
+  ) async {
     try {
-      final data = await remoteDataSource.getDetails(symbol);
+      final data = await remoteDataSource.getDetails(alertId);
       return Right(data);
     } catch (e) {
-      return Left('Error fetching bulk order details for \$symbol');
+      return Left('Error fetching bulk order details');
     }
   }
 }

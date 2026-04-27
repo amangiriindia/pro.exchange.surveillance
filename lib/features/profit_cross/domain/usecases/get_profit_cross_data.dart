@@ -9,7 +9,13 @@ class GetProfitCrossData {
 
   GetProfitCrossData(this.repository);
 
-  Future<Either<Failure, List<ProfitCrossEntity>>> call() async {
-    return await repository.getProfitCrossData();
+  Future<Either<Failure, List<ProfitCrossEntity>>> call({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    return await repository.getProfitCrossData(
+      page: page,
+      sizePerPage: sizePerPage,
+    );
   }
 }

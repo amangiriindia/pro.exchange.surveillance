@@ -6,7 +6,6 @@ import '../../domain/usecases/login_user.dart';
 import '../../domain/usecases/logout_user.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
-import '../../domain/entities/user.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUser loginUser;
@@ -33,26 +32,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     final savedUser = await AuthLocalDataSource.instance.getUserSession();
-    if (savedUser != null) {
+    if (savedUser != null && savedUser.jwtToken.isNotEmpty) {
       emit(AuthAuthenticated(user: savedUser));
     }
   }
 
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
-    
-    await Future.delayed(const Duration(milliseconds: 500));
-    final dummyUser = User(
-      id: "dummy_id",
-      username: event.username,
-      apiToken: "dummy_api_token",
-      jwtToken: "dummy_jwt_token",
-      role: "admin",
-      isActive: true,
+
+    final result = await loginUser(
+      LoginParams(username: event.username, password: event.password),
     );
-    
-    await AuthLocalDataSource.instance.saveUserSession(dummyUser);
-    emit(AuthAuthenticated(user: dummyUser));
+
+    await result.fold<Future<void>>(
+      (failure) async => emit(
+        AuthError(message: failure.message.replaceFirst('Exception: ', '')),
+      ),
+      (user) async {
+        await AuthLocalDataSource.instance.saveUserSession(user);
+        emit(AuthAuthenticated(user: user));
+      },
+    );
   }
 
   Future<void> _onFetchProfile(

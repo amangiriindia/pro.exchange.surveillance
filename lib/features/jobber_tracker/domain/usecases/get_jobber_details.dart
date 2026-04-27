@@ -8,7 +8,7 @@ class GetJobberDetails {
 
   GetJobberDetails(this.repository);
 
-  Future<Either<Failure, List<JobberDetailEntity>>> call(String uName) async {
-    return await repository.getJobberDetails(uName);
+  Future<Either<Failure, List<JobberDetailEntity>>> call(int alertId) async {
+    return await repository.getJobberDetails(alertId);
   }
 }

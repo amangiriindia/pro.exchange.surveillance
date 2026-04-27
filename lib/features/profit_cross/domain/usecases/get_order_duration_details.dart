@@ -9,7 +9,7 @@ class GetOrderDurationDetails {
 
   GetOrderDurationDetails(this.repository);
 
-  Future<Either<Failure, List<OrderDurationEntity>>> call(String symbol) async {
-    return await repository.getOrderDurationDetails(symbol);
+  Future<Either<Failure, List<OrderDurationEntity>>> call(int alertId) async {
+    return await repository.getOrderDurationDetails(alertId);
   }
 }

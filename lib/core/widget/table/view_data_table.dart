@@ -242,12 +242,14 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
   Color get _textColor => widget.isDarkMode
       ? DarkThemeColors.textColor
       : LightThemeColors.textColor;
+
   /// Header text is always white when the header background is the brand navy.
   Color get _headerTextColor {
     final bg = _headerBgColor;
     final luminance = bg.computeLuminance();
     return luminance < 0.4 ? Colors.white : _textColor;
   }
+
   @override
   Widget build(BuildContext context) {
     final rowHeight = widget.rowHeight ?? 30.h;
@@ -289,8 +291,8 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
                     borderRadius: BorderRadius.circular(12.r),
                     boxShadow: [
                       BoxShadow(
-                        color: widget.isDarkMode 
-                            ? Colors.black.withOpacity(0.3) 
+                        color: widget.isDarkMode
+                            ? Colors.black.withOpacity(0.3)
                             : Colors.black.withOpacity(0.05),
                         blurRadius: 16,
                         offset: const Offset(0, 4),
@@ -582,7 +584,7 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
           children: [
             _buildHeaderRow(headerHeight, scale),
             _displayData.isEmpty
-                ? SizedBox(height: 50.h, child: _buildEmptyState())
+                ? SizedBox(height: 150.h, child: _buildEmptyState())
                 : _buildDataRows(rowHeight, scale),
             if (widget.footerBuilder != null)
               _buildFooterRow(rowHeight, scale, isScrollableX),
@@ -593,16 +595,29 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
   }
 
   Widget _buildEmptyState() {
+    final bool darkMode = widget.isDarkMode;
+    final Color titleColor = darkMode ? Colors.white38 : Colors.black38;
+    final Color iconColor = darkMode
+        ? DarkThemeColors.supportiveTextColor
+        : const Color(0xFF9EDFEA);
+
     return Center(
-      child: Text(
-        widget.emptyMessage,
-        style: GoogleFonts.openSans(
-          fontSize: 16.sp,
-          decoration: TextDecoration.none,
-          color: widget.isDarkMode
-              ? DarkThemeColors.supportiveTextColor
-              : LightThemeColors.supportiveTextColor,
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.inventory_2_outlined, size: 56.sp, color: iconColor),
+          SizedBox(height: 14.h),
+          Text(
+            widget.emptyMessage,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w700,
+              decoration: TextDecoration.none,
+              color: titleColor,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -876,7 +891,9 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
             final colWidth = (_columnWidths[column.id] ?? column.width) * scale;
             final effectiveAlignment =
                 column.alignment ??
-                (column.isNumeric ? Alignment.centerRight : Alignment.centerLeft);
+                (column.isNumeric
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft);
             return Container(
               width: colWidth,
               alignment: effectiveAlignment,
@@ -888,11 +905,32 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
                     (isLastColumn ? 14.w : 15.w) +
                     (effectiveAlignment == Alignment.centerRight ? 8.w : 0),
               ),
-              child: widget.cellBuilder(item, column),
+              child: _normalizeEmptyTextCell(widget.cellBuilder(item, column)),
             );
           }).toList(),
         ),
       ),
+    );
+  }
+
+  Widget _normalizeEmptyTextCell(Widget cell) {
+    if (cell is! Text) {
+      return cell;
+    }
+
+    final rawText = cell.data ?? cell.textSpan?.toPlainText() ?? '';
+    if (rawText.trim().isNotEmpty) {
+      return cell;
+    }
+
+    return Text(
+      '-',
+      style: cell.style,
+      maxLines: cell.maxLines,
+      softWrap: cell.softWrap,
+      overflow: cell.overflow,
+      textAlign: cell.textAlign,
+      textWidthBasis: cell.textWidthBasis,
     );
   }
 

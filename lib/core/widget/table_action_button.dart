@@ -34,22 +34,18 @@ class TableActionButton extends StatefulWidget {
   });
 
   /// Convenience constructor for the "View" button.
-  const TableActionButton.view({
-    super.key,
-    required this.onPressed,
-  })  : label = 'View',
-        variant = TableActionVariant.view,
-        icon = null,
-        color = null;
+  const TableActionButton.view({super.key, required this.onPressed})
+    : label = 'View',
+      variant = TableActionVariant.view,
+      icon = null,
+      color = null;
 
   /// Convenience constructor for the "Investigate" button.
-  const TableActionButton.investigate({
-    super.key,
-    required this.onPressed,
-  })  : label = 'Investigate',
-        variant = TableActionVariant.investigate,
-        icon = null,
-        color = null;
+  const TableActionButton.investigate({super.key, required this.onPressed})
+    : label = 'Investigate',
+      variant = TableActionVariant.investigate,
+      icon = null,
+      color = null;
 
   @override
   State<TableActionButton> createState() => _TableActionButtonState();
@@ -134,23 +130,14 @@ class _TableActionButtonState extends State<TableActionButton> {
 /// A convenience row of [TableActionButton]s for the standard View + Investigate pair.
 class TableActionRow extends StatelessWidget {
   final VoidCallback onView;
-  final VoidCallback? onInvestigate;
 
-  const TableActionRow({
-    super.key,
-    required this.onView,
-    this.onInvestigate,
-  });
+  const TableActionRow({super.key, required this.onView});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        TableActionButton.view(onPressed: onView),
-        const SizedBox(width: 8),
-        TableActionButton.investigate(onPressed: onInvestigate ?? () {}),
-      ],
+      children: [TableActionButton.view(onPressed: onView)],
     );
   }
 }

@@ -11,6 +11,8 @@ abstract class JobberTrackerEvent extends Equatable {
 
 class LoadJobberTrackerData extends JobberTrackerEvent {}
 
+class LoadMoreJobberTrackerData extends JobberTrackerEvent {}
+
 // States
 abstract class JobberTrackerState extends Equatable {
   @override
@@ -23,9 +25,33 @@ class JobberTrackerLoading extends JobberTrackerState {}
 
 class JobberTrackerLoaded extends JobberTrackerState {
   final List<JobberTrackerEntity> data;
-  JobberTrackerLoaded(this.data);
+  final int currentPage;
+  final bool isLoadingMore;
+  final bool hasMore;
+
+  JobberTrackerLoaded(
+    this.data, {
+    required this.currentPage,
+    this.isLoadingMore = false,
+    this.hasMore = true,
+  });
+
+  JobberTrackerLoaded copyWith({
+    List<JobberTrackerEntity>? data,
+    int? currentPage,
+    bool? isLoadingMore,
+    bool? hasMore,
+  }) {
+    return JobberTrackerLoaded(
+      data ?? this.data,
+      currentPage: currentPage ?? this.currentPage,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasMore: hasMore ?? this.hasMore,
+    );
+  }
+
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props => [data, currentPage, isLoadingMore, hasMore];
 }
 
 class JobberTrackerError extends JobberTrackerState {
@@ -38,14 +64,52 @@ class JobberTrackerError extends JobberTrackerState {
 // Bloc
 class JobberTrackerBloc extends Bloc<JobberTrackerEvent, JobberTrackerState> {
   final GetJobberTrackerData getJobberTrackerData;
+  static const int _pageSize = 20;
 
-  JobberTrackerBloc({required this.getJobberTrackerData}) : super(JobberTrackerInitial()) {
+  JobberTrackerBloc({required this.getJobberTrackerData})
+    : super(JobberTrackerInitial()) {
     on<LoadJobberTrackerData>((event, emit) async {
       emit(JobberTrackerLoading());
-      final result = await getJobberTrackerData();
+      final result = await getJobberTrackerData(
+        page: 1,
+        sizePerPage: _pageSize,
+      );
       result.fold(
         (failure) => emit(JobberTrackerError('Server Failure')),
-        (data) => emit(JobberTrackerLoaded(data)),
+        (data) => emit(
+          JobberTrackerLoaded(
+            data,
+            currentPage: 1,
+            hasMore: data.length >= _pageSize,
+          ),
+        ),
+      );
+    });
+
+    on<LoadMoreJobberTrackerData>((event, emit) async {
+      final current = state;
+      if (current is! JobberTrackerLoaded ||
+          current.isLoadingMore ||
+          !current.hasMore) {
+        return;
+      }
+
+      emit(current.copyWith(isLoadingMore: true));
+      final nextPage = current.currentPage + 1;
+      final result = await getJobberTrackerData(
+        page: nextPage,
+        sizePerPage: _pageSize,
+      );
+      result.fold(
+        (failure) => emit(current.copyWith(isLoadingMore: false)),
+        (data) => emit(
+          current.copyWith(
+            data: [...current.data, ...data],
+            currentPage: nextPage,
+            isLoadingMore: false,
+            hasMore: data.length >= _pageSize,
+          ),
+        ),
       );
     });
   }

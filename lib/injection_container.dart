@@ -67,6 +67,8 @@ import 'features/trade_comparison/data/repositories/trade_comparison_repository_
 import 'features/trade_comparison/domain/repositories/trade_comparison_repository.dart';
 import 'features/trade_comparison/domain/usecases/get_trade_comparison_data.dart';
 import 'features/trade_comparison/presentation/bloc/trade_comparison_bloc.dart';
+import 'features/dashboard/data/datasources/alert_socket_datasource.dart';
+import 'features/dashboard/presentation/bloc/alert_bloc.dart';
 
 final sl = GetIt.instance;
 Future<void> init() async {
@@ -116,7 +118,7 @@ Future<void> init() async {
     () => BulkOrderRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<BulkOrderRemoteDataSource>(
-    () => BulkOrderRemoteDataSourceImpl(),
+    () => BulkOrderRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   // Bulk Order Details
@@ -126,7 +128,7 @@ Future<void> init() async {
     () => BulkOrderDetailsRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<BulkOrderDetailsRemoteDataSource>(
-    () => BulkOrderDetailsRemoteDataSourceImpl(),
+    () => BulkOrderDetailsRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   // Profit Cross Feature
@@ -142,7 +144,7 @@ Future<void> init() async {
     () => ProfitCrossRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<ProfitCrossRemoteDataSource>(
-    () => ProfitCrossRemoteDataSourceImpl(),
+    () => ProfitCrossRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   // Jobber Tracker Feature
@@ -154,7 +156,7 @@ Future<void> init() async {
     () => JobberTrackerRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<JobberTrackerRemoteDataSource>(
-    () => JobberTrackerRemoteDataSourceImpl(),
+    () => JobberTrackerRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   // BTST Feature
@@ -166,7 +168,7 @@ Future<void> init() async {
     () => BTSTRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<BTSTRemoteDataSource>(
-    () => BTSTRemoteDataSourceImpl(),
+    () => BTSTRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   // Same IP Tracker Feature
@@ -178,7 +180,7 @@ Future<void> init() async {
     () => SameIPRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<SameIPRemoteDataSource>(
-    () => SameIPRemoteDataSourceImpl(),
+    () => SameIPRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   // Same device Tracker Feature
@@ -190,7 +192,7 @@ Future<void> init() async {
     () => SameDeviceRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<SameDeviceRemoteDataSource>(
-    () => SameDeviceRemoteDataSourceImpl(),
+    () => SameDeviceRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   // Trade Comparison Feature
@@ -200,6 +202,12 @@ Future<void> init() async {
     () => TradeComparisonRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<TradeComparisonRemoteDataSource>(
-    () => TradeComparisonRemoteDataSourceImpl(),
+    () => TradeComparisonRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
+
+  // Alert / WebSocket Feature
+  sl.registerLazySingleton<AlertSocketDatasource>(
+    () => AlertSocketDatasourceImpl(),
+  );
+  sl.registerFactory(() => AlertBloc(datasource: sl<AlertSocketDatasource>()));
 }

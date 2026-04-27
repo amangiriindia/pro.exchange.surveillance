@@ -11,9 +11,15 @@ class JobberTrackerRepositoryImpl implements JobberTrackerRepository {
   JobberTrackerRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<JobberTrackerEntity>>> getJobberTrackerData() async {
+  Future<Either<Failure, List<JobberTrackerEntity>>> getJobberTrackerData({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
     try {
-      final remoteData = await remoteDataSource.getJobberTrackerData();
+      final remoteData = await remoteDataSource.getJobberTrackerData(
+        page: page,
+        sizePerPage: sizePerPage,
+      );
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());
@@ -21,9 +27,11 @@ class JobberTrackerRepositoryImpl implements JobberTrackerRepository {
   }
 
   @override
-  Future<Either<Failure, List<JobberDetailEntity>>> getJobberDetails(String uName) async {
+  Future<Either<Failure, List<JobberDetailEntity>>> getJobberDetails(
+    int alertId,
+  ) async {
     try {
-      final remoteData = await remoteDataSource.getJobberDetails(uName);
+      final remoteData = await remoteDataSource.getJobberDetails(alertId);
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());

@@ -8,7 +8,7 @@ class GetBTSTDetails {
 
   GetBTSTDetails(this.repository);
 
-  Future<Either<Failure, List<BTSTDetailEntity>>> call(String uName) async {
-    return await repository.getBTSTDetails(uName);
+  Future<Either<Failure, List<BTSTDetailEntity>>> call(int alertId) async {
+    return await repository.getBTSTDetails(alertId);
   }
 }

@@ -43,23 +43,14 @@ class CustomOutlinedActionButton extends StatelessWidget {
           padding: EdgeInsets.zero,
           backgroundColor: Colors.transparent,
         ),
-        child: isLoading
-            ? SizedBox(
-                height: 16.sp,
-                width: 16.sp,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: textColor ?? AppColors.primaryBlue,
-                ),
-              )
-            : Text(
-                text,
-                style: GoogleFonts.openSans(
-                  fontSize: fontSize ?? 12.sp,
-                  fontWeight: FontWeight.w600,
-                  color: textColor ?? AppColors.primaryBlue,
-                ),
-              ),
+        child: Text(
+          text,
+          style: GoogleFonts.openSans(
+            fontSize: fontSize ?? 12.sp,
+            fontWeight: FontWeight.w600,
+            color: textColor ?? AppColors.primaryBlue,
+          ),
+        ),
       ),
     );
   }

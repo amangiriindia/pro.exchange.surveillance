@@ -8,58 +8,119 @@ import '../../../../core/widget/table_action_button.dart';
 
 class BulkOrderTable extends StatelessWidget {
   final List<BulkOrderEntity> trades;
-  final ValueChanged<String> onViewSelected;
+  final ValueChanged<BulkOrderEntity> onViewSelected;
+  final VoidCallback? onNearBottom;
+  final bool isLoadingMore;
 
-  const BulkOrderTable({super.key, required this.trades, required this.onViewSelected});
+  static const double _triggerThresholdPx = 1600;
+
+  const BulkOrderTable({
+    super.key,
+    required this.trades,
+    required this.onViewSelected,
+    this.onNearBottom,
+    this.isLoadingMore = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ViewDataTable<BulkOrderEntity>(
-      columns: _buildColumns(),
-      data: trades,
-      idExtractor: (item) => item.time + item.symbol, // Dummy composite ID
-      autoFit: true,
-      isDarkMode: AppColors.isDarkMode(context),
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
-      cellBuilder: (item, col) => _buildCell(context, item, col),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (onNearBottom != null &&
+            notification.metrics.axis == Axis.vertical) {
+          final remaining =
+              notification.metrics.maxScrollExtent -
+              notification.metrics.pixels;
+          if (remaining < _triggerThresholdPx) {
+            onNearBottom!();
+          }
+        }
+        return false;
+      },
+      child: ViewDataTable<BulkOrderEntity>(
+        columns: _buildColumns(),
+        data: trades,
+        idExtractor: (item) => item.id.toString(),
+        autoFit: true,
+        isDarkMode: AppColors.isDarkMode(context),
+        rowBackgroundBuilder: (item, index) => index % 2 == 0
+            ? AppColors.getTableRowBackground(context)
+            : AppColors.getTableAlternateRowBackground(context),
+        cellBuilder: (item, col) => _buildCell(context, item, col),
+        footerBuilder: isLoadingMore ? (_) => const _LoadMoreFooter() : null,
+      ),
     );
   }
 
   List<ViewTableColumn> _buildColumns() {
     return const [
-      ViewTableColumn(id: 'time', label: 'Time', width: 220),
-      ViewTableColumn(id: 'exchange', label: 'Exchange', width: 140),
+      ViewTableColumn(id: 'time', label: 'Time', width: 200),
+      ViewTableColumn(id: 'exchange', label: 'Exchange', width: 110),
       ViewTableColumn(id: 'symbol', label: 'Symbol', width: 220),
-      ViewTableColumn(id: 'quantity', label: 'Quantity', width: 160, isNumeric: true),
-      ViewTableColumn(id: 'action', label: 'Action', width: 250),
+      ViewTableColumn(id: 'tradeType', label: 'B/S', width: 80),
+      ViewTableColumn(
+        id: 'quantity',
+        label: 'Quantity',
+        width: 110,
+        isNumeric: true,
+      ),
+      ViewTableColumn(
+        id: 'threshold',
+        label: 'Threshold',
+        width: 110,
+        isNumeric: true,
+      ),
+      ViewTableColumn(id: 'status', label: 'Status', width: 150),
+      ViewTableColumn(id: 'action', label: 'Action', width: 120),
     ];
   }
 
-  Widget _buildCell(BuildContext context, BulkOrderEntity trade, ViewTableColumn col) {
+  Widget _buildCell(
+    BuildContext context,
+    BulkOrderEntity trade,
+    ViewTableColumn col,
+  ) {
     Color textColor = const Color(0xFF616161);
-    FontWeight fontWeight = FontWeight.w600;
+    const FontWeight fontWeight = FontWeight.w600;
 
     if (col.id == 'action') {
-      return TableActionRow(
-        onView: () => onViewSelected(trade.symbol),
-      );
+      return TableActionButton.view(onPressed: () => onViewSelected(trade));
+    }
+
+    if (col.id == 'status') {
+      return _buildStatusBadge(trade.investigateStatus);
     }
 
     String text = '';
     switch (col.id) {
       case 'time':
-        text = trade.time;
+        try {
+          final dt = DateTime.parse(trade.time).toLocal();
+          text = DateFormat('dd/MM/yy hh:mm:ss a').format(dt);
+        } catch (_) {
+          text = trade.time;
+        }
         break;
       case 'exchange':
         text = trade.exchange;
         break;
       case 'symbol':
-        text = trade.symbol;
+        text = trade.symbol.trim().isEmpty ? '-' : trade.symbol;
+        break;
+      case 'tradeType':
+        text = trade.tradeType.toUpperCase();
+        textColor = trade.tradeType.toLowerCase() == 'buy'
+            ? AppColors.primaryBlue
+            : AppColors.errorColor;
         break;
       case 'quantity':
-        final formatter = NumberFormat('#,##0');
-        text = formatter.format(trade.quantity.abs());
-        textColor = trade.quantity < 0 ? AppColors.errorColor : AppColors.primaryBlue;
+        text = NumberFormat('#,##0').format(trade.quantity);
+        textColor = trade.tradeType.toLowerCase() == 'buy'
+            ? AppColors.primaryBlue
+            : AppColors.errorColor;
+        break;
+      case 'threshold':
+        text = trade.threshold.toString();
         break;
     }
 
@@ -70,6 +131,55 @@ class BulkOrderTable extends StatelessWidget {
         fontSize: 12,
         fontWeight: fontWeight,
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status) {
+    Color bgColor;
+    Color textColor;
+    switch (status.toUpperCase()) {
+      case 'NEW':
+        bgColor = const Color(0xFFE3F0FF);
+        textColor = AppColors.primaryBlue;
+        break;
+      case 'INVESTIGATING':
+        bgColor = const Color(0xFFFFF3E0);
+        textColor = const Color(0xFFE65100);
+        break;
+      case 'RESOLVED':
+        bgColor = const Color(0xFFE8F5E9);
+        textColor = const Color(0xFF2E7D32);
+        break;
+      default:
+        bgColor = const Color(0xFFF5F5F5);
+        textColor = const Color(0xFF616161);
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        status,
+        style: GoogleFonts.openSans(
+          color: textColor,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadMoreFooter extends StatelessWidget {
+  const _LoadMoreFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      child: const SizedBox.shrink(),
     );
   }
 }

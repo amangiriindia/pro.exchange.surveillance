@@ -7,3 +7,5 @@ abstract class BulkOrderEvent extends Equatable {
 }
 
 class LoadBulkOrders extends BulkOrderEvent {}
+
+class LoadMoreBulkOrders extends BulkOrderEvent {}

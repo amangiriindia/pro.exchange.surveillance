@@ -7,4 +7,15 @@ abstract class GroupTradeEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadGroupTrades extends GroupTradeEvent {}
+class LoadGroupTrades extends GroupTradeEvent {
+  final int page;
+  final int sizePerPage;
+  const LoadGroupTrades({this.page = 1, this.sizePerPage = 100});
+
+  @override
+  List<Object> get props => [page, sizePerPage];
+}
+
+class LoadMoreGroupTrades extends GroupTradeEvent {
+  const LoadMoreGroupTrades();
+}

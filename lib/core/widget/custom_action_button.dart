@@ -13,6 +13,8 @@ class CustomActionButton extends StatelessWidget {
   final double? borderRadius;
   final double? fontSize;
   final bool isLoading;
+  final IconData? icon;
+  final Color? iconColor;
   const CustomActionButton({
     super.key,
     required this.text,
@@ -24,6 +26,8 @@ class CustomActionButton extends StatelessWidget {
     this.borderRadius,
     this.fontSize,
     this.isLoading = false,
+    this.icon,
+    this.iconColor,
   });
   @override
   Widget build(BuildContext context) {
@@ -39,23 +43,28 @@ class CustomActionButton extends StatelessWidget {
           ),
           padding: EdgeInsets.zero,
         ),
-        child: isLoading
-            ? SizedBox(
-                height: 16.sp,
-                width: 16.sp,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: textColor ?? AppColors.white,
-                ),
-              )
-            : Text(
-                text,
-                style: GoogleFonts.openSans(
-                  fontSize: fontSize ?? 12.sp,
-                  fontWeight: FontWeight.w600,
-                  color: textColor ?? AppColors.white,
-                ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: (fontSize ?? 12.sp) + 4,
+                color: iconColor ?? textColor ?? AppColors.white,
               ),
+              SizedBox(width: 6.w),
+            ],
+            Text(
+              text,
+              style: GoogleFonts.openSans(
+                fontSize: fontSize ?? 12.sp,
+                fontWeight: FontWeight.w600,
+                color: textColor ?? AppColors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

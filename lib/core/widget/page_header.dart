@@ -21,6 +21,8 @@ class PageHeader extends StatelessWidget {
   final VoidCallback onRefresh;
   final VoidCallback? onSettingsTap;
   final List<Widget> extraActions;
+  final VoidCallback? onNotificationTap;
+  final bool showNotificationButton;
 
   const PageHeader({
     super.key,
@@ -28,6 +30,8 @@ class PageHeader extends StatelessWidget {
     required this.subtitle,
     required this.onRefresh,
     this.onSettingsTap,
+    this.onNotificationTap,
+    this.showNotificationButton = true,
     this.extraActions = const [],
   });
 
@@ -129,9 +133,7 @@ class PageHeader extends StatelessWidget {
                 ),
 
                 // Extra action widgets (e.g. Export button)
-                ...extraActions.expand(
-                  (w) => [w, const SizedBox(width: 10)],
-                ),
+                ...extraActions.expand((w) => [w, const SizedBox(width: 10)]),
 
                 // Refresh
                 _HeaderIconBtn(icon: Icons.refresh_rounded, onTap: onRefresh),
@@ -139,13 +141,17 @@ class PageHeader extends StatelessWidget {
                 // Settings (optional)
                 if (onSettingsTap != null) ...[
                   const SizedBox(width: 8),
-                  _HeaderIconBtn(icon: Icons.tune_rounded, onTap: onSettingsTap!),
+                  _HeaderIconBtn(
+                    icon: Icons.tune_rounded,
+                    onTap: onSettingsTap!,
+                  ),
                 ],
 
-                const SizedBox(width: 8),
-
-                // Notifications
-                _NotificationBtn(),
+                if (showNotificationButton) ...[
+                  const SizedBox(width: 8),
+                  // Notifications
+                  _NotificationBtn(onTap: onNotificationTap),
+                ],
               ],
             ),
           ),
@@ -197,6 +203,8 @@ class _HeaderIconBtnState extends State<_HeaderIconBtn> {
 
 // ─── Notification badge button ────────────────────────────────────────────────
 class _NotificationBtn extends StatefulWidget {
+  final VoidCallback? onTap;
+  const _NotificationBtn({this.onTap});
   @override
   State<_NotificationBtn> createState() => _NotificationBtnState();
 }
@@ -210,7 +218,7 @@ class _NotificationBtnState extends State<_NotificationBtn> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTap: () {},
+        onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           width: 36,
@@ -228,7 +236,11 @@ class _NotificationBtnState extends State<_NotificationBtn> {
             clipBehavior: Clip.none,
             alignment: Alignment.center,
             children: [
-              const Icon(Icons.notifications_outlined, color: Colors.white, size: 18),
+              const Icon(
+                Icons.notifications_outlined,
+                color: Colors.white,
+                size: 18,
+              ),
               Positioned(
                 top: 6,
                 right: 6,
@@ -238,7 +250,10 @@ class _NotificationBtnState extends State<_NotificationBtn> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF3B30),
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFF202D3B), width: 1.5),
+                    border: Border.all(
+                      color: const Color(0xFF202D3B),
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),

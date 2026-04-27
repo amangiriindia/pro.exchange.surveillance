@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constants/app_colors.dart';
 
 /// A modern text input box designed to match the [AppDropdown] style.
-/// Used for "Search & Add" or other filter inputs where consistency with 
+/// Used for "Search & Add" or other filter inputs where consistency with
 /// dropdown triggers is required.
 class CustomInputBox extends StatelessWidget {
   final String hintText;
@@ -29,13 +28,17 @@ class CustomInputBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderCol = borderColor ?? (isDarkMode
-        ? Colors.white.withOpacity(0.15)
-        : const Color(0xFFCBD5E1));
+    final borderCol =
+        borderColor ??
+        (isDarkMode ? Colors.white.withOpacity(0.15) : const Color(0xFFCBD5E1));
 
     final textColor = isDarkMode ? Colors.white : const Color(0xFF202D3B);
-    final hintColor = isDarkMode ? Colors.white.withOpacity(0.3) : const Color(0xFF94A3B8);
-    final bgColor = isDarkMode ? const Color(0xFF1E293B).withOpacity(0.5) : Colors.white;
+    final hintColor = isDarkMode
+        ? Colors.white.withOpacity(0.3)
+        : const Color(0xFF94A3B8);
+    final bgColor = isDarkMode
+        ? const Color(0xFF1E293B).withOpacity(0.5)
+        : Colors.white;
 
     return Container(
       width: width,
@@ -43,20 +46,13 @@ class CustomInputBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: borderCol,
-          width: 1.2,
-        ),
+        border: Border.all(color: borderCol, width: 1.2),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         children: [
           if (prefixIcon != null) ...[
-            Icon(
-              prefixIcon,
-              size: 16,
-              color: hintColor,
-            ),
+            Icon(prefixIcon, size: 16, color: hintColor),
             const SizedBox(width: 8),
           ],
           Expanded(

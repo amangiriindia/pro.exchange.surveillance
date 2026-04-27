@@ -10,9 +10,15 @@ class TradeComparisonRepositoryImpl implements TradeComparisonRepository {
   TradeComparisonRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<TradeComparisonEntity>>> getTradeComparisonData() async {
+  Future<Either<Failure, List<TradeComparisonEntity>>> getTradeComparisonData({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
     try {
-      final remoteData = await remoteDataSource.getTradeComparisonData();
+      final remoteData = await remoteDataSource.getTradeComparisonData(
+        page: page,
+        sizePerPage: sizePerPage,
+      );
       return Right(remoteData);
     } catch (e) {
       return Left(ServerFailure());

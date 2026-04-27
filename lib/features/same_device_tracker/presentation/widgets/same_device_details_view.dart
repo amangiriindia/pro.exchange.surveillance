@@ -9,11 +9,13 @@ import '../bloc/same_device_details_bloc.dart';
 import '../../domain/entities/same_device_detail_entity.dart';
 
 class SameDeviceDetailsView extends StatelessWidget {
+  final int alertId;
   final String clusterId;
   final VoidCallback onBack;
 
   const SameDeviceDetailsView({
     super.key,
+    required this.alertId,
     required this.clusterId,
     required this.onBack,
   });
@@ -22,7 +24,7 @@ class SameDeviceDetailsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          sl<SameDeviceDetailsBloc>()..add(LoadSameDeviceDetails(clusterId)),
+          sl<SameDeviceDetailsBloc>()..add(LoadSameDeviceDetails(alertId)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,7 +34,7 @@ class SameDeviceDetailsView extends StatelessWidget {
             child: BlocBuilder<SameDeviceDetailsBloc, SameDeviceDetailsState>(
               builder: (context, state) {
                 if (state is SameDeviceDetailsLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SizedBox.shrink();
                 } else if (state is SameDeviceDetailsLoaded) {
                   return _buildTable(state.details, context);
                 } else if (state is SameDeviceDetailsError) {
@@ -112,11 +114,12 @@ class SameDeviceDetailsView extends StatelessWidget {
         ),
       ],
       data: data,
-      idExtractor: (item) => '${item.uName}_${item.orderTime}_${item.quantity}',
+      idExtractor: (item) => item.id.toString(),
       autoFit: true,
       isDarkMode: AppColors.isDarkMode(context),
-      rowBackgroundBuilder: (item, index) =>
-          index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
+      rowBackgroundBuilder: (item, index) => index % 2 == 0
+          ? AppColors.getTableRowBackground(context)
+          : AppColors.getTableAlternateRowBackground(context),
       cellBuilder: (item, col) => _buildCell(context, item, col),
     );
   }
@@ -149,7 +152,7 @@ class SameDeviceDetailsView extends StatelessWidget {
         break;
       case 'buy_sell':
         text = item.buySell;
-        textColor = text.contains('SELL')
+        textColor = text.toLowerCase().contains('sell')
             ? AppColors.errorColor
             : AppColors.primaryBlue;
         break;
@@ -178,6 +181,18 @@ class SameDeviceDetailsView extends StatelessWidget {
         break;
       case 'r_price':
         text = currencyFormat.format(item.rPrice);
+        break;
+      case 'execution_time':
+        text = item.executionTime;
+        break;
+      case 'device_id':
+        text = item.deviceId;
+        break;
+      case 'ip_address':
+        text = item.ipAddress;
+        break;
+      case 'city':
+        text = item.city;
         break;
     }
 

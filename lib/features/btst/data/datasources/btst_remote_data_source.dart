@@ -1,83 +1,41 @@
+import 'package:dio/dio.dart';
+import '../../../../core/constants/auth_constants.dart';
 import '../models/btst_model.dart';
 import '../models/btst_detail_model.dart';
 
 abstract class BTSTRemoteDataSource {
-  Future<List<BTSTModel>> getBTSTData();
-  Future<List<BTSTDetailModel>> getBTSTDetails(String uName);
+  Future<List<BTSTModel>> getBTSTData({int page = 1, int sizePerPage = 20});
+  Future<List<BTSTDetailModel>> getBTSTDetails(int alertId);
 }
 
 class BTSTRemoteDataSourceImpl implements BTSTRemoteDataSource {
+  final Dio dio;
+
+  BTSTRemoteDataSourceImpl({required this.dio});
+
   @override
-  Future<List<BTSTModel>> getBTSTData() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return [
-      const BTSTModel(
-        uName: 'DEMO56',
-        pUser: 'DEMO',
-        exchange: 'MCX',
-        symbol: 'GOLD',
-        pnl: 36200.0,
-        inTime: '13/03/2026 | 10:22:02 AM',
-        outTime: '13/03/2026 | 10:22:02 AM',
-        orderDuration: '11 hours 47 minutes',
-      ),
-      const BTSTModel(
-        uName: 'DEMO4',
-        pUser: 'DEMO49',
-        exchange: 'MCX',
-        symbol: 'GOLD',
-        pnl: 36200.0,
-        inTime: '13/03/2026 | 10:22:02 AM',
-        outTime: '13/03/2026 | 10:22:02 AM',
-        orderDuration: '11 hours 47 minutes',
-      ),
-      const BTSTModel(
-        uName: 'DEMO56',
-        pUser: 'DEMO49',
-        exchange: 'MCX',
-        symbol: 'GOLD',
-        pnl: 36200.0,
-        inTime: '13/03/2026 | 10:22:02 AM',
-        outTime: '13/03/2026 | 10:22:02 AM',
-        orderDuration: '11 hours 47 minutes',
-      ),
-    ];
+  Future<List<BTSTModel>> getBTSTData({
+    int page = 1,
+    int sizePerPage = 20,
+  }) async {
+    final response = await dio.get(
+      AuthConstants.btstListEndpoint,
+      queryParameters: {'page': page, 'sizePerPage': sizePerPage},
+    );
+    final items = response.data['data']['items'] as List<dynamic>;
+    return items
+        .map((e) => BTSTModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   @override
-  Future<List<BTSTDetailModel>> getBTSTDetails(String uName) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return [
-      const BTSTDetailModel(
-        uName: 'DEMO56',
-        pUser: 'DEMO',
-        exch: 'MCX',
-        symbol: 'RELIANCE',
-        orderTime: '22/11/25 03:06:34 PM',
-        buySell: 'SELL - SL Market',
-        quantity: -500.0,
-        lot: 1.0,
-        type: 'Market',
-        pl: 36200.0,
-        tPrice: 124191.0,
-        brk: 0.0,
-        rPrice: 0.0,
-      ),
-      const BTSTDetailModel(
-        uName: 'DEMO56',
-        pUser: 'DEMO49',
-        exch: 'MCX',
-        symbol: 'RELIANCE',
-        orderTime: '22/11/25 03:06:34 PM',
-        buySell: 'BUY - SL Add Trade',
-        quantity: 1000000.0,
-        lot: 1.0,
-        type: 'Market',
-        pl: 36200.0,
-        tPrice: 124191.0,
-        brk: 0.0,
-        rPrice: 0.0,
-      ),
-    ];
+  Future<List<BTSTDetailModel>> getBTSTDetails(int alertId) async {
+    final response = await dio.get(
+      '${AuthConstants.btstTradesEndpoint}/$alertId/trades',
+    );
+    final items = response.data['data']['items'] as List<dynamic>;
+    return items
+        .map((e) => BTSTDetailModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

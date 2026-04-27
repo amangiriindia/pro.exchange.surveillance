@@ -4,6 +4,11 @@ import '../entities/same_device_entity.dart';
 import '../entities/same_device_detail_entity.dart';
 
 abstract class SameDeviceRepository {
-  Future<Either<Failure, List<SameDeviceEntity>>> getSameDeviceData();
-  Future<Either<Failure, List<SameDeviceDetailEntity>>> getSameDeviceDetails(String clusterId);
+  Future<Either<Failure, List<SameDeviceEntity>>> getSameDeviceData({
+    int page = 1,
+    int sizePerPage = 20,
+  });
+  Future<Either<Failure, List<SameDeviceDetailEntity>>> getSameDeviceDetails(
+    int alertId,
+  );
 }

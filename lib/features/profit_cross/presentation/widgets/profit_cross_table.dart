@@ -11,35 +11,73 @@ import 'order_duration_dialog_content.dart';
 
 class ProfitCrossTable extends StatelessWidget {
   final List<ProfitCrossEntity> data;
+  final VoidCallback? onNearBottom;
+  final bool isLoadingMore;
 
-  const ProfitCrossTable({super.key, required this.data});
+  static const double _triggerThresholdPx = 1600;
+
+  const ProfitCrossTable({
+    super.key,
+    required this.data,
+    this.onNearBottom,
+    this.isLoadingMore = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ViewDataTable<ProfitCrossEntity>(
-      columns: const [
-        ViewTableColumn(id: 'time', label: 'Time', width: 200),
-        ViewTableColumn(id: 'exchange', label: 'EXCH', width: 100),
-        ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 140),
-        ViewTableColumn(id: 'order_dt', label: 'ORDER D/T', width: 200),
-        ViewTableColumn(id: 'pnl', label: 'P/L', width: 120, isNumeric: true),
-        ViewTableColumn(id: 'order_duration', label: 'ORDER DURATION', width: 180),
-        ViewTableColumn(id: 'pnl_percentage', label: 'P/L%', width: 100, isNumeric: true),
-      ],
-      data: data,
-      idExtractor: (item) => item.time + item.symbol + item.pnlPercentage.toString(),
-      autoFit: true,
-      isDarkMode: AppColors.isDarkMode(context),
-      rowBackgroundBuilder: (item, index) => index % 2 == 0 ? AppColors.getTableRowBackground(context) : AppColors.getTableAlternateRowBackground(context),
-      cellBuilder: (item, col) => _buildCell(context, item, col),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (onNearBottom != null &&
+            notification.metrics.axis == Axis.vertical) {
+          final remaining =
+              notification.metrics.maxScrollExtent -
+              notification.metrics.pixels;
+          if (remaining < _triggerThresholdPx) {
+            onNearBottom!();
+          }
+        }
+        return false;
+      },
+      child: ViewDataTable<ProfitCrossEntity>(
+        columns: const [
+          ViewTableColumn(id: 'time', label: 'Time', width: 200),
+          ViewTableColumn(id: 'exchange', label: 'EXCH', width: 100),
+          ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 220),
+          ViewTableColumn(id: 'order_dt', label: 'ORDER D/T', width: 200),
+          ViewTableColumn(id: 'pnl', label: 'P/L', width: 120, isNumeric: true),
+          ViewTableColumn(
+            id: 'order_duration',
+            label: 'ORDER DURATION',
+            width: 180,
+          ),
+          ViewTableColumn(
+            id: 'pnl_percentage',
+            label: 'P/L%',
+            width: 100,
+            isNumeric: true,
+          ),
+        ],
+        data: data,
+        idExtractor: (item) => item.id.toString(),
+        autoFit: true,
+        isDarkMode: AppColors.isDarkMode(context),
+        rowBackgroundBuilder: (item, index) => index % 2 == 0
+            ? AppColors.getTableRowBackground(context)
+            : AppColors.getTableAlternateRowBackground(context),
+        cellBuilder: (item, col) => _buildCell(context, item, col),
+        footerBuilder: isLoadingMore ? (_) => const _LoadMoreFooter() : null,
+      ),
     );
   }
 
-  Widget _buildCell(BuildContext context, ProfitCrossEntity item, ViewTableColumn col) {
+  Widget _buildCell(
+    BuildContext context,
+    ProfitCrossEntity item,
+    ViewTableColumn col,
+  ) {
     final currencyFormat = NumberFormat('#,##0.00');
     String text = '';
     Color textColor = const Color(0xFF616161);
-    bool isUnderlined = false;
 
     switch (col.id) {
       case 'time':
@@ -49,10 +87,15 @@ class ProfitCrossTable extends StatelessWidget {
         text = item.exchange;
         break;
       case 'symbol':
-        text = item.symbol;
+        text = item.symbol.trim().isEmpty ? '-' : item.symbol;
         break;
       case 'order_dt':
-        text = item.orderDT;
+        try {
+          final dt = DateTime.parse(item.orderDT);
+          text = DateFormat('dd/MM/yy hh:mm:ss a').format(dt.toLocal());
+        } catch (_) {
+          text = item.orderDT;
+        }
         break;
       case 'pnl':
         text = currencyFormat.format(item.pnl);
@@ -60,7 +103,6 @@ class ProfitCrossTable extends StatelessWidget {
         break;
       case 'order_duration':
         text = item.orderDuration;
-        isUnderlined = true;
         break;
       case 'pnl_percentage':
         text = item.pnlPercentage.toStringAsFixed(0);
@@ -73,25 +115,37 @@ class ProfitCrossTable extends StatelessWidget {
         color: textColor,
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        decoration: isUnderlined ? TextDecoration.underline : null,
       ),
     );
 
     if (col.id == 'order_duration') {
       return InkWell(
         onTap: () {
-          _showOrderDurationDialog(context, item.symbol);
+          _showOrderDurationDialog(context, item.id, item.symbol);
         },
-        child: cellWidget,
+        child: Text(
+          text,
+          style: GoogleFonts.openSans(
+            color: AppColors.primaryBlue,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
+            decorationColor: AppColors.primaryBlue,
+          ),
+        ),
       );
     }
 
     return cellWidget;
   }
 
-  void _showOrderDurationDialog(BuildContext context, String symbol) {
+  void _showOrderDurationDialog(
+    BuildContext context,
+    int alertId,
+    String symbol,
+  ) {
     final bloc = context.read<ProfitCrossBloc>();
-    bloc.add(LoadOrderDurationDetails(symbol));
+    bloc.add(LoadOrderDurationDetails(alertId));
 
     CommonDialog.show(
       context: context,
@@ -101,11 +155,23 @@ class ProfitCrossTable extends StatelessWidget {
       showButtons: false,
       backgroundColor: Colors.white,
       headerColor: const Color.fromARGB(255, 2, 12, 28),
-      titleActions: [], // Can add icons here if needed to match screenshot exactly
+      titleActions: [],
       content: BlocProvider.value(
         value: bloc,
-        child: OrderDurationDialogContent(symbol: symbol),
+        child: OrderDurationDialogContent(alertId: alertId, symbol: symbol),
       ),
+    );
+  }
+}
+
+class _LoadMoreFooter extends StatelessWidget {
+  const _LoadMoreFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      child: const SizedBox.shrink(),
     );
   }
 }
