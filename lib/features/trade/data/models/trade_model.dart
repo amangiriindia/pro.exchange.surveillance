@@ -29,13 +29,11 @@ class TradeModel extends TradeEntity {
   factory TradeModel.fromJson(Map<String, dynamic> json) {
     final tradeType = (json['tradeType'] as String? ?? 'buy').toLowerCase();
     final productType = (json['productType'] as String? ?? '');
+    final orderType = (json['orderType'] as String? ?? 'market');
     final mainOrderType = (json['mainOrderType'] as String? ?? 'market');
 
-    // Build B/S display string: e.g. "SELL - L Market", "BUY - SL Add Trade"
-    final productPrefix = _productPrefix(productType);
-    final orderDisplay = _capitalize(mainOrderType);
-    final buySell = '${tradeType.toUpperCase()} - $productPrefix $orderDisplay'
-        .trim();
+    // Build B/S display string from trade side + API orderType.
+    final buySell = '${tradeType.toUpperCase()} - ${_capitalize(orderType)}';
 
     // Format orderDateTime from ISO string
     final createdAt = json['createdAt'] as String? ?? '';
@@ -72,23 +70,6 @@ class TradeModel extends TradeEntity {
       productType: productType,
       userId: json['userId'] as int?,
     );
-  }
-
-  /// Maps productType to short prefix for B/S column.
-  static String _productPrefix(String productType) {
-    // toLowerCase() normalises both 'longTerm' and 'longterm'
-    switch (productType.toLowerCase()) {
-      case 'longterm':
-        return 'L';
-      case 'intraday':
-        return 'I';
-      case 'delivery':
-        return 'D';
-      default:
-        return productType.isEmpty
-            ? ''
-            : productType.substring(0, 1).toUpperCase();
-    }
   }
 
   static String _capitalize(String s) {
