@@ -2,7 +2,7 @@ name: surveillance
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+5
 
 environment:
   sdk: ^3.10.3
@@ -51,6 +51,8 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
+  macos:
+    generate: true
   image_path: "assets/images/bazaar_logo.png"
   adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/images/bazaar_logo.png"

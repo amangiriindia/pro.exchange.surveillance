@@ -15,6 +15,7 @@ class AlertOverlayManager {
 
   // Queue of active toasts
   final List<_ToastItem> _toasts = [];
+  final Set<String> _dismissedSignatures = <String>{};
   final GlobalKey<_AlertOverlayContainerState> _containerKey =
       GlobalKey<_AlertOverlayContainerState>();
 
@@ -31,16 +32,57 @@ class AlertOverlayManager {
 
   /// Show a new alert toast and keep it visible until user dismisses it.
   void show(AlertEntity alert) {
+    final signature = _alertSignature(alert);
+
+    // If user already dismissed this alert signature once, do not show again.
+    if (_dismissedSignatures.contains(signature)) {
+      return;
+    }
+
+    // Avoid stacking duplicate active toasts for the same alert payload.
+    if (_toasts.any((item) => item.signature == signature)) {
+      return;
+    }
+
     final item = _ToastItem(alert: alert);
     _toasts.add(item);
     _containerKey.currentState?._addToast(item);
+  }
+
+  void markDismissed(_ToastItem item) {
+    _dismissedSignatures.add(item.signature);
+    _toasts.remove(item);
+  }
+
+  String _alertSignature(AlertEntity alert) {
+    return [
+      alert.alertType.name,
+      alert.script ?? '',
+      alert.exchange ?? '',
+      alert.clientIds.join(','),
+      alert.tradeIds.join(','),
+      alert.message,
+      alert.investigateStatus,
+    ].join('|');
   }
 }
 
 class _ToastItem {
   final AlertEntity alert;
   final Key key = UniqueKey();
-  _ToastItem({required this.alert});
+  late final String signature;
+
+  _ToastItem({required this.alert}) {
+    signature = [
+      alert.alertType.name,
+      alert.script ?? '',
+      alert.exchange ?? '',
+      alert.clientIds.join(','),
+      alert.tradeIds.join(','),
+      alert.message,
+      alert.investigateStatus,
+    ].join('|');
+  }
 }
 
 class _AlertOverlayContainer extends StatefulWidget {
@@ -56,7 +98,7 @@ class _AlertOverlayContainerState extends State<_AlertOverlayContainer> {
   void _addToast(_ToastItem item) {
     if (!mounted) return;
     setState(() {
-      _active.insert(0, item);
+      _active.add(item);
     });
   }
 
@@ -69,7 +111,7 @@ class _AlertOverlayContainerState extends State<_AlertOverlayContainer> {
     final maxPanelHeight = MediaQuery.of(context).size.height * 0.78;
 
     return Positioned(
-      top: 16,
+      bottom: 16,
       right: 16,
       child: Material(
         color: Colors.transparent,
@@ -85,7 +127,7 @@ class _AlertOverlayContainerState extends State<_AlertOverlayContainer> {
                   alert: item.alert,
                   onDismiss: () {
                     _removeToast(item);
-                    AlertOverlayManager.instance._toasts.remove(item);
+                    AlertOverlayManager.instance.markDismissed(item);
                   },
                 );
               }).toList(),

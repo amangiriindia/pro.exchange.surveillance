@@ -14,6 +14,8 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Surveillance</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -22,6 +24,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.business</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -33,5 +37,11 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Surveillance needs access to your Documents folder to save exported reports (PDF/Excel).</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Surveillance needs access to your Downloads folder to save exported reports (PDF/Excel).</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Surveillance needs access to your Desktop folder to save exported reports (PDF/Excel).</string>
 </dict>
 </plist>

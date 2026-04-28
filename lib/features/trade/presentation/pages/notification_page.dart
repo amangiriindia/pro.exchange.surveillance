@@ -161,15 +161,35 @@ class _NotificationPageState extends State<NotificationPage> {
   int _totalUnread = 0;
   Map<String, int> _unreadByType = const {};
 
+  int _tabIndexFromAlertType(String? alertType) {
+    if (alertType == null || alertType.isEmpty) {
+      return 0;
+    }
+    final idx = _kTabs.indexWhere((t) => t.alertType == alertType);
+    return idx >= 0 ? idx : 0;
+  }
+
   @override
   void initState() {
     super.initState();
-    _activeTabIndex = widget.initialTabAlertType != null
-        ? _kTabs
-              .indexWhere((t) => t.alertType == widget.initialTabAlertType)
-              .clamp(0, _kTabs.length - 1)
-        : 0;
+    _activeTabIndex = _tabIndexFromAlertType(widget.initialTabAlertType);
     unawaited(_fetchUnreadCounts());
+  }
+
+  @override
+  void didUpdateWidget(covariant NotificationPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // When a toast is tapped while NotificationPage is already visible,
+    // switch to the requested tab immediately.
+    if (oldWidget.initialTabAlertType != widget.initialTabAlertType) {
+      final nextIndex = _tabIndexFromAlertType(widget.initialTabAlertType);
+      if (nextIndex != _activeTabIndex) {
+        setState(() {
+          _activeTabIndex = nextIndex;
+        });
+      }
+    }
   }
 
   Future<void> _fetchUnreadCounts() async {
