@@ -28,6 +28,7 @@ class CustomInputField extends StatelessWidget {
   final bool autofocus;
   final ValueChanged<String>? onFieldSubmitted;
   final TextInputAction? textInputAction;
+  final VoidCallback? onTap;
   const CustomInputField({
     Key? key,
     required this.hintText,
@@ -53,6 +54,7 @@ class CustomInputField extends StatelessWidget {
     this.autofocus = false,
     this.onFieldSubmitted,
     this.textInputAction,
+    this.onTap,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -129,6 +131,7 @@ class CustomInputField extends StatelessWidget {
         validator: validator,
         onChanged: onChanged,
         onFieldSubmitted: onFieldSubmitted,
+        onTap: onTap,
       ),
     );
   }

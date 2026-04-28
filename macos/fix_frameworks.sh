@@ -1,33 +1,29 @@
 #!/bin/bash
 # Fix malformed framework bundles (ITMS-90291) before App Store upload.
-# Usage:  ./macos/fix_frameworks.sh path/to/Surveillance.app
-#         (defaults to build/macos/Build/Products/Release/Surveillance.app)
+# Usage:
+#   ./macos/fix_frameworks.sh path/to/Surveillance.app
+#   ./macos/fix_frameworks.sh path/to/Some.framework
+#
+# For Xcode archive, this script is run as a build phase and receives:
+#   "$TARGET_BUILD_DIR/$WRAPPER_NAME"
 
 set -euo pipefail
 
-APP_PATH="${1:-build/macos/Build/Products/Release/Surveillance.app}"
+TARGET_PATH="${1:-build/macos/Build/Products/Release/Surveillance.app}"
 
-if [ ! -d "$APP_PATH" ]; then
-  echo "ERROR: App not found at $APP_PATH"
+if [ ! -e "$TARGET_PATH" ]; then
+  echo "ERROR: Target path not found at $TARGET_PATH"
   exit 1
 fi
 
-FRAMEWORKS_DIR="$APP_PATH/Contents/Frameworks"
-echo "Scanning $FRAMEWORKS_DIR ..."
-
-if [ ! -d "$FRAMEWORKS_DIR" ]; then
-  echo "No Frameworks directory found."
-  exit 0
+if [ -d "$TARGET_PATH/Contents/Frameworks" ]; then
+  FRAMEWORKS_DIR="$TARGET_PATH/Contents/Frameworks"
+elif [[ "$TARGET_PATH" == *.framework ]] && [ -d "$TARGET_PATH" ]; then
+  FRAMEWORKS_DIR=""
+else
+  echo "ERROR: Unsupported target. Provide an .app or .framework path."
+  exit 1
 fi
-
-CODESIGN_IDENTITY="${CODESIGN_IDENTITY-}"
-if [ -z "$CODESIGN_IDENTITY" ]; then
-  # Pick the first Developer ID / Apple Distribution identity available
-  CODESIGN_IDENTITY=$(security find-identity -v -p codesigning 2>/dev/null | \
-    grep -E "Apple Distribution|3rd Party Mac Developer Application|Developer ID Application" | \
-    head -n1 | sed -E 's/.*"([^"]+)".*/\1/' || true)
-fi
-echo "Using codesign identity: ${CODESIGN_IDENTITY:-<none, will skip resign>}"
 
 fix_framework() {
   local fw="$1"
@@ -91,25 +87,22 @@ fix_framework() {
 
   popd > /dev/null
 
-  # 5) Re-sign the framework so the new structure is valid
-  if [ -n "$CODESIGN_IDENTITY" ]; then
-    codesign --force --sign "$CODESIGN_IDENTITY" --timestamp --options runtime "$fw"
-    echo "   ✓ re-signed"
-  fi
 }
 
-for fw in "$FRAMEWORKS_DIR"/*.framework; do
-  [ -d "$fw" ] || continue
-  fix_framework "$fw"
-done
-
-# Re-sign the outer app last so the changed framework hashes are recorded.
-if [ -n "$CODESIGN_IDENTITY" ]; then
-  echo ""
-  echo "Re-signing $APP_PATH ..."
-  codesign --force --deep --sign "$CODESIGN_IDENTITY" --timestamp --options runtime "$APP_PATH"
-  echo "✓ App re-signed."
+if [ -n "$FRAMEWORKS_DIR" ]; then
+  echo "Scanning $FRAMEWORKS_DIR ..."
+  if [ ! -d "$FRAMEWORKS_DIR" ]; then
+    echo "No Frameworks directory found."
+    exit 0
+  fi
+  for fw in "$FRAMEWORKS_DIR"/*.framework; do
+    [ -d "$fw" ] || continue
+    fix_framework "$fw"
+  done
+else
+  echo "Scanning $TARGET_PATH ..."
+  fix_framework "$TARGET_PATH"
 fi
 
 echo ""
-echo "Done. Verify with:  codesign --verify --deep --strict --verbose=2 \"$APP_PATH\""
+echo "Done."
