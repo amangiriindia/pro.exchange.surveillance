@@ -6,4 +6,6 @@ abstract class TradeRepository {
     int page = 1,
     int sizePerPage = 20,
   });
+
+  Future<Either<String, TradeCountResult>> getTradeCount();
 }

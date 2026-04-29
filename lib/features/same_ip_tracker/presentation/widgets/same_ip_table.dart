@@ -39,13 +39,14 @@ class SameIPTable extends StatelessWidget {
       child: ViewDataTable<SameIPEntity>(
         columns: const [
           ViewTableColumn(id: 'time', label: 'Time', width: 220),
-          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 600),
-          ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 200),
+          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 760),
+          ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 300),
           ViewTableColumn(id: 'action', label: 'Action', width: 120),
         ],
         data: data,
         idExtractor: (item) => item.id.toString(),
-        autoFit: true,
+        autoFit: false,
+        rowHeight: 64,
         isDarkMode: AppColors.isDarkMode(context),
         rowBackgroundBuilder: (item, index) => index % 2 == 0
             ? AppColors.getTableRowBackground(context)
@@ -86,12 +87,18 @@ class SameIPTable extends StatelessWidget {
         break;
     }
 
+    final isLongTextColumn = col.id == 'u_name' || col.id == 'ip_address';
+
     return Text(
       text,
+      maxLines: isLongTextColumn ? 2 : 1,
+      softWrap: isLongTextColumn,
+      overflow: TextOverflow.ellipsis,
       style: GoogleFonts.openSans(
         color: textColor,
         fontSize: 12,
         fontWeight: FontWeight.w600,
+        height: 1.3,
       ),
     );
   }

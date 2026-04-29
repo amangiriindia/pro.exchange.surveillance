@@ -22,4 +22,14 @@ class TradeRepositoryImpl implements TradeRepository {
       return Left('Error fetching trades: ${e.toString()}');
     }
   }
+
+  @override
+  Future<Either<String, TradeCountResult>> getTradeCount() async {
+    try {
+      final result = await remoteDataSource.getTradeCount();
+      return Right(result);
+    } catch (e) {
+      return Left('Error fetching trade count: ${e.toString()}');
+    }
+  }
 }

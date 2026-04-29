@@ -11,6 +11,7 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/trade/data/datasources/trade_remote_data_source.dart';
 import 'features/trade/data/repositories/trade_repository_impl.dart';
 import 'features/trade/domain/repositories/trade_repository.dart';
+import 'features/trade/domain/usecases/get_trade_count.dart';
 import 'features/trade/domain/usecases/get_trades.dart';
 import 'features/trade/presentation/bloc/trade_bloc.dart';
 import 'features/group_trade/data/datasources/group_trade_remote_data_source.dart';
@@ -92,7 +93,8 @@ Future<void> init() async {
     () => AuthRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
   // Trade Feature
-  sl.registerFactory(() => TradeBloc(getTrades: sl()));
+  sl.registerFactory(() => TradeBloc(getTrades: sl(), getTradeCount: sl()));
+  sl.registerLazySingleton(() => GetTradeCount(sl()));
   sl.registerLazySingleton(() => GetTrades(sl()));
   sl.registerLazySingleton<TradeRepository>(
     () => TradeRepositoryImpl(remoteDataSource: sl()),

@@ -1,26 +1,35 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'trade_event.dart';
 import 'trade_state.dart';
+import '../../domain/usecases/get_trade_count.dart';
 import '../../domain/usecases/get_trades.dart';
 
 class TradeBloc extends Bloc<TradeEvent, TradeState> {
   final GetTrades getTrades;
+  final GetTradeCount getTradeCount;
   static const int _pageSize = 100;
 
-  TradeBloc({required this.getTrades}) : super(TradeInitial()) {
+  TradeBloc({required this.getTrades, required this.getTradeCount})
+    : super(TradeInitial()) {
     on<LoadTrades>(_onLoadTrades);
     on<LoadMoreTrades>(_onLoadMoreTrades);
   }
 
   Future<void> _onLoadTrades(LoadTrades event, Emitter<TradeState> emit) async {
     emit(TradeLoading());
-    final result = await getTrades(page: 1, sizePerPage: _pageSize);
-    result.fold(
+    final tradesResult = await getTrades(page: 1, sizePerPage: _pageSize);
+    final countResult = await getTradeCount();
+
+    int todayTradeCount = 0;
+    countResult.fold((_) {}, (count) => todayTradeCount = count.totalTrades);
+
+    tradesResult.fold(
       (failure) => emit(TradeError(message: failure)),
       (paginated) => emit(
         TradeLoaded(
           trades: paginated.trades,
           totalRecords: paginated.totalRecords,
+          todayTradeCount: todayTradeCount,
           totalPages: paginated.totalPages,
           currentPage: paginated.currentPage,
           hasMore: paginated.currentPage < paginated.totalPages,
@@ -47,6 +56,7 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
         TradeLoaded(
           trades: [...current.trades, ...paginated.trades],
           totalRecords: paginated.totalRecords,
+          todayTradeCount: current.todayTradeCount,
           totalPages: paginated.totalPages,
           currentPage: paginated.currentPage,
           isLoadingMore: false,

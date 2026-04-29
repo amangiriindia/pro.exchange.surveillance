@@ -131,11 +131,7 @@ class _TradeViewState extends State<TradeView> {
                         onApply: () => setState(() {}),
                       ),
                       const SizedBox(height: 12),
-                      _RecordCounter(
-                        loaded: filteredTrades.length,
-                        total: state.totalRecords,
-                        hasMore: state.hasMore,
-                      ),
+                      _RecordCounter(todayTradeCount: state.todayTradeCount),
                       const SizedBox(height: 8),
                       Expanded(
                         child: TradeTable(
@@ -167,23 +163,15 @@ class _TradeViewState extends State<TradeView> {
 
 // ─── Record counter bar ───────────────────────────────────────────────────
 class _RecordCounter extends StatelessWidget {
-  final int loaded;
-  final int total;
-  final bool hasMore;
+  final int todayTradeCount;
 
-  const _RecordCounter({
-    required this.loaded,
-    required this.total,
-    required this.hasMore,
-  });
+  const _RecordCounter({required this.todayTradeCount});
 
   @override
   Widget build(BuildContext context) {
     final isDark = AppColors.isDarkMode(context);
     return Text(
-      hasMore
-          ? 'Showing $loaded of $total records  •  Scroll down to load more'
-          : 'Showing all $loaded records',
+      'Today trade count: $todayTradeCount',
       style: GoogleFonts.openSans(
         fontSize: 12,
         color: isDark

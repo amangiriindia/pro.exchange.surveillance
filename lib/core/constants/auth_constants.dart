@@ -13,6 +13,7 @@ class AuthConstants {
   static const String changePasswordEndpoint = '/admin/change-password';
   static const String logoutEndpoint = '/admin/logout';
   static const String tradeListEndpoint = '/user/modules/trade';
+  static const String tradeCountEndpoint = '/user/trade/count';
   static const String groupTradeListEndpoint = '/user/modules/group-trade';
   static const String bulkOrderListEndpoint = '/user/modules/bulk-order';
   static const String bulkOrderTradesEndpoint = '/user/modules/bulk-order';

@@ -15,6 +15,7 @@ class TradeLoading extends TradeState {}
 class TradeLoaded extends TradeState {
   final List<TradeEntity> trades;
   final int totalRecords;
+  final int todayTradeCount;
   final int totalPages;
   final int currentPage;
   final bool isLoadingMore;
@@ -23,6 +24,7 @@ class TradeLoaded extends TradeState {
   const TradeLoaded({
     required this.trades,
     required this.totalRecords,
+    required this.todayTradeCount,
     required this.totalPages,
     required this.currentPage,
     this.isLoadingMore = false,
@@ -32,6 +34,7 @@ class TradeLoaded extends TradeState {
   TradeLoaded copyWith({
     List<TradeEntity>? trades,
     int? totalRecords,
+    int? todayTradeCount,
     int? totalPages,
     int? currentPage,
     bool? isLoadingMore,
@@ -40,6 +43,7 @@ class TradeLoaded extends TradeState {
     return TradeLoaded(
       trades: trades ?? this.trades,
       totalRecords: totalRecords ?? this.totalRecords,
+      todayTradeCount: todayTradeCount ?? this.todayTradeCount,
       totalPages: totalPages ?? this.totalPages,
       currentPage: currentPage ?? this.currentPage,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
@@ -51,6 +55,7 @@ class TradeLoaded extends TradeState {
   List<Object> get props => [
     trades,
     totalRecords,
+    todayTradeCount,
     totalPages,
     currentPage,
     isLoadingMore,
