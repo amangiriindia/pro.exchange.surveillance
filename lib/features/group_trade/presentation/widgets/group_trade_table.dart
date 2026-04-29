@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widget/city_from_ip_table_cell.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../domain/entities/group_trade_entity.dart';
 
 class GroupTradeTable extends StatelessWidget {
   final List<GroupTradeEntity> trades;
+  final Map<String, String> resolvedCityByIp;
   final VoidCallback? onNearBottom;
   final bool isLoadingMore;
 
   const GroupTradeTable({
     super.key,
     required this.trades,
+    this.resolvedCityByIp = const {},
     this.onNearBottom,
     this.isLoadingMore = false,
   });
@@ -39,7 +42,7 @@ class GroupTradeTable extends StatelessWidget {
         rowBackgroundBuilder: (item, index) => index % 2 == 0
             ? AppColors.getTableRowBackground(context)
             : AppColors.getTableAlternateRowBackground(context),
-        cellBuilder: _buildCell,
+        cellBuilder: (item, col) => _buildCell(context, item, col),
         footerBuilder: isLoadingMore ? (_) => const _LoadMoreFooter() : null,
       ),
     );
@@ -96,7 +99,11 @@ class GroupTradeTable extends StatelessWidget {
     ];
   }
 
-  Widget _buildCell(GroupTradeEntity trade, ViewTableColumn col) {
+  Widget _buildCell(
+    BuildContext context,
+    GroupTradeEntity trade,
+    ViewTableColumn col,
+  ) {
     final isBuy = trade.tradeType.toLowerCase() == 'buy';
     final bsColor = isBuy ? AppColors.buyColor : AppColors.sellColor;
 
@@ -159,8 +166,12 @@ class GroupTradeTable extends StatelessWidget {
         text = _orDash(trade.ipAddress);
         break;
       case 'city':
-        text = _orDash(trade.city);
-        break;
+        return buildCityFromIpCell(
+          context,
+          backendCity: trade.city,
+          ip: trade.ipAddress,
+          resolvedCityByIp: resolvedCityByIp,
+        );
     }
 
     return Text(

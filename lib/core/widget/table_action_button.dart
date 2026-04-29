@@ -2,21 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 
-/// Button variant used for table action cells.
-enum TableActionVariant {
-  /// "View" — teal/blue outlined pill with eye icon
-  view,
+enum TableActionVariant { view, investigate, filled }
 
-  /// "Investigate" — amber/orange outlined pill with search icon
-  investigate,
-
-  /// Generic filled pill — uses [color] or defaults to navy
-  filled,
-}
-
-/// A modern, compact action button for use inside data-table "Action" cells.
-///
-/// Renders as a pill with an icon + label, hover-animated border & background.
 class TableActionButton extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
@@ -33,14 +20,12 @@ class TableActionButton extends StatefulWidget {
     this.color,
   });
 
-  /// Convenience constructor for the "View" button.
   const TableActionButton.view({super.key, required this.onPressed})
     : label = 'View',
       variant = TableActionVariant.view,
       icon = null,
       color = null;
 
-  /// Convenience constructor for the "Investigate" button.
   const TableActionButton.investigate({super.key, required this.onPressed})
     : label = 'Investigate',
       variant = TableActionVariant.investigate,
@@ -58,16 +43,15 @@ class _TableActionButtonState extends State<TableActionButton> {
   Widget build(BuildContext context) {
     final isDark = AppColors.isDarkMode(context);
 
-    // ── Resolve colors based on variant ─────────────────────────────────────
     final Color accent;
     final IconData iconData;
     switch (widget.variant) {
       case TableActionVariant.view:
-        accent = const Color(0xFF0066FF); // blue
+        accent = const Color(0xFF0066FF);
         iconData = Icons.remove_red_eye_outlined;
         break;
       case TableActionVariant.investigate:
-        accent = const Color(0xFFFF8C00); // amber
+        accent = const Color(0xFFFF8C00);
         iconData = Icons.manage_search_rounded;
         break;
       case TableActionVariant.filled:
@@ -127,7 +111,6 @@ class _TableActionButtonState extends State<TableActionButton> {
   }
 }
 
-/// A convenience row of [TableActionButton]s for the standard View + Investigate pair.
 class TableActionRow extends StatelessWidget {
   final VoidCallback onView;
 

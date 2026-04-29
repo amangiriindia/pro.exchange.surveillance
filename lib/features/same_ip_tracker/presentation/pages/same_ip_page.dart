@@ -122,6 +122,7 @@ class _SameIPViewState extends State<SameIPView> {
                       Expanded(
                         child: SameIPTable(
                           data: filteredData,
+                          resolvedCityByIp: state.resolvedCityByIp,
                           onViewSelected: (item) {
                             _showDetailsDialog(context, item);
                           },
@@ -161,7 +162,7 @@ class _SameIPViewState extends State<SameIPView> {
       content: SameIPDetailsView(
         alertId: item.id,
         clusterId: item.uName,
-        onBack: () {}, // Handled by dialog close
+        onBack: () {},
       ),
     );
   }

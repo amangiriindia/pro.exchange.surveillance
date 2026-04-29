@@ -17,12 +17,18 @@ class GroupTradePaginatedResult {
 }
 
 abstract class GroupTradeRemoteDataSource {
-  Future<GroupTradePaginatedResult> getGroupTrades({int page = 1, int sizePerPage = 100});
+  Future<GroupTradePaginatedResult> getGroupTrades({
+    int page = 1,
+    int sizePerPage = 100,
+  });
 }
 
 class GroupTradeRemoteDataSourceImpl implements GroupTradeRemoteDataSource {
   @override
-  Future<GroupTradePaginatedResult> getGroupTrades({int page = 1, int sizePerPage = 100}) async {
+  Future<GroupTradePaginatedResult> getGroupTrades({
+    int page = 1,
+    int sizePerPage = 100,
+  }) async {
     final response = await ApiClient().dio.get(
       AuthConstants.groupTradeListEndpoint,
       queryParameters: {'page': page, 'sizePerPage': sizePerPage},

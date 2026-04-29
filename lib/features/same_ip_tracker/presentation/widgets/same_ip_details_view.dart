@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widget/city_from_ip_table_cell.dart';
+import '../../../../core/widget/prefetch_ip_city_scope.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../../../injection_container.dart';
 import '../bloc/same_ip_details_bloc.dart';
@@ -81,53 +83,76 @@ class SameIPDetailsView extends StatelessWidget {
   }
 
   Widget _buildTable(List<SameIPDetailEntity> data, BuildContext context) {
-    return ViewDataTable<SameIPDetailEntity>(
-      columns: const [
-        ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 100),
-        ViewTableColumn(id: 'p_user', label: 'P USER', width: 100),
-        ViewTableColumn(id: 'exch', label: 'EXCH', width: 80),
-        ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 110),
-        ViewTableColumn(id: 'order_time', label: 'ORDER D/T', width: 180),
-        ViewTableColumn(id: 'buy_sell', label: 'B/S', width: 180),
-        ViewTableColumn(
-          id: 'quantity',
-          label: 'QTY',
-          width: 110,
-          isNumeric: true,
-        ),
-        ViewTableColumn(id: 'lot', label: 'LOT', width: 80, isNumeric: true),
-        ViewTableColumn(id: 'type', label: 'TYPE', width: 80),
-        ViewTableColumn(id: 'pl', label: 'P/L', width: 100, isNumeric: true),
-        ViewTableColumn(
-          id: 't_price',
-          label: 'T. PRICE',
-          width: 100,
-          isNumeric: true,
-        ),
-        ViewTableColumn(id: 'brk', label: 'BRK', width: 80, isNumeric: true),
-        ViewTableColumn(
-          id: 'r_price',
-          label: 'R. PRICE',
-          width: 80,
-          isNumeric: true,
-        ),
-        ViewTableColumn(
-          id: 'execution_time',
-          label: 'EXECUTION D/T',
-          width: 180,
-        ),
-        ViewTableColumn(id: 'device_id', label: 'DEVICE ID', width: 280),
-        ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 150),
-        ViewTableColumn(id: 'city', label: 'CITY', width: 120),
-      ],
-      data: data,
-      idExtractor: (item) => item.id.toString(),
-      autoFit: true,
-      isDarkMode: AppColors.isDarkMode(context),
-      rowBackgroundBuilder: (item, index) => index % 2 == 0
-          ? AppColors.getTableRowBackground(context)
-          : AppColors.getTableAlternateRowBackground(context),
-      cellBuilder: (item, col) => _buildCell(context, item, col),
+    return PrefetchIpCityScope(
+      rowSources: data
+          .map((e) => (ip: e.ipAddress, backendCity: e.city))
+          .toList(),
+      builder: (ctx, resolvedCityByIp) {
+        return ViewDataTable<SameIPDetailEntity>(
+          columns: const [
+            ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 100),
+            ViewTableColumn(id: 'p_user', label: 'P USER', width: 100),
+            ViewTableColumn(id: 'exch', label: 'EXCH', width: 80),
+            ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 110),
+            ViewTableColumn(id: 'order_time', label: 'ORDER D/T', width: 180),
+            ViewTableColumn(id: 'buy_sell', label: 'B/S', width: 180),
+            ViewTableColumn(
+              id: 'quantity',
+              label: 'QTY',
+              width: 110,
+              isNumeric: true,
+            ),
+            ViewTableColumn(
+              id: 'lot',
+              label: 'LOT',
+              width: 80,
+              isNumeric: true,
+            ),
+            ViewTableColumn(id: 'type', label: 'TYPE', width: 80),
+            ViewTableColumn(
+              id: 'pl',
+              label: 'P/L',
+              width: 100,
+              isNumeric: true,
+            ),
+            ViewTableColumn(
+              id: 't_price',
+              label: 'T. PRICE',
+              width: 100,
+              isNumeric: true,
+            ),
+            ViewTableColumn(
+              id: 'brk',
+              label: 'BRK',
+              width: 80,
+              isNumeric: true,
+            ),
+            ViewTableColumn(
+              id: 'r_price',
+              label: 'R. PRICE',
+              width: 80,
+              isNumeric: true,
+            ),
+            ViewTableColumn(
+              id: 'execution_time',
+              label: 'EXECUTION D/T',
+              width: 180,
+            ),
+            ViewTableColumn(id: 'device_id', label: 'DEVICE ID', width: 280),
+            ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 150),
+            ViewTableColumn(id: 'city', label: 'CITY', width: 120),
+          ],
+          data: data,
+          idExtractor: (item) => item.id.toString(),
+          autoFit: true,
+          isDarkMode: AppColors.isDarkMode(ctx),
+          rowBackgroundBuilder: (item, index) => index % 2 == 0
+              ? AppColors.getTableRowBackground(ctx)
+              : AppColors.getTableAlternateRowBackground(ctx),
+          cellBuilder: (item, col) =>
+              _buildCell(ctx, item, col, resolvedCityByIp),
+        );
+      },
     );
   }
 
@@ -135,6 +160,7 @@ class SameIPDetailsView extends StatelessWidget {
     BuildContext context,
     SameIPDetailEntity item,
     ViewTableColumn col,
+    Map<String, String> resolvedCityByIp,
   ) {
     final currencyFormat = NumberFormat('#,##0.00');
     String text = '';
@@ -211,8 +237,15 @@ class SameIPDetailsView extends StatelessWidget {
         text = item.ipAddress;
         break;
       case 'city':
-        text = item.city;
-        break;
+        return buildCityFromIpCell(
+          context,
+          backendCity: item.city,
+          ip: item.ipAddress,
+          resolvedCityByIp: resolvedCityByIp,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          textColor: const Color(0xFF616161),
+        );
     }
 
     return Text(

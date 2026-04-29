@@ -122,14 +122,20 @@ class BulkOrderTabState extends State<BulkOrderTab> {
         '${AuthConstants.surveillanceSettingsTypeEndpoint}/BULK_ORDER',
       );
       final rawItems = response.data['data'] as List<dynamic>? ?? [];
-      final rows = rawItems
-          .map((item) => _BulkOrderSettingRow.fromJson(item as Map<String, dynamic>))
-          .toList()
-        ..sort((a, b) {
-          final exchangeCompare = _sortIndex(a.exchangeName).compareTo(_sortIndex(b.exchangeName));
-          if (exchangeCompare != 0) return exchangeCompare;
-          return a.symbolName.compareTo(b.symbolName);
-        });
+      final rows =
+          rawItems
+              .map(
+                (item) =>
+                    _BulkOrderSettingRow.fromJson(item as Map<String, dynamic>),
+              )
+              .toList()
+            ..sort((a, b) {
+              final exchangeCompare = _sortIndex(
+                a.exchangeName,
+              ).compareTo(_sortIndex(b.exchangeName));
+              if (exchangeCompare != 0) return exchangeCompare;
+              return a.symbolName.compareTo(b.symbolName);
+            });
 
       if (!mounted) return;
       setState(() {
@@ -146,7 +152,9 @@ class BulkOrderTabState extends State<BulkOrderTab> {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _error = error.response?.data['message']?.toString() ?? 'Failed to load bulk order settings.';
+        _error =
+            error.response?.data['message']?.toString() ??
+            'Failed to load bulk order settings.';
       });
     } catch (_) {
       if (!mounted) return;
@@ -172,8 +180,10 @@ class BulkOrderTabState extends State<BulkOrderTab> {
                 (row) => {
                   'id': row.id,
                   'isActive': row.isActive,
-                  'qtyThreshold': double.tryParse(row.qtyController.text.trim()) ?? 0,
-                  'timeFrameSeconds': int.tryParse(row.timeController.text.trim()) ?? 0,
+                  'qtyThreshold':
+                      double.tryParse(row.qtyController.text.trim()) ?? 0,
+                  'timeFrameSeconds':
+                      int.tryParse(row.timeController.text.trim()) ?? 0,
                 },
               )
               .toList(),
@@ -187,16 +197,22 @@ class BulkOrderTabState extends State<BulkOrderTab> {
         _isSaving = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bulk order settings updated successfully.')),
+        const SnackBar(
+          content: Text('Bulk order settings updated successfully.'),
+        ),
       );
       return true;
     } on DioException catch (error) {
       if (!mounted) return false;
       setState(() {
         _isSaving = false;
-        _error = error.response?.data['message']?.toString() ?? 'Failed to update bulk order settings.';
+        _error =
+            error.response?.data['message']?.toString() ??
+            'Failed to update bulk order settings.';
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_error!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_error!)));
       return false;
     } catch (_) {
       if (!mounted) return false;
@@ -204,7 +220,9 @@ class BulkOrderTabState extends State<BulkOrderTab> {
         _isSaving = false;
         _error = 'Failed to update bulk order settings.';
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_error!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_error!)));
       return false;
     }
   }
@@ -239,7 +257,9 @@ class BulkOrderTabState extends State<BulkOrderTab> {
   Future<void> _importCsvFromPath(String path) async {
     if (!path.toLowerCase().endsWith('.csv')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Only .csv files are supported for import.')),
+        const SnackBar(
+          content: Text('Only .csv files are supported for import.'),
+        ),
       );
       return;
     }
@@ -260,7 +280,9 @@ class BulkOrderTabState extends State<BulkOrderTab> {
     try {
       final multipartFile = await MultipartFile.fromFile(
         path,
-        filename: file.uri.pathSegments.isNotEmpty ? file.uri.pathSegments.last : 'bulk-order.csv',
+        filename: file.uri.pathSegments.isNotEmpty
+            ? file.uri.pathSegments.last
+            : 'bulk-order.csv',
       );
       final formData = FormData.fromMap({'file': multipartFile});
       await _dio.post(
@@ -275,22 +297,30 @@ class BulkOrderTabState extends State<BulkOrderTab> {
         _isImporting = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${file.uri.pathSegments.last} imported successfully.')),
+        SnackBar(
+          content: Text('${file.uri.pathSegments.last} imported successfully.'),
+        ),
       );
     } on DioException catch (error) {
       if (!mounted) return;
       setState(() {
         _isImporting = false;
-        _error = error.response?.data['message']?.toString() ?? 'Failed to import bulk order file.';
+        _error =
+            error.response?.data['message']?.toString() ??
+            'Failed to import bulk order file.';
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_error!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_error!)));
     } catch (error) {
       if (!mounted) return;
       setState(() {
         _isImporting = false;
         _error = error.toString().replaceFirst('Exception: ', '');
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_error!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_error!)));
     }
   }
 
@@ -351,10 +381,15 @@ class BulkOrderTabState extends State<BulkOrderTab> {
     );
   }
 
-  Future<void> _downloadTemplateToPath(String path, VoidCallback? closeDialog) async {
+  Future<void> _downloadTemplateToPath(
+    String path,
+    VoidCallback? closeDialog,
+  ) async {
     if (path.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a destination path for the template.')),
+        const SnackBar(
+          content: Text('Enter a destination path for the template.'),
+        ),
       );
       return;
     }
@@ -485,7 +520,11 @@ class BulkOrderTabState extends State<BulkOrderTab> {
             children: [
               ViewDataTable<_BulkOrderSettingRow>(
                 columns: const [
-                  ViewTableColumn(id: 'exchange', label: 'EXCHANGE', width: 200),
+                  ViewTableColumn(
+                    id: 'exchange',
+                    label: 'EXCHANGE',
+                    width: 200,
+                  ),
                   ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 240),
                   ViewTableColumn(id: 'qty', label: 'QTY', width: 250),
                   ViewTableColumn(id: 'time', label: 'TIME', width: 250),

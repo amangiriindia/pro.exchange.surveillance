@@ -2,7 +2,7 @@ name: surveillance
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.1+7
+version: 1.0.1+9
 
 environment:
   sdk: ^3.10.3
@@ -30,6 +30,7 @@ dependencies:
   file_picker: ^11.0.2
   socket_io_client: ^3.1.4
   web_socket_channel: ^3.0.3
+  geolocation_ip: ^0.0.3
 
 dev_dependencies:
   flutter_test:

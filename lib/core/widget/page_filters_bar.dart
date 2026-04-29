@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import 'app_dropdown.dart';
 
-/// The standard list of exchanges shown across all feature pages.
 const kExchangeItems = [
   'ALL',
   'NSE',
@@ -18,7 +17,6 @@ const kExchangeItems = [
   'CDS',
 ];
 
-/// The standard list of symbols shown across all feature pages.
 const kSymbolItems = [
   'SGX GIFTNIFTY Oct 28',
   'NSE NIFTY Oct 28',
@@ -30,13 +28,6 @@ const kSymbolItems = [
   'OTHER S & P Dec 19',
 ];
 
-/// A reusable modern filters section used across all feature pages.
-///
-/// Renders a clean frosted-glass filter card with:
-/// - "FILTERS" label with accent divider
-/// - Date, Exchange, Symbol dropdowns
-/// - [extraFilters] for page-specific additions
-/// - Gradient "Apply Filter" button
 class PageFiltersBar extends StatelessWidget {
   final VoidCallback? onApply;
   final VoidCallback? onReset;
@@ -104,10 +95,8 @@ class PageFiltersBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── Section label ──
           Row(
             children: [
-              // Accent pip
               Container(
                 width: 3,
                 height: 14,
@@ -148,7 +137,6 @@ class PageFiltersBar extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // ── Filter controls row ──
           Row(
             children: [
               if (showDateFilter) ...[
@@ -203,7 +191,6 @@ class PageFiltersBar extends StatelessWidget {
                 ),
               ],
 
-              // Extra feature-specific filter slots
               for (final extra in extraFilters) ...[
                 const SizedBox(width: 10),
                 extra,
@@ -211,7 +198,6 @@ class PageFiltersBar extends StatelessWidget {
 
               const Spacer(),
 
-              // Apply Filter – gradient button
               _GradientApplyButton(onPressed: onApply ?? () {}),
             ],
           ),
@@ -263,7 +249,6 @@ class _ResetFiltersButton extends StatelessWidget {
   }
 }
 
-/// Fixed-width wrapper used for each dropdown in [PageFiltersBar].
 class _FilterDropdownSlot extends StatelessWidget {
   final Widget child;
   const _FilterDropdownSlot({required this.child});
@@ -274,7 +259,6 @@ class _FilterDropdownSlot extends StatelessWidget {
   }
 }
 
-/// Gradient "Apply Filter" button matching the BazaarPro brand.
 class _GradientApplyButton extends StatefulWidget {
   final VoidCallback onPressed;
   const _GradientApplyButton({required this.onPressed});

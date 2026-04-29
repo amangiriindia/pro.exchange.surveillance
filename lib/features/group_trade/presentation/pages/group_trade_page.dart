@@ -170,6 +170,7 @@ class _GroupTradeViewState extends State<GroupTradeView> {
                       Expanded(
                         child: GroupTradeTable(
                           trades: filteredItems,
+                          resolvedCityByIp: state.resolvedCityByIp,
                           onNearBottom: _onNearBottom,
                           isLoadingMore: state.isLoadingMore,
                         ),

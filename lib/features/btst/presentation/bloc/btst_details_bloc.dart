@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/btst_detail_entity.dart';
 import '../../domain/usecases/get_btst_details.dart';
 
-// Events
 abstract class BTSTDetailsEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -16,7 +15,6 @@ class LoadBTSTDetails extends BTSTDetailsEvent {
   List<Object?> get props => [alertId];
 }
 
-// States
 abstract class BTSTDetailsState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -40,7 +38,6 @@ class BTSTDetailsError extends BTSTDetailsState {
   List<Object?> get props => [message];
 }
 
-// Bloc
 class BTSTDetailsBloc extends Bloc<BTSTDetailsEvent, BTSTDetailsState> {
   final GetBTSTDetails getBTSTDetails;
 

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widget/city_from_ip_table_cell.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../domain/entities/trade_comparison_entity.dart';
 
 class TradeComparisonTable extends StatelessWidget {
   final List<TradeComparisonEntity> data;
+  final Map<String, String> resolvedCityByIp;
   final VoidCallback? onNearBottom;
   final bool isLoadingMore;
 
@@ -15,6 +17,7 @@ class TradeComparisonTable extends StatelessWidget {
   const TradeComparisonTable({
     super.key,
     required this.data,
+    this.resolvedCityByIp = const {},
     this.onNearBottom,
     this.isLoadingMore = false,
   });
@@ -150,8 +153,15 @@ class TradeComparisonTable extends StatelessWidget {
         text = item.ipAddress;
         break;
       case 'city':
-        text = item.city;
-        break;
+        return buildCityFromIpCell(
+          context,
+          backendCity: item.city,
+          ip: item.ipAddress,
+          resolvedCityByIp: resolvedCityByIp,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          textColor: const Color(0xFF616161),
+        );
     }
 
     return Text(
@@ -173,7 +183,7 @@ class _LoadMoreFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 12),
-      child: const SizedBox.shrink(),
+      child: SizedBox.shrink(),
     );
   }
 }

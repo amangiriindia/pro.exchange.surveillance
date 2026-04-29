@@ -141,7 +141,7 @@ class JobberDetailsView extends StatelessWidget {
         break;
       case 'symbol':
         text = item.symbol;
-        textColor = const Color(0xFFE27C00); // Matches screenshot GOLD color
+        textColor = const Color(0xFFE27C00);
         break;
       case 'order_time':
         try {
@@ -171,11 +171,11 @@ class JobberDetailsView extends StatelessWidget {
         break;
       case 'pl':
         text = currencyFormat.format(item.pl);
-        textColor = AppColors.primaryBlue; // Matches screenshot blue P/L
+        textColor = AppColors.primaryBlue;
         break;
       case 't_price':
         text = currencyFormat.format(item.tPrice);
-        textColor = AppColors.errorColor; // Matches screenshot red T. PRICE
+        textColor = AppColors.errorColor;
         break;
       case 'brk':
         text = currencyFormat.format(item.brk);

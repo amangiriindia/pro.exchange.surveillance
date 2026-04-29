@@ -10,6 +10,9 @@ class GetGroupTrades {
     int page = 1,
     int sizePerPage = 100,
   }) async {
-    return await repository.getGroupTrades(page: page, sizePerPage: sizePerPage);
+    return await repository.getGroupTrades(
+      page: page,
+      sizePerPage: sizePerPage,
+    );
   }
 }

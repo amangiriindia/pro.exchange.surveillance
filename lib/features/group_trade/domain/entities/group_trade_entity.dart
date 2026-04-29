@@ -47,9 +47,25 @@ class GroupTradeEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id, userName, parentUserName, exchange, symbol, orderDateTime,
-        buySell, tradeType, mainOrderType, quantity, lot, type, profitLoss,
-        tradePrice, brokerage, referencePrice, executionDateTime,
-        deviceId, ipAddress, city,
-      ];
+    id,
+    userName,
+    parentUserName,
+    exchange,
+    symbol,
+    orderDateTime,
+    buySell,
+    tradeType,
+    mainOrderType,
+    quantity,
+    lot,
+    type,
+    profitLoss,
+    tradePrice,
+    brokerage,
+    referencePrice,
+    executionDateTime,
+    deviceId,
+    ipAddress,
+    city,
+  ];
 }

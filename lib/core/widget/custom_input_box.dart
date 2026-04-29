@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// A modern text input box designed to match the [AppDropdown] style.
-/// Used for "Search & Add" or other filter inputs where consistency with
-/// dropdown triggers is required.
 class CustomInputBox extends StatelessWidget {
   final String hintText;
   final TextEditingController? controller;

@@ -243,7 +243,6 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
       ? DarkThemeColors.textColor
       : LightThemeColors.textColor;
 
-  /// Header text is always white when the header background is the brand navy.
   Color get _headerTextColor {
     final bg = _headerBgColor;
     final luminance = bg.computeLuminance();

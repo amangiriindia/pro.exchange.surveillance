@@ -39,7 +39,6 @@ class TradeView extends StatefulWidget {
 }
 
 class _TradeViewState extends State<TradeView> {
-  // Guard: prevent multiple rapid-fire LoadMoreTrades dispatches
   bool _fetchPending = false;
   String? _selectedDate;
   String? _selectedExchange;
@@ -64,7 +63,7 @@ class _TradeViewState extends State<TradeView> {
     if (s is TradeLoaded && s.hasMore && !s.isLoadingMore) {
       _fetchPending = true;
       context.read<TradeBloc>().add(const LoadMoreTrades());
-      // Reset guard after a short delay so rapid scroll events don't double-fire
+
       Future.delayed(const Duration(milliseconds: 500), () {
         _fetchPending = false;
       });
@@ -136,6 +135,7 @@ class _TradeViewState extends State<TradeView> {
                       Expanded(
                         child: TradeTable(
                           trades: filteredTrades,
+                          resolvedCityByIp: state.resolvedCityByIp,
                           onNearBottom: _onNearBottom,
                           isLoadingMore: state.isLoadingMore,
                         ),
@@ -161,7 +161,6 @@ class _TradeViewState extends State<TradeView> {
   }
 }
 
-// ─── Record counter bar ───────────────────────────────────────────────────
 class _RecordCounter extends StatelessWidget {
   final int todayTradeCount;
 

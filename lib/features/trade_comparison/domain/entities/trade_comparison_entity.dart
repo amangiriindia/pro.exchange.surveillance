@@ -41,8 +41,22 @@ class TradeComparisonEntity extends Equatable {
 
   @override
   List<Object> get props => [
-    uName, pUser, exch, symbol, orderDateTime, buySell,
-    quantity, lot, type, pl, tPrice, brk, rPrice,
-    executionDateTime, deviceId, ipAddress, city,
+    uName,
+    pUser,
+    exch,
+    symbol,
+    orderDateTime,
+    buySell,
+    quantity,
+    lot,
+    type,
+    pl,
+    tPrice,
+    brk,
+    rPrice,
+    executionDateTime,
+    deviceId,
+    ipAddress,
+    city,
   ];
 }

@@ -1,12 +1,14 @@
 import 'package:surveillance/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/widget/city_from_ip_table_cell.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../domain/entities/same_ip_entity.dart';
 import '../../../../core/widget/table_action_button.dart';
 
 class SameIPTable extends StatelessWidget {
   final List<SameIPEntity> data;
+  final Map<String, String> resolvedCityByIp;
   final ValueChanged<SameIPEntity> onViewSelected;
   final VoidCallback? onNearBottom;
   final bool isLoadingMore;
@@ -16,6 +18,7 @@ class SameIPTable extends StatelessWidget {
   const SameIPTable({
     super.key,
     required this.data,
+    this.resolvedCityByIp = const {},
     required this.onViewSelected,
     this.onNearBottom,
     this.isLoadingMore = false,
@@ -39,8 +42,9 @@ class SameIPTable extends StatelessWidget {
       child: ViewDataTable<SameIPEntity>(
         columns: const [
           ViewTableColumn(id: 'time', label: 'Time', width: 220),
-          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 760),
-          ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 300),
+          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 560),
+          ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 260),
+          ViewTableColumn(id: 'city', label: 'CITY', width: 160),
           ViewTableColumn(id: 'action', label: 'Action', width: 120),
         ],
         data: data,
@@ -85,6 +89,16 @@ class SameIPTable extends StatelessWidget {
       case 'ip_address':
         text = item.ipAddress;
         break;
+      case 'city':
+        return buildCityFromIpCell(
+          context,
+          backendCity: null,
+          ip: item.ipAddress,
+          resolvedCityByIp: resolvedCityByIp,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          textColor: const Color(0xFF616161),
+        );
     }
 
     final isLongTextColumn = col.id == 'u_name' || col.id == 'ip_address';
@@ -111,7 +125,7 @@ class _LoadMoreFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 12),
-      child: const SizedBox.shrink(),
+      child: SizedBox.shrink(),
     );
   }
 }

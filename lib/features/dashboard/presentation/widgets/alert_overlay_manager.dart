@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/alert_entity.dart';
 import 'alert_toast_card.dart';
 
-/// Manages a global top-right overlay queue of alert toasts.
-/// Call [AlertOverlayManager.show] from anywhere after the app has navigated.
 class AlertOverlayManager {
   AlertOverlayManager._();
 
@@ -13,13 +11,11 @@ class AlertOverlayManager {
   OverlayState? _overlayState;
   OverlayEntry? _containerEntry;
 
-  // Queue of active toasts
   final List<_ToastItem> _toasts = [];
   final Set<String> _dismissedSignatures = <String>{};
   final GlobalKey<_AlertOverlayContainerState> _containerKey =
       GlobalKey<_AlertOverlayContainerState>();
 
-  /// Attach to the navigator's overlay (call once from [MaterialApp]).
   void attach(OverlayState overlayState) {
     if (_overlayState == overlayState) return;
     _overlayState = overlayState;
@@ -30,16 +26,13 @@ class AlertOverlayManager {
     _overlayState!.insert(_containerEntry!);
   }
 
-  /// Show a new alert toast and keep it visible until user dismisses it.
   void show(AlertEntity alert) {
     final signature = _alertSignature(alert);
 
-    // If user already dismissed this alert signature once, do not show again.
     if (_dismissedSignatures.contains(signature)) {
       return;
     }
 
-    // Avoid stacking duplicate active toasts for the same alert payload.
     if (_toasts.any((item) => item.signature == signature)) {
       return;
     }

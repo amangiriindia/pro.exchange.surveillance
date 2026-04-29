@@ -2,19 +2,19 @@ import 'package:equatable/equatable.dart';
 
 class TradeEntity extends Equatable {
   final int id;
-  final String uName; // userName
-  final String pUser; // parentUserName
-  final String exchange; // exchangeName
-  final String symbol; // symbolName
+  final String uName;
+  final String pUser;
+  final String exchange;
+  final String symbol;
   final String orderDateTime;
-  final String buySell; // constructed: "SELL - L Market"
-  final double quantity; // totalQuantity
-  final double lot; // lotSize
-  final String type; // mainOrderType (Market/Limit)
+  final String buySell;
+  final double quantity;
+  final double lot;
+  final String type;
   final double profitLoss;
-  final double tradePrice; // price
-  final double? brk; // brokerageAmount
-  final double? rPrice; // referencePrice
+  final double tradePrice;
+  final double? brk;
+  final double? rPrice;
   final String? executionDateTime;
   final String? deviceId;
   final String? ipAddress;

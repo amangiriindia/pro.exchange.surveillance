@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// A modern gradient button matching the BazaarPro brand, 
-/// used for primary actions like "Submit" or "Apply".
 class GradientSubmitButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;

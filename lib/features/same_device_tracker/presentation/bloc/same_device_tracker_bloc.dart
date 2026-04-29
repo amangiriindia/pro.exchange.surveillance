@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/same_device_entity.dart';
 import '../../domain/usecases/get_same_device_data.dart';
 
-// Events
 abstract class SameDeviceTrackerEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -13,7 +12,6 @@ class LoadSameDeviceData extends SameDeviceTrackerEvent {}
 
 class LoadMoreSameDeviceData extends SameDeviceTrackerEvent {}
 
-// States
 abstract class SameDeviceTrackerState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -61,7 +59,6 @@ class SameDeviceTrackerError extends SameDeviceTrackerState {
   List<Object?> get props => [message];
 }
 
-// Bloc
 class SameDeviceTrackerBloc
     extends Bloc<SameDeviceTrackerEvent, SameDeviceTrackerState> {
   final GetSameDeviceData getSameDeviceData;

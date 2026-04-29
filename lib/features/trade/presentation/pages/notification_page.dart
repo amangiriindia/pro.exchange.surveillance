@@ -8,9 +8,6 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/widget/app_tab_bar.dart';
 import '../../../../core/widget/page_header.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Alert model
-// ─────────────────────────────────────────────────────────────────────────────
 class AlertItem {
   final int id;
   final String alertType;
@@ -80,9 +77,6 @@ class AlertItem {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Tab config
-// ─────────────────────────────────────────────────────────────────────────────
 class _TabConfig {
   final String label;
   final String alertType;
@@ -136,13 +130,9 @@ const _kTabs = [
   ),
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// NotificationPage
-// ─────────────────────────────────────────────────────────────────────────────
 class NotificationPage extends StatefulWidget {
   final VoidCallback? onNotificationTap;
 
-  /// If set, the tab whose alertType matches this string is pre-selected.
   final String? initialTabAlertType;
 
   const NotificationPage({
@@ -180,8 +170,6 @@ class _NotificationPageState extends State<NotificationPage> {
   void didUpdateWidget(covariant NotificationPage oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // When a toast is tapped while NotificationPage is already visible,
-    // switch to the requested tab immediately.
     if (oldWidget.initialTabAlertType != widget.initialTabAlertType) {
       final nextIndex = _tabIndexFromAlertType(widget.initialTabAlertType);
       if (nextIndex != _activeTabIndex) {
@@ -210,9 +198,7 @@ class _NotificationPageState extends State<NotificationPage> {
         _totalUnread = (data['total'] as num?)?.toInt() ?? 0;
         _unreadByType = byType;
       });
-    } catch (_) {
-      // Keep UI functional even if unread count endpoint fails.
-    }
+    } catch (_) {}
   }
 
   Future<void> _refreshCurrentTab() async {
@@ -283,9 +269,6 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Per-tab content — fetches its own alerts
-// ─────────────────────────────────────────────────────────────────────────────
 class _AlertTabContent extends StatefulWidget {
   final _TabConfig config;
   final ValueChanged<String>? onAlertMarkedRead;
@@ -563,9 +546,6 @@ class _AlertTabContentState extends State<_AlertTabContent> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared base card container
-// ─────────────────────────────────────────────────────────────────────────────
 class _BaseCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -633,9 +613,6 @@ class _BaseCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared helpers
-// ─────────────────────────────────────────────────────────────────────────────
 String _formatTime(DateTime dt) {
   final diff = DateTime.now().difference(dt);
   if (diff.inDays > 0) return '${diff.inDays}d ago';
@@ -696,7 +673,7 @@ Widget _statusBadge(String status) {
       bg = const Color(0xFFE8F5E9);
       fg = const Color(0xFF4CAF50);
       break;
-    default: // NEW
+    default:
       bg = const Color(0xFFE3F2FD);
       fg = const Color(0xFF0066FF);
   }
@@ -743,9 +720,6 @@ Widget _infoChip(String label, String value, Color accent) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GROUP TRADE card — horizontal stat row style
-// ─────────────────────────────────────────────────────────────────────────────
 class _GroupTradeCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -858,9 +832,6 @@ class _GroupTradeCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BULK ORDER card — quantity-focused style with progress feel
-// ─────────────────────────────────────────────────────────────────────────────
 class _BulkOrderCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -953,7 +924,7 @@ class _BulkOrderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          // Fill bar
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1004,9 +975,6 @@ class _BulkOrderCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TRADE COMPARISON card — price matching display
-// ─────────────────────────────────────────────────────────────────────────────
 class _TradeComparisonCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -1081,7 +1049,7 @@ class _TradeComparisonCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // Base price + direction highlight
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -1170,9 +1138,6 @@ class _TradeComparisonCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SAME IP card — IP address focus + client pill list
-// ─────────────────────────────────────────────────────────────────────────────
 class _SameIpCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -1240,7 +1205,7 @@ class _SameIpCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // IP highlight box
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
@@ -1269,7 +1234,7 @@ class _SameIpCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          // Client IDs as pills
+
           if (item.clientIds.isNotEmpty)
             Wrap(
               spacing: 6,
@@ -1301,9 +1266,6 @@ class _SameIpCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PROFIT CROSS card — buy/sell price + profit % bar
-// ─────────────────────────────────────────────────────────────────────────────
 class _ProfitCrossCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -1514,9 +1476,6 @@ class _ProfitCrossCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BTST/STBT card — timeline style
-// ─────────────────────────────────────────────────────────────────────────────
 class _BtstStbtCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -1602,7 +1561,7 @@ class _BtstStbtCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // Timeline
+
           Row(
             children: [
               _TimelineNode(
@@ -1701,9 +1660,6 @@ class _TimelineNode extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Generic fallback card
-// ─────────────────────────────────────────────────────────────────────────────
 class _GenericCard extends StatelessWidget {
   final AlertItem item;
   final Color accent;
@@ -1727,9 +1683,6 @@ class _GenericCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Utils
-// ─────────────────────────────────────────────────────────────────────────────
 Widget _vertDivider() {
   return Container(width: 1, height: 28, color: Colors.white.withOpacity(0.08));
 }

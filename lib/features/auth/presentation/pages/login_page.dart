@@ -8,17 +8,11 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Live candlestick that scrolls left → right across the screen
-// ─────────────────────────────────────────────────────────────────────────────
 class _LiveCandle {
-  /// Normalised x position (0..1). Candle moves from -0.12 → 1.12.
   double x;
 
-  /// Fixed normalised y (row centre, 0..1). Set once on spawn.
   final double yNorm;
 
-  /// Horizontal scroll speed in normalised units per second.
   final double speed;
 
   final double widthPx;
@@ -40,7 +34,6 @@ class _LiveCandle {
     required this.baseOpacity,
   });
 
-  /// Opacity with smooth fade-in (left edge) and fade-out (right edge).
   double get opacity {
     const fadeZone = 0.12;
     if (x < fadeZone) return (x / fadeZone).clamp(0.0, 1.0) * baseOpacity;
@@ -50,9 +43,8 @@ class _LiveCandle {
     return baseOpacity;
   }
 
-  /// Reset this candle to the left edge with new random appearance.
   void respawn(math.Random rng) {
-    x = -0.06 - rng.nextDouble() * 0.08; // stagger spawn timing
+    x = -0.06 - rng.nextDouble() * 0.08;
     isBull = rng.nextBool();
   }
 
@@ -60,7 +52,7 @@ class _LiveCandle {
       _LiveCandle(
         x: startX,
         yNorm: rowY,
-        speed: 0.028 + rng.nextDouble() * 0.014, // ~35-55 s to cross screen
+        speed: 0.028 + rng.nextDouble() * 0.014,
         widthPx: 7.0 + rng.nextDouble() * 5.0,
         bodyPx: 10.0 + rng.nextDouble() * 20.0,
         wickTopPx: 4.0 + rng.nextDouble() * 14.0,
@@ -70,12 +62,9 @@ class _LiveCandle {
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Custom painter: live-chart scrolling candles + chart line + grid + orbs
-// ─────────────────────────────────────────────────────────────────────────────
 class _TradingBackgroundPainter extends CustomPainter {
   final List<_LiveCandle> candles;
-  final double elapsedSeconds; // monotonically increasing
+  final double elapsedSeconds;
 
   _TradingBackgroundPainter({
     required this.candles,
@@ -112,7 +101,7 @@ class _TradingBackgroundPainter extends CustomPainter {
     for (int i = 0; i <= points; i++) {
       final t = i / points;
       final x = size.width * t;
-      // Phase shifts continuously with elapsed time → no reset glitch
+
       final phase = elapsedSeconds * 0.6;
       final base = size.height * 0.58;
       final wave1 = math.sin(phase + t * 5.5) * size.height * 0.065;
@@ -122,7 +111,6 @@ class _TradingBackgroundPainter extends CustomPainter {
       i == 0 ? path.moveTo(x, y) : path.lineTo(x, y);
     }
 
-    // Glow blur
     canvas.drawPath(
       path,
       Paint()
@@ -131,7 +119,7 @@ class _TradingBackgroundPainter extends CustomPainter {
         ..strokeWidth = 4
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
     );
-    // Main line
+
     canvas.drawPath(
       path,
       Paint()
@@ -139,7 +127,7 @@ class _TradingBackgroundPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5,
     );
-    // Gradient fill
+
     final fillPath = Path.from(path)
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
@@ -170,7 +158,6 @@ class _TradingBackgroundPainter extends CustomPainter {
       final bearColor = Color.fromRGBO(255, 75, 75, op);
       final color = c.isBull ? bullColor : bearColor;
 
-      // Wick
       canvas.drawLine(
         Offset(cx, cy - c.bodyPx / 2 - c.wickTopPx),
         Offset(cx, cy + c.bodyPx / 2 + c.wickBottomPx),
@@ -179,13 +166,12 @@ class _TradingBackgroundPainter extends CustomPainter {
           ..strokeWidth = 1.2,
       );
 
-      // Body
       final bodyRect = Rect.fromCenter(
         center: Offset(cx, cy),
         width: c.widthPx,
         height: c.bodyPx,
       );
-      // Hollow (bear) vs solid (bull) — like a real terminal
+
       if (c.isBull) {
         canvas.drawRect(bodyRect, Paint()..color = color);
       } else {
@@ -234,12 +220,9 @@ class _TradingBackgroundPainter extends CustomPainter {
   bool shouldRepaint(_TradingBackgroundPainter old) => true;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Animated gradient border wrapper
-// ─────────────────────────────────────────────────────────────────────────────
 class _AnimatedBorderCard extends StatelessWidget {
   final Widget child;
-  final double borderProgress; // 0..1
+  final double borderProgress;
 
   const _AnimatedBorderCard({
     required this.child,
@@ -286,9 +269,6 @@ class _BorderPainter extends CustomPainter {
   bool shouldRepaint(_BorderPainter old) => old.progress != progress;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LoginPage
-// ─────────────────────────────────────────────────────────────────────────────
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
@@ -296,18 +276,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
-  // Entry animation
   late final AnimationController _entryCtrl;
   late final Animation<double> _fadeAnim;
   late final Animation<Offset> _slideAnim;
 
-  // Background animation
   late final AnimationController _bgCtrl;
 
-  // Border rotation
   late final AnimationController _borderCtrl;
 
-  // Button shimmer
   late final AnimationController _shimmerCtrl;
   late final Animation<double> _shimmerAnim;
 
@@ -326,23 +302,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    // Spawn candles in 6 rows, 5 per row, evenly spaced along x
-    // Rows occupy the middle band of the screen (15%..85% vertically)
     const rowCount = 6;
     const candlesPerRow = 5;
-    const rowSpacing = 0.14; // normalised
+    const rowSpacing = 0.14;
     const rowStart = 0.15;
     _candles = [
       for (int row = 0; row < rowCount; row++)
         for (int col = 0; col < candlesPerRow; col++)
           _LiveCandle.spawn(
             _rng,
-            col / candlesPerRow + _rng.nextDouble() * 0.05, // stagger x
+            col / candlesPerRow + _rng.nextDouble() * 0.05,
             rowStart + row * rowSpacing,
           ),
     ];
 
-    // Entry fade+slide
     _entryCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -354,20 +327,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     ).animate(CurvedAnimation(parent: _entryCtrl, curve: Curves.easeOut));
     _entryCtrl.forward();
 
-    // Continuous background (candles + chart + orbs)
     _bgCtrl = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     )..addListener(_tickBackground);
     _bgCtrl.repeat();
 
-    // Rotating border
     _borderCtrl = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat();
 
-    // Shimmer on the button
     _shimmerCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1600),
@@ -378,7 +348,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     ).animate(CurvedAnimation(parent: _shimmerCtrl, curve: Curves.easeInOut));
   }
 
-  // Proper delta-time tick: accumulates elapsed seconds, moves candles right.
   void _tickBackground() {
     final nowMs = DateTime.now().millisecondsSinceEpoch;
     final dtSec = _lastTickMs != null
@@ -462,7 +431,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       backgroundColor: const Color(0xFF060D1A),
       body: Stack(
         children: [
-          // ── Animated trading background ──────────────────────────────────
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _bgCtrl,
@@ -475,7 +443,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             ),
           ),
 
-          // ── Dark overlay gradient ────────────────────────────────────────
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -488,7 +455,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             ),
           ),
 
-          // ── Form ────────────────────────────────────────────────────────
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -801,14 +767,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       borderRadius: BorderRadius.circular(12),
                       child: Stack(
                         children: [
-                          // Shimmer sweep
                           Positioned.fill(
                             child: Transform.translate(
-                              offset: Offset(
-                                _shimmerAnim.value *
-                                    460, // sweep across card width
-                                0,
-                              ),
+                              offset: Offset(_shimmerAnim.value * 460, 0),
                               child: Container(
                                 width: 80,
                                 decoration: BoxDecoration(

@@ -2,7 +2,7 @@ class AuthConstants {
   AuthConstants._();
 
   static const String baseUrl = 'http://13.48.251.17:4000';
-  // WebSocket / Socket.IO server URL — change this for production
+
   static const String socketUrl = 'ws://13.48.251.17:4000';
   static const String socketAlertEvent = 'surveillance_alert';
   static const String alertListEndpoint = '/user/alert/list';

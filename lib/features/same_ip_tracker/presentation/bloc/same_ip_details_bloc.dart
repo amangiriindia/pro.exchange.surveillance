@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/same_ip_detail_entity.dart';
 import '../../domain/usecases/get_same_ip_details.dart';
 
-// Events
 abstract class SameIPDetailsEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -16,7 +15,6 @@ class LoadSameIPDetails extends SameIPDetailsEvent {
   List<Object?> get props => [alertId];
 }
 
-// States
 abstract class SameIPDetailsState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -40,7 +38,6 @@ class SameIPDetailsError extends SameIPDetailsState {
   List<Object?> get props => [message];
 }
 
-// Bloc
 class SameIPDetailsBloc extends Bloc<SameIPDetailsEvent, SameIPDetailsState> {
   final GetSameIPDetails getSameIPDetails;
 

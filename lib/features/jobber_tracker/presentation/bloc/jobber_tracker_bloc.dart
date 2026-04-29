@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/jobber_tracker_entity.dart';
 import '../../domain/usecases/get_jobber_tracker_data.dart';
 
-// Events
 abstract class JobberTrackerEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -13,7 +12,6 @@ class LoadJobberTrackerData extends JobberTrackerEvent {}
 
 class LoadMoreJobberTrackerData extends JobberTrackerEvent {}
 
-// States
 abstract class JobberTrackerState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -61,7 +59,6 @@ class JobberTrackerError extends JobberTrackerState {
   List<Object?> get props => [message];
 }
 
-// Bloc
 class JobberTrackerBloc extends Bloc<JobberTrackerEvent, JobberTrackerState> {
   final GetJobberTrackerData getJobberTrackerData;
   static const int _pageSize = 20;

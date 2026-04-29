@@ -250,9 +250,7 @@ class BtstStbtTabState extends State<BtstStbtTab> {
             ),
           ),
           child: MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(alwaysUse24HourFormat: false),
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
             child: Localizations.override(
               context: context,
               locale: const Locale('en', 'IN'),
@@ -455,7 +453,9 @@ String _formatInitialDisplayTime(String? value) {
   final raw = value?.trim();
   if (raw == null || raw.isEmpty) return '09:30 AM';
 
-  final match = RegExp(r'^([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$').firstMatch(raw);
+  final match = RegExp(
+    r'^([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$',
+  ).firstMatch(raw);
   if (match == null) return raw;
 
   final hour24 = int.parse(match.group(1)!);

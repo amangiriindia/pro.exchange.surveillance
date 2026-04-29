@@ -9,7 +9,6 @@ import '../models/alert_model.dart';
 abstract class AlertSocketDatasource {
   Stream<AlertModel> get alertStream;
 
-  /// Emits once each time the server confirms successful auth (event: 'connected').
   Stream<void> get connectedStream;
   bool get isConnected;
   Future<void> connect();

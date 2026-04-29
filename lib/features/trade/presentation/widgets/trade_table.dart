@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widget/city_from_ip_table_cell.dart';
 import '../../../../core/widget/table/view_data_table.dart';
 import '../../domain/entities/trade_entity.dart';
 
 class TradeTable extends StatelessWidget {
   final List<TradeEntity> trades;
+
+  final Map<String, String> resolvedCityByIp;
   final VoidCallback? onNearBottom;
   final bool isLoadingMore;
 
-  // Trigger fetch when within ~50 rows from bottom (≈50 × 40px = 2000px)
   static const double _triggerThresholdPx = 2000;
 
   const TradeTable({
     super.key,
     required this.trades,
+    this.resolvedCityByIp = const {},
     this.onNearBottom,
     this.isLoadingMore = false,
   });
@@ -43,7 +47,7 @@ class TradeTable extends StatelessWidget {
         rowBackgroundBuilder: (item, index) => index % 2 == 0
             ? AppColors.getTableRowBackground(context)
             : AppColors.getTableAlternateRowBackground(context),
-        cellBuilder: _buildCell,
+        cellBuilder: (item, col) => _buildCell(context, item, col),
         footerBuilder: isLoadingMore ? (_) => const _LoadMoreFooter() : null,
       ),
     );
@@ -97,7 +101,11 @@ class TradeTable extends StatelessWidget {
     ];
   }
 
-  Widget _buildCell(TradeEntity trade, ViewTableColumn col) {
+  Widget _buildCell(
+    BuildContext context,
+    TradeEntity trade,
+    ViewTableColumn col,
+  ) {
     final isBuy = trade.buySell.toUpperCase().startsWith('BUY');
     final bsColor = isBuy ? AppColors.buyColor : AppColors.sellColor;
 
@@ -163,8 +171,12 @@ class TradeTable extends StatelessWidget {
         text = trade.deviceId ?? '-';
         break;
       case 'city':
-        text = trade.city ?? '-';
-        break;
+        return buildCityFromIpCell(
+          context,
+          backendCity: trade.city,
+          ip: trade.ipAddress,
+          resolvedCityByIp: resolvedCityByIp,
+        );
       case 'comment':
         text = trade.comment ?? '-';
         textColor = const Color(0xFFE57373);
@@ -197,24 +209,12 @@ class TradeTable extends StatelessWidget {
     Color fg;
     switch (status.toLowerCase()) {
       case 'executed':
-        bg = const Color(0xFF1B4332);
-        fg = const Color(0xFF52B788);
-        break;
-      case 'pending':
-        bg = const Color(0xFF3D2B00);
-        fg = const Color(0xFFFFC107);
-        break;
-      case 'rejected':
-        bg = const Color(0xFF3B1111);
-        fg = const Color(0xFFEF5350);
-        break;
-      case 'cancelled':
-        bg = const Color(0xFF2A2A2A);
-        fg = const Color(0xFF9E9E9E);
+        bg = const Color.fromARGB(255, 240, 241, 244);
+        fg = const Color.fromARGB(255, 14, 5, 55);
         break;
       default:
-        bg = const Color(0xFF1A237E);
-        fg = const Color(0xFF90CAF9);
+        bg = const Color.fromARGB(255, 196, 199, 226);
+        fg = const Color.fromARGB(255, 246, 81, 31);
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -236,7 +236,6 @@ class TradeTable extends StatelessWidget {
   }
 }
 
-// ─── Loading footer ────────────────────────────────────────────────────────
 class _LoadMoreFooter extends StatelessWidget {
   const _LoadMoreFooter();
 

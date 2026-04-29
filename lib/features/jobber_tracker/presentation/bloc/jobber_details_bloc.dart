@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/jobber_detail_entity.dart';
 import '../../domain/usecases/get_jobber_details.dart';
 
-// Events
 abstract class JobberDetailsEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -16,7 +15,6 @@ class LoadJobberDetails extends JobberDetailsEvent {
   List<Object?> get props => [alertId];
 }
 
-// States
 abstract class JobberDetailsState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -40,7 +38,6 @@ class JobberDetailsError extends JobberDetailsState {
   List<Object?> get props => [message];
 }
 
-// Bloc
 class JobberDetailsBloc extends Bloc<JobberDetailsEvent, JobberDetailsState> {
   final GetJobberDetails getJobberDetails;
 

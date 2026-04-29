@@ -3,18 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_colors.dart';
 
-// ─── BazaarPro brand palette ────────────────────────────────────────────────
-//  Primary dark: #202D3B  (sidebar, header base)
-//  Accent red:   #FF0000  (rupee / sell highlight)
-//  Accent blue:  #0066FF  (buy / action highlight)
-//  Mid navy:     #1A3A52
-// ────────────────────────────────────────────────────────────────────────────
-
-/// A reusable page-level header used across all surveillance feature pages.
-///
-/// Renders a modern dark gradient banner with:
-/// - Left: [title] + [subtitle]
-/// - Right: optional [extraActions], refresh, optional settings, notifications
 class PageHeader extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -68,7 +56,6 @@ class PageHeader extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Subtle scanner-line texture overlay
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -76,7 +63,6 @@ class PageHeader extends StatelessWidget {
             ),
           ),
 
-          // Left accent bar
           Positioned(
             left: 0,
             top: 10,
@@ -94,7 +80,6 @@ class PageHeader extends StatelessWidget {
             ),
           ),
 
-          // Content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -102,7 +87,6 @@ class PageHeader extends StatelessWidget {
               children: [
                 const SizedBox(width: 12),
 
-                // Title + subtitle
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -132,13 +116,10 @@ class PageHeader extends StatelessWidget {
                   ),
                 ),
 
-                // Extra action widgets (e.g. Export button)
                 ...extraActions.expand((w) => [w, const SizedBox(width: 10)]),
 
-                // Refresh
                 _HeaderIconBtn(icon: Icons.refresh_rounded, onTap: onRefresh),
 
-                // Settings (optional)
                 if (onSettingsTap != null) ...[
                   const SizedBox(width: 8),
                   _HeaderIconBtn(
@@ -149,7 +130,7 @@ class PageHeader extends StatelessWidget {
 
                 if (showNotificationButton) ...[
                   const SizedBox(width: 8),
-                  // Notifications
+
                   _NotificationBtn(onTap: onNotificationTap),
                 ],
               ],
@@ -161,7 +142,6 @@ class PageHeader extends StatelessWidget {
   }
 }
 
-// ─── Header icon button ───────────────────────────────────────────────────────
 class _HeaderIconBtn extends StatefulWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -201,7 +181,6 @@ class _HeaderIconBtnState extends State<_HeaderIconBtn> {
   }
 }
 
-// ─── Notification badge button ────────────────────────────────────────────────
 class _NotificationBtn extends StatefulWidget {
   final VoidCallback? onTap;
   const _NotificationBtn({this.onTap});
@@ -265,7 +244,6 @@ class _NotificationBtnState extends State<_NotificationBtn> {
   }
 }
 
-// ─── Subtle grid line painter (decorative background) ────────────────────────
 class _GridLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

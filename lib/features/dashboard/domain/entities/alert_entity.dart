@@ -57,7 +57,6 @@ enum AlertType {
     }
   }
 
-  /// Returns the API string used by the notification page tab config.
   String toApiString() {
     switch (this) {
       case AlertType.btstStbt:

@@ -21,6 +21,8 @@ class TradeLoaded extends TradeState {
   final bool isLoadingMore;
   final bool hasMore;
 
+  final Map<String, String> resolvedCityByIp;
+
   const TradeLoaded({
     required this.trades,
     required this.totalRecords,
@@ -29,6 +31,7 @@ class TradeLoaded extends TradeState {
     required this.currentPage,
     this.isLoadingMore = false,
     this.hasMore = true,
+    this.resolvedCityByIp = const {},
   });
 
   TradeLoaded copyWith({
@@ -39,6 +42,7 @@ class TradeLoaded extends TradeState {
     int? currentPage,
     bool? isLoadingMore,
     bool? hasMore,
+    Map<String, String>? resolvedCityByIp,
   }) {
     return TradeLoaded(
       trades: trades ?? this.trades,
@@ -48,6 +52,7 @@ class TradeLoaded extends TradeState {
       currentPage: currentPage ?? this.currentPage,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasMore: hasMore ?? this.hasMore,
+      resolvedCityByIp: resolvedCityByIp ?? this.resolvedCityByIp,
     );
   }
 
@@ -60,6 +65,7 @@ class TradeLoaded extends TradeState {
     currentPage,
     isLoadingMore,
     hasMore,
+    resolvedCityByIp,
   ];
 }
 

@@ -4,8 +4,6 @@ import '../../domain/entities/alert_entity.dart';
 import '../utils/alert_navigation_bus.dart';
 import 'alert_type_theme.dart';
 
-/// A single toast notification card shown in the top-right overlay.
-/// Tapping it navigates to the Notifications page at the matching tab.
 class AlertToastCard extends StatefulWidget {
   final AlertEntity alert;
   final VoidCallback onDismiss;
@@ -57,7 +55,6 @@ class _AlertToastCardState extends State<AlertToastCard>
   }
 
   void _onTap() {
-    // Signal dashboard to navigate to the matching notification tab
     AlertNavigationBus.instance.navigateTo(
       widget.alert.alertType.toApiString(),
     );
@@ -137,7 +134,6 @@ class _AlertToastCardState extends State<AlertToastCard>
                     ),
                     child: Stack(
                       children: [
-                        // Left accent bar
                         Positioned(
                           left: 0,
                           top: 0,
@@ -157,13 +153,12 @@ class _AlertToastCardState extends State<AlertToastCard>
                             ),
                           ),
                         ),
-                        // Main content
+
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 12, 10, 12),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Icon badge
                               Container(
                                 width: 40,
                                 height: 40,
@@ -185,12 +180,11 @@ class _AlertToastCardState extends State<AlertToastCard>
                                 child: Icon(icon, color: color, size: 20),
                               ),
                               const SizedBox(width: 12),
-                              // Content
+
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Type pill + time
                                     Row(
                                       children: [
                                         Container(
@@ -233,7 +227,7 @@ class _AlertToastCardState extends State<AlertToastCard>
                                       ],
                                     ),
                                     const SizedBox(height: 5),
-                                    // Script name if available
+
                                     if (widget.alert.script != null &&
                                         widget.alert.script!.isNotEmpty) ...[
                                       Text(
@@ -249,7 +243,7 @@ class _AlertToastCardState extends State<AlertToastCard>
                                       ),
                                       const SizedBox(height: 3),
                                     ],
-                                    // Message
+
                                     Text(
                                       widget.alert.message,
                                       style: _txt(
@@ -262,7 +256,7 @@ class _AlertToastCardState extends State<AlertToastCard>
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 8),
-                                    // "View details" hint
+
                                     Row(
                                       children: [
                                         Icon(
@@ -285,7 +279,7 @@ class _AlertToastCardState extends State<AlertToastCard>
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              // Dismiss button
+
                               GestureDetector(
                                 onTap: _dismiss,
                                 child: Container(

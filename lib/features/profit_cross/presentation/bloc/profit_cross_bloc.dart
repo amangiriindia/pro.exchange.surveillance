@@ -5,7 +5,6 @@ import '../../domain/entities/order_duration_entity.dart';
 import '../../domain/usecases/get_profit_cross_data.dart';
 import '../../domain/usecases/get_order_duration_details.dart';
 
-// Events
 abstract class ProfitCrossEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -22,7 +21,6 @@ class LoadOrderDurationDetails extends ProfitCrossEvent {
   List<Object?> get props => [alertId];
 }
 
-// States
 abstract class ProfitCrossState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -79,7 +77,6 @@ class OrderDurationLoaded extends ProfitCrossState {
   List<Object?> get props => [details];
 }
 
-// Bloc
 class ProfitCrossBloc extends Bloc<ProfitCrossEvent, ProfitCrossState> {
   final GetProfitCrossData getProfitCrossData;
   final GetOrderDurationDetails getOrderDurationDetails;

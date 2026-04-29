@@ -116,8 +116,8 @@ class _AppTabBarState extends State<AppTabBar> {
                         color: selected
                             ? AppColors.primaryBlue
                             : _hoveredIndex == i
-                                ? AppColors.primaryBlue.withOpacity(0.8)
-                                : AppColors.primaryBlue.withOpacity(0.6),
+                            ? AppColors.primaryBlue.withOpacity(0.8)
+                            : AppColors.primaryBlue.withOpacity(0.6),
                       ),
                     ),
                   ),
@@ -138,9 +138,11 @@ class _AppTabBarState extends State<AppTabBar> {
         children: List.generate(widget.tabs.length, (i) {
           final selected = widget.activeTab == i;
           final isHovered = _hoveredIndex == i && !selected;
-          
+
           final tabChild = Padding(
-            padding: EdgeInsets.symmetric(horizontal: widget.useExpanded ? 4.w : 0),
+            padding: EdgeInsets.symmetric(
+              horizontal: widget.useExpanded ? 4.w : 0,
+            ),
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
               onEnter: (_) => setState(() => _hoveredIndex = i),
@@ -154,18 +156,24 @@ class _AppTabBarState extends State<AppTabBar> {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: selected 
-                        ? (widget.isDarkMode ? const Color(0xFF2C3E50) : const Color(0xFF202D3B))
-                        : (isHovered 
-                            ? (widget.isDarkMode ? Colors.white.withOpacity(0.08) : const Color(0xFFF1F5F9))
-                            : Colors.transparent),
+                    color: selected
+                        ? (widget.isDarkMode
+                              ? const Color(0xFF2C3E50)
+                              : const Color(0xFF202D3B))
+                        : (isHovered
+                              ? (widget.isDarkMode
+                                    ? Colors.white.withOpacity(0.08)
+                                    : const Color(0xFFF1F5F9))
+                              : Colors.transparent),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: selected
                           ? Colors.transparent
-                          : (isHovered 
-                              ? (widget.isDarkMode ? Colors.white.withOpacity(0.12) : const Color(0xFFE2E8F0))
-                              : Colors.transparent),
+                          : (isHovered
+                                ? (widget.isDarkMode
+                                      ? Colors.white.withOpacity(0.12)
+                                      : const Color(0xFFE2E8F0))
+                                : Colors.transparent),
                     ),
                   ),
                   child: Center(
@@ -175,10 +183,14 @@ class _AppTabBarState extends State<AppTabBar> {
                       maxLines: 1,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                         color: selected
                             ? Colors.white
-                            : (widget.isDarkMode ? Colors.white.withOpacity(0.65) : const Color(0xFF64748B)),
+                            : (widget.isDarkMode
+                                  ? Colors.white.withOpacity(0.65)
+                                  : const Color(0xFF64748B)),
                       ),
                     ),
                   ),

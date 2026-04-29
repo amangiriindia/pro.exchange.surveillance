@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/same_device_detail_entity.dart';
 import '../../domain/usecases/get_same_device_details.dart';
 
-// Events
 abstract class SameDeviceDetailsEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -16,7 +15,6 @@ class LoadSameDeviceDetails extends SameDeviceDetailsEvent {
   List<Object?> get props => [alertId];
 }
 
-// States
 abstract class SameDeviceDetailsState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -40,7 +38,6 @@ class SameDeviceDetailsError extends SameDeviceDetailsState {
   List<Object?> get props => [message];
 }
 
-// Bloc
 class SameDeviceDetailsBloc
     extends Bloc<SameDeviceDetailsEvent, SameDeviceDetailsState> {
   final GetSameDeviceDetails getSameDeviceDetails;

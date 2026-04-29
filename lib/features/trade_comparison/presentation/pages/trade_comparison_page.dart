@@ -147,6 +147,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                       Expanded(
                         child: TradeComparisonTable(
                           data: filteredData,
+                          resolvedCityByIp: state.resolvedCityByIp,
                           onNearBottom: _onNearBottom,
                           isLoadingMore: state.isLoadingMore,
                         ),
@@ -203,7 +204,6 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── Section label ──
           Row(
             children: [
               Container(
@@ -244,7 +244,6 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
             ],
           ),
           const SizedBox(height: 12),
-          // ── Scrollable filter row + pinned Apply button ──
           Row(
             children: [
               Expanded(
@@ -252,7 +251,6 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      // Search & Add – Using CustomInputBox for a search field that matches dropdown styling
                       SizedBox(
                         width: 150,
                         child: AppDropdown(
@@ -269,7 +267,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                       ),
 
                       const SizedBox(width: 10),
-                      // Date
+
                       SizedBox(
                         width: 150,
                         child: AppDropdown(
@@ -284,7 +282,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      // Exchange
+
                       SizedBox(
                         width: 150,
                         child: AppDropdown(
@@ -300,7 +298,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      // Symbol
+
                       SizedBox(
                         width: 150,
                         child: AppDropdown(
@@ -316,7 +314,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      // Type
+
                       SizedBox(
                         width: 150,
                         child: AppDropdown(
@@ -335,7 +333,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                 ),
               ),
               const SizedBox(width: 12),
-              // Apply button always pinned to the right
+
               _GradientApplyBtn(onPressed: () => setState(() {})),
             ],
           ),
@@ -345,7 +343,6 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
   }
 }
 
-// ── Gradient Apply Filter button ──────────────────────────────────────────────
 class _GradientApplyBtn extends StatefulWidget {
   final VoidCallback onPressed;
   const _GradientApplyBtn({required this.onPressed});

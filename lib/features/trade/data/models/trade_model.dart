@@ -32,10 +32,8 @@ class TradeModel extends TradeEntity {
     final orderType = (json['orderType'] as String? ?? 'market');
     final mainOrderType = (json['mainOrderType'] as String? ?? 'market');
 
-    // Build B/S display string from trade side + API orderType.
     final buySell = '${tradeType.toUpperCase()} - ${_capitalize(orderType)}';
 
-    // Format orderDateTime from ISO string
     final createdAt = json['createdAt'] as String? ?? '';
     final orderDateTime = _formatDateTime(createdAt);
 
@@ -77,7 +75,6 @@ class TradeModel extends TradeEntity {
     return s[0].toUpperCase() + s.substring(1).toLowerCase();
   }
 
-  /// Formats ISO 8601 datetime to "dd/MM/yy hh:mm:ss AM/PM"
   static String _formatDateTime(String iso) {
     try {
       final dt = DateTime.parse(iso).toLocal();

@@ -24,10 +24,7 @@ class ApiClient {
         },
       ),
     );
-    // API response logging disabled — uncomment to re-enable verbose HTTP logs.
-    // dio.interceptors.add(
-    //   LogInterceptor(requestBody: true, responseBody: true, error: true),
-    // );
+
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {

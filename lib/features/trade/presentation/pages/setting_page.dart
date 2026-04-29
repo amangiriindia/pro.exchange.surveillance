@@ -48,7 +48,6 @@ class _SettingPageState extends State<SettingPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Modern Branded Header ──
           PageHeader(
             title: 'Setting',
             subtitle:
@@ -59,17 +58,14 @@ class _SettingPageState extends State<SettingPage> {
 
           const SizedBox(height: 16),
 
-          // ── Compact Tab Bar ──
           _buildTabBar(isDark),
 
           const SizedBox(height: 16),
 
-          // ── Tab Content ──
           Expanded(child: _buildSelectedTabContent()),
 
           const SizedBox(height: 20),
 
-          // ── Modern Action Button ──
           GradientSubmitButton(
             text: 'Submit Preferences',
             onPressed: _handleSubmit,
@@ -91,7 +87,7 @@ class _SettingPageState extends State<SettingPage> {
       },
       style: AppTabBarStyle.pill,
       autoFocus: false,
-      useExpanded: false, // Reduced gap as requested
+      useExpanded: false,
       isDarkMode: isDark,
     );
   }

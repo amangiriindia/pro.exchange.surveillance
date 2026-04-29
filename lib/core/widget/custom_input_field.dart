@@ -72,7 +72,7 @@ class CustomInputField extends StatelessWidget {
         enabled: enabled,
         readOnly: readOnly,
         style: GoogleFonts.openSans(
-          fontSize: 14.sp, // improved legibility
+          fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           height: 1.0,
           letterSpacing: 0.15,
@@ -85,11 +85,13 @@ class CustomInputField extends StatelessWidget {
           fillColor: fillColor ?? AppColors.white,
           hintText: hintText,
           hintStyle: GoogleFonts.openSans(
-            fontSize: 14.sp, // improved legibility
+            fontSize: 14.sp,
             fontWeight: FontWeight.w600,
             height: 1.0,
             letterSpacing: 0.15,
-            color: textColor?.withOpacity(0.6) ?? AppColors.primaryBlue.withOpacity(0.6),
+            color:
+                textColor?.withOpacity(0.6) ??
+                AppColors.primaryBlue.withOpacity(0.6),
           ),
           contentPadding: EdgeInsets.symmetric(
             horizontal: 0,
@@ -149,7 +151,11 @@ class CustomInputField extends StatelessWidget {
   Widget? _buildSuffixIcon() {
     if (suffixIcon != null) {
       return IconButton(
-        icon: Icon(suffixIcon, size: 20.sp, color: textColor?.withOpacity(0.8) ?? AppColors.primaryBlue),
+        icon: Icon(
+          suffixIcon,
+          size: 20.sp,
+          color: textColor?.withOpacity(0.8) ?? AppColors.primaryBlue,
+        ),
         splashRadius: 20.sp,
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),

@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/services/ip_city_lookup.dart';
 import 'trade_event.dart';
 import 'trade_state.dart';
 import '../../domain/usecases/get_trade_count.dart';
@@ -9,6 +11,8 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
   final GetTradeCount getTradeCount;
   static const int _pageSize = 100;
 
+  int _reloadGeneration = 0;
+
   TradeBloc({required this.getTrades, required this.getTradeCount})
     : super(TradeInitial()) {
     on<LoadTrades>(_onLoadTrades);
@@ -16,25 +20,45 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
   }
 
   Future<void> _onLoadTrades(LoadTrades event, Emitter<TradeState> emit) async {
+    _reloadGeneration++;
+    final reloadGen = _reloadGeneration;
+
     emit(TradeLoading());
     final tradesResult = await getTrades(page: 1, sizePerPage: _pageSize);
     final countResult = await getTradeCount();
 
-    int todayTradeCount = 0;
-    countResult.fold((_) {}, (count) => todayTradeCount = count.totalTrades);
+    await tradesResult.fold(
+      (failure) async {
+        emit(TradeError(message: failure));
+      },
+      (paginated) async {
+        int todayTradeCount = 0;
+        countResult.fold(
+          (_) {},
+          (count) => todayTradeCount = count.totalTrades,
+        );
 
-    tradesResult.fold(
-      (failure) => emit(TradeError(message: failure)),
-      (paginated) => emit(
-        TradeLoaded(
-          trades: paginated.trades,
-          totalRecords: paginated.totalRecords,
-          todayTradeCount: todayTradeCount,
-          totalPages: paginated.totalPages,
-          currentPage: paginated.currentPage,
-          hasMore: paginated.currentPage < paginated.totalPages,
-        ),
-      ),
+        emit(
+          TradeLoaded(
+            trades: paginated.trades,
+            totalRecords: paginated.totalRecords,
+            todayTradeCount: todayTradeCount,
+            totalPages: paginated.totalPages,
+            currentPage: paginated.currentPage,
+            hasMore: paginated.currentPage < paginated.totalPages,
+            resolvedCityByIp: const {},
+          ),
+        );
+
+        final cityMap = await IpCityLookup.instance.prefetchBatch(
+          paginated.trades.map((t) => (ip: t.ipAddress, backendCity: t.city)),
+        );
+
+        if (reloadGen != _reloadGeneration) return;
+        final s = state;
+        if (s is! TradeLoaded) return;
+        emit(s.copyWith(resolvedCityByIp: cityMap));
+      },
     );
   }
 
@@ -50,19 +74,40 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
     final nextPage = current.currentPage + 1;
     final result = await getTrades(page: nextPage, sizePerPage: _pageSize);
-    result.fold(
-      (failure) => emit(current.copyWith(isLoadingMore: false)),
-      (paginated) => emit(
-        TradeLoaded(
-          trades: [...current.trades, ...paginated.trades],
-          totalRecords: paginated.totalRecords,
-          todayTradeCount: current.todayTradeCount,
-          totalPages: paginated.totalPages,
-          currentPage: paginated.currentPage,
-          isLoadingMore: false,
-          hasMore: paginated.currentPage < paginated.totalPages,
-        ),
-      ),
+
+    await result.fold(
+      (_) async {
+        emit(current.copyWith(isLoadingMore: false));
+      },
+      (paginated) async {
+        final mergedTrades = [...current.trades, ...paginated.trades];
+        final expectedLen = mergedTrades.length;
+        final expectedPage = paginated.currentPage;
+
+        emit(
+          TradeLoaded(
+            trades: mergedTrades,
+            totalRecords: paginated.totalRecords,
+            todayTradeCount: current.todayTradeCount,
+            totalPages: paginated.totalPages,
+            currentPage: paginated.currentPage,
+            isLoadingMore: false,
+            hasMore: paginated.currentPage < paginated.totalPages,
+            resolvedCityByIp: current.resolvedCityByIp,
+          ),
+        );
+
+        final patch = await IpCityLookup.instance.prefetchBatch(
+          paginated.trades.map((t) => (ip: t.ipAddress, backendCity: t.city)),
+        );
+
+        final s = state;
+        if (s is! TradeLoaded) return;
+        if (s.currentPage != expectedPage || s.trades.length != expectedLen) {
+          return;
+        }
+        emit(s.copyWith(resolvedCityByIp: {...s.resolvedCityByIp, ...patch}));
+      },
     );
   }
 }

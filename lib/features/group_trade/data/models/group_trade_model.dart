@@ -39,12 +39,9 @@ class GroupTradeModel extends GroupTradeEntity {
       quantity: double.tryParse(json['quantity']?.toString() ?? '0') ?? 0.0,
       lot: double.tryParse(json['lot']?.toString() ?? '0') ?? 0.0,
       type: _formatType(json['type'] as String? ?? ''),
-      profitLoss:
-          double.tryParse(json['profitLoss']?.toString() ?? '0') ?? 0.0,
-      tradePrice:
-          double.tryParse(json['tradePrice']?.toString() ?? '0') ?? 0.0,
-      brokerage:
-          double.tryParse(json['brokerage']?.toString() ?? '0') ?? 0.0,
+      profitLoss: double.tryParse(json['profitLoss']?.toString() ?? '0') ?? 0.0,
+      tradePrice: double.tryParse(json['tradePrice']?.toString() ?? '0') ?? 0.0,
+      brokerage: double.tryParse(json['brokerage']?.toString() ?? '0') ?? 0.0,
       referencePrice:
           double.tryParse(json['referencePrice']?.toString() ?? '0') ?? 0.0,
       executionDateTime: json['executionDateTime'] != null
@@ -56,7 +53,6 @@ class GroupTradeModel extends GroupTradeEntity {
     );
   }
 
-  // "sell - market" → "SELL - Market"
   static String _formatBuySell(String raw) {
     if (raw.isEmpty) return raw;
     final parts = raw.split(' - ');
@@ -69,7 +65,6 @@ class GroupTradeModel extends GroupTradeEntity {
     return '$side - $orderFormatted';
   }
 
-  // "longTerm" → "Long Term", "intraday" → "Intraday", "btst" → "BTST"
   static String _formatType(String raw) {
     switch (raw.toLowerCase()) {
       case 'longterm':
@@ -84,7 +79,6 @@ class GroupTradeModel extends GroupTradeEntity {
     }
   }
 
-  /// Formats ISO 8601 datetime to "dd/MM/yy hh:mm:ss AM/PM"
   static String _formatDateTime(String iso) {
     try {
       final dt = DateTime.parse(iso).toLocal();

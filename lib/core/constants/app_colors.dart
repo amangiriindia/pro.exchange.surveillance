@@ -13,7 +13,7 @@ class LightThemeColors {
   static const Color cardBorderColor = Color(0xFFE2E8F0);
   static const Color dividerColor = Color(0xFFE2E8F0);
   static const Color tableBackground = Color(0xFFFFFFFF);
-  /// Modern dark-navy header matching BazaarPro brand
+
   static const Color tableColumnHeadColor = Color(0xFF202D3B);
   static const Color tableRowBackground = Color(0xFFFFFFFF);
   static const Color tableAlternateRowBackground = Color(0xFFF8FAFC);
@@ -320,23 +320,15 @@ class AppColors {
       return const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Color(0xFF0F1623), // deep dark-navy base
-          Color(0xFF121A28), // slightly lighter
-          Color(0xFF0F1623), // back to base
-        ],
+        colors: [Color(0xFF0F1623), Color(0xFF121A28), Color(0xFF0F1623)],
         stops: [0.0, 0.5, 1.0],
       );
     }
-    // Light mode: cool slate-blue wash
+
     return const LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [
-        Color(0xFFF0F4F8), // soft blue-gray
-        Color(0xFFFFFFFF), // pure white at centre
-        Color(0xFFF4F7FB), // subtle blue tint
-      ],
+      colors: [Color(0xFFF0F4F8), Color(0xFFFFFFFF), Color(0xFFF4F7FB)],
       stops: [0.0, 0.45, 1.0],
     );
   }

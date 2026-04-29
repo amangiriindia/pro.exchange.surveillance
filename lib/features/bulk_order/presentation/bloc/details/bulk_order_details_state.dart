@@ -8,13 +8,16 @@ abstract class BulkOrderDetailsState extends Equatable {
 }
 
 class BulkOrderDetailsInitial extends BulkOrderDetailsState {}
+
 class BulkOrderDetailsLoading extends BulkOrderDetailsState {}
+
 class BulkOrderDetailsLoaded extends BulkOrderDetailsState {
   final List<BulkOrderDetailsEntity> details;
   const BulkOrderDetailsLoaded({required this.details});
   @override
   List<Object> get props => [details];
 }
+
 class BulkOrderDetailsError extends BulkOrderDetailsState {
   final String message;
   const BulkOrderDetailsError({required this.message});
