@@ -43,6 +43,7 @@ class ProfitCrossTable extends StatelessWidget {
           ViewTableColumn(id: 'time', label: 'Time', width: 200),
           ViewTableColumn(id: 'exchange', label: 'EXCH', width: 100),
           ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 220),
+          ViewTableColumn(id: 'user_names', label: 'USERS', width: 220),
           ViewTableColumn(id: 'order_dt', label: 'ORDER D/T', width: 200),
           ViewTableColumn(id: 'pnl', label: 'P/L', width: 120, isNumeric: true),
           ViewTableColumn(
@@ -88,6 +89,9 @@ class ProfitCrossTable extends StatelessWidget {
         break;
       case 'symbol':
         text = item.symbol.trim().isEmpty ? '-' : item.symbol;
+        break;
+      case 'user_names':
+        text = item.userNameJoined.isEmpty ? '-' : item.userNameJoined;
         break;
       case 'order_dt':
         try {

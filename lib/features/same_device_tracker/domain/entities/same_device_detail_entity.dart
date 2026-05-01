@@ -21,6 +21,8 @@ class SameDeviceDetailEntity extends Equatable {
   final String deviceId;
   final String ipAddress;
   final String city;
+  final String? orderType;
+  final String? comment;
 
   const SameDeviceDetailEntity({
     required this.id,
@@ -43,10 +45,12 @@ class SameDeviceDetailEntity extends Equatable {
     required this.deviceId,
     required this.ipAddress,
     required this.city,
+    this.orderType,
+    this.comment,
   });
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     id,
     uName,
     pUser,
@@ -67,5 +71,7 @@ class SameDeviceDetailEntity extends Equatable {
     deviceId,
     ipAddress,
     city,
+    orderType,
+    comment,
   ];
 }

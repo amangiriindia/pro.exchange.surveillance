@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widget/city_from_ip_table_cell.dart';
 import '../../../../core/widget/table/view_data_table.dart';
+import '../../../../core/widget/table_action_button.dart';
 import '../../domain/entities/group_trade_entity.dart';
 
 class GroupTradeTable extends StatelessWidget {
   final List<GroupTradeEntity> trades;
-  final Map<String, String> resolvedCityByIp;
+  final ValueChanged<GroupTradeEntity> onViewSelected;
   final VoidCallback? onNearBottom;
   final bool isLoadingMore;
+
+  static const double _triggerThresholdPx = 1600;
 
   const GroupTradeTable({
     super.key,
     required this.trades,
-    this.resolvedCityByIp = const {},
+    required this.onViewSelected,
     this.onNearBottom,
     this.isLoadingMore = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = AppColors.isDarkMode(context);
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (onNearBottom != null &&
@@ -29,16 +31,18 @@ class GroupTradeTable extends StatelessWidget {
           final remaining =
               notification.metrics.maxScrollExtent -
               notification.metrics.pixels;
-          if (remaining < 2000) onNearBottom!();
+          if (remaining < _triggerThresholdPx) {
+            onNearBottom!();
+          }
         }
         return false;
       },
       child: ViewDataTable<GroupTradeEntity>(
         columns: _buildColumns(),
         data: trades,
-        idExtractor: (item) => '${item.id}',
-        autoFit: false,
-        isDarkMode: isDark,
+        idExtractor: (item) => item.id.toString(),
+        autoFit: true,
+        isDarkMode: AppColors.isDarkMode(context),
         rowBackgroundBuilder: (item, index) => index % 2 == 0
             ? AppColors.getTableRowBackground(context)
             : AppColors.getTableAlternateRowBackground(context),
@@ -50,52 +54,24 @@ class GroupTradeTable extends StatelessWidget {
 
   List<ViewTableColumn> _buildColumns() {
     return const [
-      ViewTableColumn(id: 'userName', label: 'U. NAME', width: 160),
-      ViewTableColumn(id: 'parentUserName', label: 'P USER', width: 160),
-      ViewTableColumn(id: 'exchange', label: 'EXCH', width: 120),
-      ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 220),
-      ViewTableColumn(id: 'orderDateTime', label: 'ORDER D/T', width: 220),
-      ViewTableColumn(id: 'buySell', label: 'B/S', width: 220),
+      ViewTableColumn(id: 'time', label: 'Time', width: 200),
+      ViewTableColumn(id: 'exchange', label: 'Exchange', width: 110),
+      ViewTableColumn(id: 'symbol', label: 'Symbol', width: 220),
+      ViewTableColumn(id: 'tradeType', label: 'B/S', width: 80),
       ViewTableColumn(
-        id: 'quantity',
-        label: 'QTY',
-        width: 140,
-        isNumeric: true,
-      ),
-      ViewTableColumn(id: 'lot', label: 'LOT', width: 120, isNumeric: true),
-      ViewTableColumn(id: 'type', label: 'TYPE', width: 140),
-      ViewTableColumn(
-        id: 'profitLoss',
-        label: 'P/L',
-        width: 140,
+        id: 'clientCount',
+        label: 'Client Count',
+        width: 100,
         isNumeric: true,
       ),
       ViewTableColumn(
-        id: 'tradePrice',
-        label: 'T. PRICE',
-        width: 160,
+        id: 'totalQty',
+        label: 'Total Qty',
+        width: 110,
         isNumeric: true,
       ),
-      ViewTableColumn(
-        id: 'brokerage',
-        label: 'BRK',
-        width: 140,
-        isNumeric: true,
-      ),
-      ViewTableColumn(
-        id: 'referencePrice',
-        label: 'R. PRICE',
-        width: 140,
-        isNumeric: true,
-      ),
-      ViewTableColumn(
-        id: 'executionDateTime',
-        label: 'EXECUTION D/T',
-        width: 220,
-      ),
-      ViewTableColumn(id: 'deviceId', label: 'DEVICE ID', width: 450),
-      ViewTableColumn(id: 'ipAddress', label: 'IP ADDRESS', width: 180),
-      ViewTableColumn(id: 'city', label: 'CITY', width: 140),
+      ViewTableColumn(id: 'users', label: 'Users', width: 200),
+      ViewTableColumn(id: 'action', label: 'Action', width: 120),
     ];
   }
 
@@ -104,85 +80,98 @@ class GroupTradeTable extends StatelessWidget {
     GroupTradeEntity trade,
     ViewTableColumn col,
   ) {
-    final isBuy = trade.tradeType.toLowerCase() == 'buy';
-    final bsColor = isBuy ? AppColors.buyColor : AppColors.sellColor;
+    Color textColor = const Color(0xFF616161);
+    const FontWeight fontWeight = FontWeight.w600;
+
+    if (col.id == 'action') {
+      return TableActionButton.view(onPressed: () => onViewSelected(trade));
+    }
+
+    if (col.id == 'status') {
+      if (trade.investigateStatus.toUpperCase() == 'NEW') {
+        return const SizedBox.shrink();
+      }
+      return _buildStatusBadge(trade.investigateStatus);
+    }
 
     String text = '';
-    Color textColor = const Color(0xFF424242);
-
     switch (col.id) {
-      case 'userName':
-        text = _orDash(trade.userName);
-        break;
-      case 'parentUserName':
-        text = _orDash(trade.parentUserName);
+      case 'time':
+        try {
+          final dt = DateTime.parse(trade.time).toLocal();
+          text = DateFormat('dd/MM/yy hh:mm:ss a').format(dt);
+        } catch (_) {
+          text = trade.time;
+        }
         break;
       case 'exchange':
-        text = _orDash(trade.exchange);
+        text = trade.exchange;
         break;
       case 'symbol':
-        text = _orDash(trade.symbol);
+        text = trade.symbol.trim().isEmpty ? '-' : trade.symbol;
         break;
-      case 'orderDateTime':
-        text = _orDash(trade.orderDateTime);
+      case 'tradeType':
+        text = trade.tradeType.toUpperCase();
+        textColor = trade.tradeType.toLowerCase() == 'buy'
+            ? AppColors.primaryBlue
+            : AppColors.errorColor;
         break;
-      case 'buySell':
-        text = _orDash(trade.buySell);
-        textColor = bsColor;
+      case 'clientCount':
+        text = trade.clientCount.toString();
         break;
-      case 'quantity':
-        text = trade.quantity.toStringAsFixed(2);
-        textColor = bsColor;
+      case 'totalQty':
+        text = NumberFormat('#,##0').format(trade.totalQty);
         break;
-      case 'lot':
-        text = trade.lot.toStringAsFixed(2);
+      case 'users':
+        text = trade.userNameJoined.isEmpty ? '-' : trade.userNameJoined;
         break;
-      case 'type':
-        text = _orDash(trade.type);
-        break;
-      case 'profitLoss':
-        text = trade.profitLoss.toStringAsFixed(2);
-        textColor = bsColor;
-        break;
-      case 'tradePrice':
-        text = trade.tradePrice.toStringAsFixed(2);
-        textColor = bsColor;
-        break;
-      case 'brokerage':
-        text = trade.brokerage.toStringAsFixed(2);
-        textColor = AppColors.sellColor;
-        break;
-      case 'referencePrice':
-        text = trade.referencePrice.toStringAsFixed(2);
-        textColor = AppColors.buyColor;
-        break;
-      case 'executionDateTime':
-        text = _orDash(trade.executionDateTime);
-        break;
-      case 'deviceId':
-        text = _orDash(trade.deviceId);
-        break;
-      case 'ipAddress':
-        text = _orDash(trade.ipAddress);
-        break;
-      case 'city':
-        return buildCityFromIpCell(
-          context,
-          backendCity: trade.city,
-          ip: trade.ipAddress,
-          resolvedCityByIp: resolvedCityByIp,
-        );
     }
 
     return Text(
       text,
-      style: GoogleFonts.openSans(color: textColor, fontSize: 13),
+      style: GoogleFonts.openSans(
+        color: textColor,
+        fontSize: 12,
+        fontWeight: fontWeight,
+      ),
     );
   }
 
-  String _orDash(String? value) {
-    final trimmed = value?.trim() ?? '';
-    return trimmed.isEmpty ? '-' : trimmed;
+  Widget _buildStatusBadge(String status) {
+    Color bgColor;
+    Color textColor;
+    switch (status.toUpperCase()) {
+      case 'NEW':
+        bgColor = const Color(0xFFE3F0FF);
+        textColor = AppColors.primaryBlue;
+        break;
+      case 'INVESTIGATING':
+        bgColor = const Color(0xFFFFF3E0);
+        textColor = const Color(0xFFE65100);
+        break;
+      case 'RESOLVED':
+        bgColor = const Color(0xFFE8F5E9);
+        textColor = const Color(0xFF2E7D32);
+        break;
+      default:
+        bgColor = const Color(0xFFF5F5F5);
+        textColor = const Color(0xFF616161);
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        status,
+        style: GoogleFonts.openSans(
+          color: textColor,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 }
 
@@ -191,6 +180,9 @@ class _LoadMoreFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox.shrink();
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      child: SizedBox.shrink(),
+    );
   }
 }

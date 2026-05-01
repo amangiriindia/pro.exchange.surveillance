@@ -15,6 +15,7 @@ class ProfitCrossModel extends ProfitCrossEntity {
     required super.isRead,
     required super.clientIds,
     required super.tradeIds,
+    required super.userNameJoined,
   });
 
   factory ProfitCrossModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +33,7 @@ class ProfitCrossModel extends ProfitCrossEntity {
       isRead: json['isRead'] ?? false,
       clientIds: (json['clientIds'] as List<dynamic>? ?? []).cast<int>(),
       tradeIds: (json['tradeIds'] as List<dynamic>? ?? []).cast<int>(),
+      userNameJoined: json['userNameJoined'] as String? ?? '',
     );
   }
 }

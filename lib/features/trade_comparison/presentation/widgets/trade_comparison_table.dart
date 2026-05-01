@@ -45,6 +45,9 @@ class TradeComparisonTable extends StatelessWidget {
           ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 220),
           ViewTableColumn(id: 'order_d_t', label: 'ORDER D/T', width: 180),
           ViewTableColumn(id: 'b_s', label: 'B/S', width: 180),
+          ViewTableColumn(id: 'trade_type', label: 'tradeType', width: 100),
+          ViewTableColumn(id: 'order_type', label: 'orderType', width: 110),
+          ViewTableColumn(id: 'comment', label: 'comment', width: 180),
           ViewTableColumn(id: 'qty', label: 'QTY', width: 110, isNumeric: true),
           ViewTableColumn(id: 'lot', label: 'LOT', width: 80, isNumeric: true),
           ViewTableColumn(id: 'type', label: 'TYPE', width: 80),
@@ -116,6 +119,19 @@ class TradeComparisonTable extends StatelessWidget {
         textColor = text.contains('SELL')
             ? AppColors.errorColor
             : AppColors.primaryBlue;
+        break;
+      case 'trade_type':
+        final tt = item.tradeType ?? '';
+        text = tt.isEmpty ? '-' : tt;
+        textColor = tt.toLowerCase() == 'buy'
+            ? AppColors.primaryBlue
+            : AppColors.errorColor;
+        break;
+      case 'order_type':
+        text = item.orderType ?? '-';
+        break;
+      case 'comment':
+        text = item.comment ?? '-';
         break;
       case 'qty':
         text = currencyFormat.format(item.quantity);

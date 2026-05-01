@@ -19,6 +19,8 @@ class JobberDetailModel extends JobberDetailEntity {
     required super.brk,
     required super.rPrice,
     required super.executionTime,
+    super.orderType,
+    super.comment,
   });
 
   factory JobberDetailModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,8 @@ class JobberDetailModel extends JobberDetailEntity {
       brk: double.tryParse(json['brokerage']?.toString() ?? '0') ?? 0,
       rPrice: double.tryParse(json['referencePrice']?.toString() ?? '0') ?? 0,
       executionTime: json['executionDateTime'] ?? '',
+      orderType: json['orderType'] as String?,
+      comment: json['comment'] as String?,
     );
   }
 }

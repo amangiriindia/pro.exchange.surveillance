@@ -21,6 +21,8 @@ class BulkOrderDetailsEntity extends Equatable {
   final String deviceId;
   final String ipAddress;
   final String city;
+  final String? orderType;
+  final String? comment;
 
   const BulkOrderDetailsEntity({
     required this.id,
@@ -43,6 +45,8 @@ class BulkOrderDetailsEntity extends Equatable {
     required this.deviceId,
     required this.ipAddress,
     required this.city,
+    this.orderType,
+    this.comment,
   });
 
   @override

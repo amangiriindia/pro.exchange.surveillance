@@ -19,7 +19,6 @@ class GroupTradeLoaded extends GroupTradeState {
   final int currentPage;
   final bool isLoadingMore;
   final bool hasMore;
-  final Map<String, String> resolvedCityByIp;
 
   const GroupTradeLoaded({
     required this.items,
@@ -28,7 +27,6 @@ class GroupTradeLoaded extends GroupTradeState {
     required this.currentPage,
     this.isLoadingMore = false,
     this.hasMore = true,
-    this.resolvedCityByIp = const {},
   });
 
   GroupTradeLoaded copyWith({
@@ -38,7 +36,6 @@ class GroupTradeLoaded extends GroupTradeState {
     int? currentPage,
     bool? isLoadingMore,
     bool? hasMore,
-    Map<String, String>? resolvedCityByIp,
   }) {
     return GroupTradeLoaded(
       items: items ?? this.items,
@@ -47,7 +44,6 @@ class GroupTradeLoaded extends GroupTradeState {
       currentPage: currentPage ?? this.currentPage,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasMore: hasMore ?? this.hasMore,
-      resolvedCityByIp: resolvedCityByIp ?? this.resolvedCityByIp,
     );
   }
 
@@ -59,7 +55,6 @@ class GroupTradeLoaded extends GroupTradeState {
     currentPage,
     isLoadingMore,
     hasMore,
-    resolvedCityByIp,
   ];
 }
 

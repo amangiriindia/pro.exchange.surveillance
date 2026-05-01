@@ -13,6 +13,8 @@ class OrderDurationModel extends OrderDurationEntity {
     required super.price,
     required super.executionDT,
     required super.pnl,
+    super.orderType,
+    super.comment,
   });
 
   factory OrderDurationModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,8 @@ class OrderDurationModel extends OrderDurationEntity {
       price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
       executionDT: json['executionDateTime'] ?? '',
       pnl: double.tryParse(json['profitLoss']?.toString() ?? '0') ?? 0,
+      orderType: json['orderType'] as String?,
+      comment: json['comment'] as String?,
     );
   }
 }

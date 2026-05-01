@@ -28,7 +28,9 @@ class OrderDurationDialogContent extends StatelessWidget {
             columns: const [
               ViewTableColumn(id: 'duration', label: 'DURATION', width: 140),
               ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 180),
-              ViewTableColumn(id: 'type', label: 'TYPE', width: 100),
+              ViewTableColumn(id: 'tradeType', label: 'tradeType', width: 100),
+              ViewTableColumn(id: 'orderType', label: 'orderType', width: 110),
+              ViewTableColumn(id: 'comment', label: 'comment', width: 180),
               ViewTableColumn(
                 id: 'qty',
                 label: 'QTY',
@@ -82,11 +84,17 @@ class OrderDurationDialogContent extends StatelessWidget {
         text = item.symbol;
         textColor = const Color(0xFF2E6BFF);
         break;
-      case 'type':
-        text = item.type;
-        textColor = item.type.toLowerCase().contains('sell')
-            ? Colors.red
-            : const Color(0xFF2E6BFF);
+      case 'tradeType':
+        text = item.tradeType.isEmpty ? '-' : item.tradeType;
+        textColor = item.tradeType.toLowerCase() == 'buy'
+            ? const Color(0xFF2E6BFF)
+            : Colors.red;
+        break;
+      case 'orderType':
+        text = item.orderType ?? '-';
+        break;
+      case 'comment':
+        text = item.comment ?? '-';
         break;
       case 'qty':
         text = currencyFormat.format(item.qty);

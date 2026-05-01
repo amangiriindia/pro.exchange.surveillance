@@ -70,7 +70,6 @@ class BulkOrderTable extends StatelessWidget {
         width: 110,
         isNumeric: true,
       ),
-      ViewTableColumn(id: 'status', label: 'Status', width: 150),
       ViewTableColumn(id: 'action', label: 'Action', width: 120),
     ];
   }
@@ -88,6 +87,9 @@ class BulkOrderTable extends StatelessWidget {
     }
 
     if (col.id == 'status') {
+      if (trade.investigateStatus.toUpperCase() == 'NEW') {
+        return const SizedBox.shrink();
+      }
       return _buildStatusBadge(trade.investigateStatus);
     }
 

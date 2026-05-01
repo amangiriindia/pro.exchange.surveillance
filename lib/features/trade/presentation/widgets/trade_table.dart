@@ -60,7 +60,9 @@ class TradeTable extends StatelessWidget {
       ViewTableColumn(id: 'exchange', label: 'EXCH', width: 120),
       ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 220),
       ViewTableColumn(id: 'orderDateTime', label: 'ORDER D/T', width: 220),
-      ViewTableColumn(id: 'buySell', label: 'B/S', width: 250),
+      ViewTableColumn(id: 'tradeType', label: 'tradeType', width: 100),
+      ViewTableColumn(id: 'orderType', label: 'orderType', width: 110),
+      ViewTableColumn(id: 'comment', label: 'comment', width: 200),
       ViewTableColumn(
         id: 'quantity',
         label: 'QTY',
@@ -68,7 +70,6 @@ class TradeTable extends StatelessWidget {
         isNumeric: true,
       ),
       ViewTableColumn(id: 'lot', label: 'LOT', width: 120, isNumeric: true),
-      ViewTableColumn(id: 'type', label: 'TYPE', width: 140),
       ViewTableColumn(
         id: 'profitLoss',
         label: 'P/L',
@@ -97,7 +98,6 @@ class TradeTable extends StatelessWidget {
       ViewTableColumn(id: 'ipAddress', label: 'IP ADDRESS', width: 180),
       ViewTableColumn(id: 'deviceId', label: 'DEVICE ID', width: 380),
       ViewTableColumn(id: 'city', label: 'CITY', width: 140),
-      ViewTableColumn(id: 'comment', label: 'COMMENT', width: 360),
     ];
   }
 
@@ -135,15 +135,22 @@ class TradeTable extends StatelessWidget {
         textColor = bsColor;
         fontWeight = FontWeight.w600;
         break;
+      case 'tradeType':
+        text = trade.tradeType ?? '-';
+        textColor = (trade.tradeType ?? '').toLowerCase() == 'buy'
+            ? AppColors.buyColor
+            : AppColors.sellColor;
+        fontWeight = FontWeight.w600;
+        break;
+      case 'orderType':
+        text = trade.orderType ?? '-';
+        break;
       case 'quantity':
         text = trade.quantity.toStringAsFixed(2);
         textColor = bsColor;
         break;
       case 'lot':
         text = trade.lot.toStringAsFixed(2);
-        break;
-      case 'type':
-        text = trade.type;
         break;
       case 'profitLoss':
         text = trade.profitLoss.toStringAsFixed(2);
@@ -179,7 +186,6 @@ class TradeTable extends StatelessWidget {
         );
       case 'comment':
         text = trade.comment ?? '-';
-        textColor = const Color(0xFFE57373);
         break;
     }
 
@@ -196,10 +202,6 @@ class TradeTable extends StatelessWidget {
         fontWeight: fontWeight,
       ),
     );
-
-    if (col.id == 'comment') {
-      return Tooltip(message: text, child: cellText);
-    }
 
     return cellText;
   }

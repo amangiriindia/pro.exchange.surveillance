@@ -96,7 +96,9 @@ class SameDeviceDetailsView extends StatelessWidget {
             ViewTableColumn(id: 'exch', label: 'EXCH', width: 80),
             ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 110),
             ViewTableColumn(id: 'order_time', label: 'ORDER D/T', width: 180),
-            ViewTableColumn(id: 'buy_sell', label: 'B/S', width: 180),
+            ViewTableColumn(id: 'trade_type', label: 'tradeType', width: 100),
+            ViewTableColumn(id: 'order_type', label: 'orderType', width: 110),
+            ViewTableColumn(id: 'comment', label: 'comment', width: 180),
             ViewTableColumn(
               id: 'quantity',
               label: 'QTY',
@@ -109,7 +111,6 @@ class SameDeviceDetailsView extends StatelessWidget {
               width: 80,
               isNumeric: true,
             ),
-            ViewTableColumn(id: 'type', label: 'TYPE', width: 80),
             ViewTableColumn(
               id: 'pl',
               label: 'P/L',
@@ -196,6 +197,18 @@ class SameDeviceDetailsView extends StatelessWidget {
             ? AppColors.errorColor
             : AppColors.primaryBlue;
         break;
+      case 'trade_type':
+        text = item.tradeType.isEmpty ? '-' : item.tradeType;
+        textColor = item.tradeType.toLowerCase() == 'buy'
+            ? AppColors.primaryBlue
+            : AppColors.errorColor;
+        break;
+      case 'order_type':
+        text = item.orderType ?? '-';
+        break;
+      case 'comment':
+        text = item.comment ?? '-';
+        break;
       case 'quantity':
         text = currencyFormat.format(item.quantity);
         textColor = item.quantity < 0
@@ -204,9 +217,6 @@ class SameDeviceDetailsView extends StatelessWidget {
         break;
       case 'lot':
         text = currencyFormat.format(item.lot);
-        break;
-      case 'type':
-        text = item.type;
         break;
       case 'pl':
         text = currencyFormat.format(item.pl);

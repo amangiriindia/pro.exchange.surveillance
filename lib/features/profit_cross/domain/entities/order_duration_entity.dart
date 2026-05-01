@@ -12,6 +12,8 @@ class OrderDurationEntity extends Equatable {
   final double price;
   final String executionDT;
   final double pnl;
+  final String? orderType;
+  final String? comment;
 
   const OrderDurationEntity({
     required this.id,
@@ -25,6 +27,8 @@ class OrderDurationEntity extends Equatable {
     required this.price,
     required this.executionDT,
     required this.pnl,
+    this.orderType,
+    this.comment,
   });
 
   @override

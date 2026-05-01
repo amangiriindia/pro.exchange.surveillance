@@ -19,6 +19,11 @@ import 'features/group_trade/data/repositories/group_trade_repository_impl.dart'
 import 'features/group_trade/domain/repositories/group_trade_repository.dart';
 import 'features/group_trade/domain/usecases/get_group_trades.dart';
 import 'features/group_trade/presentation/bloc/group_trade_bloc.dart';
+import 'features/group_trade/data/datasources/group_trade_details_remote_data_source.dart';
+import 'features/group_trade/data/repositories/group_trade_details_repository_impl.dart';
+import 'features/group_trade/domain/repositories/group_trade_details_repository.dart';
+import 'features/group_trade/domain/usecases/get_group_trade_details.dart';
+import 'features/group_trade/presentation/bloc/details/group_trade_details_bloc.dart';
 import 'features/bulk_order/data/datasources/bulk_order_remote_data_source.dart';
 import 'features/bulk_order/data/repositories/bulk_order_repository_impl.dart';
 import 'features/bulk_order/domain/repositories/bulk_order_repository.dart';
@@ -110,6 +115,15 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<GroupTradeRemoteDataSource>(
     () => GroupTradeRemoteDataSourceImpl(),
+  );
+
+  sl.registerFactory(() => GroupTradeDetailsBloc(getGroupTradeDetails: sl()));
+  sl.registerLazySingleton(() => GetGroupTradeDetails(sl()));
+  sl.registerLazySingleton<GroupTradeDetailsRepository>(
+    () => GroupTradeDetailsRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<GroupTradeDetailsRemoteDataSource>(
+    () => GroupTradeDetailsRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
   );
 
   sl.registerFactory(() => BulkOrderBloc(getBulkOrders: sl()));

@@ -22,6 +22,8 @@ class BulkOrderDetailsModel extends BulkOrderDetailsEntity {
     required super.deviceId,
     required super.ipAddress,
     required super.city,
+    super.orderType,
+    super.comment,
   });
 
   factory BulkOrderDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,8 @@ class BulkOrderDetailsModel extends BulkOrderDetailsEntity {
       deviceId: json['deviceId'] ?? '',
       ipAddress: json['ipAddress'] ?? '',
       city: json['city'] ?? '',
+      orderType: json['orderType'] as String?,
+      comment: json['comment'] as String?,
     );
   }
 }

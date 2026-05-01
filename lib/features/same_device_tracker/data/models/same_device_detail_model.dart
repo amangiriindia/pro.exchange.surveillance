@@ -22,6 +22,8 @@ class SameDeviceModelDetail extends SameDeviceDetailEntity {
     required super.deviceId,
     required super.ipAddress,
     required super.city,
+    super.orderType,
+    super.comment,
   });
 
   static String _formatIso(dynamic raw) {
@@ -62,6 +64,8 @@ class SameDeviceModelDetail extends SameDeviceDetailEntity {
       deviceId: json['deviceId']?.toString() ?? '',
       ipAddress: json['ipAddress']?.toString() ?? '',
       city: json['city']?.toString() ?? '',
+      orderType: json['orderType'] as String?,
+      comment: json['comment'] as String?,
     );
   }
 }

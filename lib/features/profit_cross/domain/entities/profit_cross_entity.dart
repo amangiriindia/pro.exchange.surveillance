@@ -14,6 +14,7 @@ class ProfitCrossEntity extends Equatable {
   final bool isRead;
   final List<int> clientIds;
   final List<int> tradeIds;
+  final String userNameJoined;
 
   const ProfitCrossEntity({
     required this.id,
@@ -29,6 +30,7 @@ class ProfitCrossEntity extends Equatable {
     required this.isRead,
     required this.clientIds,
     required this.tradeIds,
+    required this.userNameJoined,
   });
 
   @override

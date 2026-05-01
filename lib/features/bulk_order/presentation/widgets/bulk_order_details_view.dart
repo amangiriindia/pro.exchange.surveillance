@@ -98,7 +98,9 @@ class BulkOrderDetailsView extends StatelessWidget {
             ViewTableColumn(id: 'exch', label: 'EXCH', width: 80),
             ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 180),
             ViewTableColumn(id: 'orderTime', label: 'ORDER D/T', width: 180),
-            ViewTableColumn(id: 'buySell', label: 'B/S', width: 160),
+            ViewTableColumn(id: 'tradeType', label: 'tradeType', width: 100),
+            ViewTableColumn(id: 'orderType', label: 'orderType', width: 110),
+            ViewTableColumn(id: 'comment', label: 'comment', width: 180),
             ViewTableColumn(
               id: 'quantity',
               label: 'QTY',
@@ -111,7 +113,6 @@ class BulkOrderDetailsView extends StatelessWidget {
               width: 80,
               isNumeric: true,
             ),
-            ViewTableColumn(id: 'type', label: 'TYPE', width: 100),
             ViewTableColumn(
               id: 'pl',
               label: 'P/L',
@@ -195,6 +196,18 @@ class BulkOrderDetailsView extends StatelessWidget {
             ? AppColors.primaryBlue
             : AppColors.errorColor;
         break;
+      case 'tradeType':
+        text = item.tradeType.isEmpty ? '-' : item.tradeType;
+        textColor = item.tradeType.toLowerCase() == 'buy'
+            ? AppColors.primaryBlue
+            : AppColors.errorColor;
+        break;
+      case 'orderType':
+        text = item.orderType ?? '-';
+        break;
+      case 'comment':
+        text = item.comment ?? '-';
+        break;
       case 'quantity':
         text = item.quantity.toStringAsFixed(2);
         textColor = item.tradeType.toLowerCase() == 'buy'
@@ -203,9 +216,6 @@ class BulkOrderDetailsView extends StatelessWidget {
         break;
       case 'lot':
         text = item.lot.toStringAsFixed(2);
-        break;
-      case 'type':
-        text = item.type;
         break;
       case 'pl':
         text = item.pl.toStringAsFixed(2);

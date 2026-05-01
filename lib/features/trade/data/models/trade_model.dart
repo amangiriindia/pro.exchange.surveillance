@@ -24,6 +24,8 @@ class TradeModel extends TradeEntity {
     super.status,
     super.productType,
     super.userId,
+    super.tradeType,
+    super.orderType,
   });
 
   factory TradeModel.fromJson(Map<String, dynamic> json) {
@@ -67,6 +69,8 @@ class TradeModel extends TradeEntity {
       status: json['status'] as String?,
       productType: productType,
       userId: json['userId'] as int?,
+      tradeType: json['tradeType'] as String?,
+      orderType: json['orderType'] as String?,
     );
   }
 

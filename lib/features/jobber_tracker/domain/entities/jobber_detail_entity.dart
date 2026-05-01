@@ -18,6 +18,8 @@ class JobberDetailEntity extends Equatable {
   final double brk;
   final double rPrice;
   final String executionTime;
+  final String? orderType;
+  final String? comment;
 
   const JobberDetailEntity({
     required this.id,
@@ -37,10 +39,12 @@ class JobberDetailEntity extends Equatable {
     required this.brk,
     required this.rPrice,
     required this.executionTime,
+    this.orderType,
+    this.comment,
   });
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     id,
     uName,
     pUser,
