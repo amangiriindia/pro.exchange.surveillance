@@ -18,18 +18,35 @@ class BulkOrderModel extends BulkOrderEntity {
 
   factory BulkOrderModel.fromJson(Map<String, dynamic> json) {
     return BulkOrderModel(
-      id: (json['id'] ?? 0) as int,
-      time: json['time'] ?? '',
-      exchange: json['exchange'] ?? '',
-      symbol: json['symbol'] ?? '',
-      tradeType: json['tradeType'] ?? '',
-      quantity: (json['quantity'] ?? 0) as int,
-      threshold: (json['threshold'] ?? 0) as int,
-      exceedsThreshold: json['exceedsThreshold'] ?? false,
-      investigateStatus: json['investigateStatus'] ?? '',
-      isRead: json['isRead'] ?? false,
-      clientIds: (json['clientIds'] as List<dynamic>? ?? []).cast<int>(),
-      tradeIds: (json['tradeIds'] as List<dynamic>? ?? []).cast<int>(),
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      time: json['time']?.toString() ?? '',
+      exchange: json['exchange']?.toString() ?? '',
+      symbol: json['symbol']?.toString() ?? '',
+      tradeType: json['tradeType']?.toString() ?? '',
+      quantity: _asDouble(json['quantity']),
+      threshold: _asInt(json['threshold']),
+      exceedsThreshold: json['exceedsThreshold'] == true,
+      investigateStatus: json['investigateStatus']?.toString() ?? '',
+      isRead: json['isRead'] == true,
+      clientIds: (json['clientIds'] as List<dynamic>? ?? [])
+          .map((e) => (e as num).toInt())
+          .toList(),
+      tradeIds: (json['tradeIds'] as List<dynamic>? ?? [])
+          .map((e) => (e as num).toInt())
+          .toList(),
     );
+  }
+
+  static double _asDouble(dynamic v) {
+    if (v == null) return 0;
+    if (v is num) return v.toDouble();
+    return double.tryParse(v.toString()) ?? 0;
+  }
+
+  static int _asInt(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is num) return v.round();
+    return int.tryParse(v.toString()) ?? 0;
   }
 }

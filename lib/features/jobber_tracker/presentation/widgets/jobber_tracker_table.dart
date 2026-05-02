@@ -44,12 +44,6 @@ class JobberTrackerTable extends StatelessWidget {
           ViewTableColumn(id: 'p_user', label: 'P USER', width: 140),
           ViewTableColumn(id: 'exchange', label: 'EXCH', width: 100),
           ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 220),
-          ViewTableColumn(
-            id: 'trade_frequency',
-            label: 'Trade frequency',
-            width: 160,
-            isNumeric: true,
-          ),
           ViewTableColumn(id: 'pnl', label: 'P/L', width: 140, isNumeric: true),
           ViewTableColumn(id: 'action', label: 'Action', width: 120),
         ],
@@ -99,9 +93,6 @@ class JobberTrackerTable extends StatelessWidget {
         break;
       case 'symbol':
         text = item.symbol.trim().isEmpty ? '-' : item.symbol;
-        break;
-      case 'trade_frequency':
-        text = item.tradeFrequency.toString();
         break;
       case 'pnl':
         text = currencyFormat.format(item.pnl);

@@ -116,7 +116,7 @@ class BulkOrderTable extends StatelessWidget {
             : AppColors.errorColor;
         break;
       case 'quantity':
-        text = NumberFormat('#,##0').format(trade.quantity);
+        text = NumberFormat('#,##0.##').format(trade.quantity);
         textColor = trade.tradeType.toLowerCase() == 'buy'
             ? AppColors.primaryBlue
             : AppColors.errorColor;
@@ -181,7 +181,7 @@ class _LoadMoreFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 12),
-      child: const SizedBox.shrink(),
+      child: SizedBox.shrink(),
     );
   }
 }

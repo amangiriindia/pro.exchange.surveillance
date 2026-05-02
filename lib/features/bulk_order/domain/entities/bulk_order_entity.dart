@@ -6,7 +6,7 @@ class BulkOrderEntity extends Equatable {
   final String exchange;
   final String symbol;
   final String tradeType;
-  final int quantity;
+  final double quantity;
   final int threshold;
   final bool exceedsThreshold;
   final String investigateStatus;
