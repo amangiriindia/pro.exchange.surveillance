@@ -71,7 +71,12 @@ class GroupTradeTable extends StatelessWidget {
         isNumeric: true,
       ),
       ViewTableColumn(id: 'users', label: 'Users', width: 200),
-      ViewTableColumn(id: 'action', label: 'Action', width: 120),
+      ViewTableColumn(
+        id: 'action',
+        label: 'Action',
+        width: 90,
+        alignment: Alignment.center,
+      ),
     ];
   }
 

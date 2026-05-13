@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/list_filter_utils.dart';
 import '../../../../core/widget/page_filters_bar.dart';
 import '../../../../injection_container.dart';
@@ -41,6 +39,7 @@ class TradeView extends StatefulWidget {
 class _TradeViewState extends State<TradeView> {
   bool _fetchPending = false;
   String? _selectedDate;
+  DateTimeRange? _customDateRange;
   String? _selectedExchange;
   String? _selectedSymbol;
 
@@ -72,9 +71,10 @@ class _TradeViewState extends State<TradeView> {
 
   List<TradeEntity> _applyFilters(List<TradeEntity> trades) {
     return trades.where((trade) {
-      return ListFilterUtils.matchesQuickDate(
+      return ListFilterUtils.matchesDateRangeOrQuick(
             trade.orderDateTime,
             _selectedDate,
+            _customDateRange,
           ) &&
           ListFilterUtils.matchesExact(trade.exchange, _selectedExchange) &&
           ListFilterUtils.matchesContains(trade.symbol, _selectedSymbol);
@@ -91,7 +91,7 @@ class _TradeViewState extends State<TradeView> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -102,8 +102,8 @@ class _TradeViewState extends State<TradeView> {
             onRefresh: _onRefresh,
             onSettingsTap: widget.onSettingsTap,
             onNotificationTap: widget.onNotificationTap,
+            hasFilterBelow: true,
           ),
-          const SizedBox(height: 24),
           Expanded(
             child: BlocBuilder<TradeBloc, TradeState>(
               builder: (context, state) {
@@ -116,6 +116,8 @@ class _TradeViewState extends State<TradeView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       PageFiltersBar(
+                        itemCount: state.todayTradeCount,
+                        countLabel: 'Today trade',
                         selectedDate: _selectedDate,
                         selectedExchange: _selectedExchange,
                         selectedSymbol: _selectedSymbol,
@@ -128,9 +130,11 @@ class _TradeViewState extends State<TradeView> {
                             setState(() => _selectedSymbol = value),
                         onReset: _resetFilters,
                         onApply: () => setState(() {}),
+                        attachedToHeader: true,
+                        customDateRange: _customDateRange,
+                        onCustomDateRangeChanged: (range) =>
+                            setState(() => _customDateRange = range),
                       ),
-                      const SizedBox(height: 12),
-                      _RecordCounter(todayTradeCount: state.todayTradeCount),
                       const SizedBox(height: 8),
                       Expanded(
                         child: TradeTable(
@@ -156,26 +160,6 @@ class _TradeViewState extends State<TradeView> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _RecordCounter extends StatelessWidget {
-  final int todayTradeCount;
-
-  const _RecordCounter({required this.todayTradeCount});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = AppColors.isDarkMode(context);
-    return Text(
-      'Today trade count: $todayTradeCount',
-      style: GoogleFonts.openSans(
-        fontSize: 12,
-        color: isDark
-            ? DarkThemeColors.supportiveTextColor
-            : LightThemeColors.supportiveTextColor,
       ),
     );
   }

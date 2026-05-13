@@ -42,7 +42,7 @@ class TradeTable extends StatelessWidget {
         columns: _buildColumns(),
         data: trades,
         idExtractor: (item) => '${item.id}',
-        autoFit: false,
+        autoFit: true,
         isDarkMode: AppColors.isDarkMode(context),
         rowBackgroundBuilder: (item, index) => index % 2 == 0
             ? AppColors.getTableRowBackground(context)

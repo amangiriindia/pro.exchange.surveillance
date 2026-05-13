@@ -40,6 +40,7 @@ class SameIPView extends StatefulWidget {
 class _SameIPViewState extends State<SameIPView> {
   bool _fetchPending = false;
   String? _selectedDate;
+  DateTimeRange? _customDateRange;
   String? _selectedSymbol;
 
   void _resetFilters() {
@@ -68,7 +69,11 @@ class _SameIPViewState extends State<SameIPView> {
 
   List<SameIPEntity> _applyFilters(List<SameIPEntity> data) {
     return data.where((item) {
-      return ListFilterUtils.matchesQuickDate(item.time, _selectedDate) &&
+      return ListFilterUtils.matchesDateRangeOrQuick(
+            item.time,
+            _selectedDate,
+            _customDateRange,
+          ) &&
           ListFilterUtils.matchesContains(item.uName, _selectedSymbol);
     }).toList();
   }
@@ -83,7 +88,7 @@ class _SameIPViewState extends State<SameIPView> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(left: 24, top: 24, right: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -94,6 +99,7 @@ class _SameIPViewState extends State<SameIPView> {
             onRefresh: _onRefresh,
             onSettingsTap: widget.onSettingsTap,
             onNotificationTap: widget.onNotificationTap,
+            hasFilterBelow: true,
           ),
           Expanded(
             child: BlocBuilder<SameIPTrackerBloc, SameIPTrackerState>(
@@ -105,8 +111,8 @@ class _SameIPViewState extends State<SameIPView> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 12),
                       PageFiltersBar(
+                        itemCount: filteredData.length,
                         selectedDate: _selectedDate,
                         selectedSymbol: _selectedSymbol,
                         symbolItems: _symbolItems(state.data),
@@ -117,8 +123,12 @@ class _SameIPViewState extends State<SameIPView> {
                             setState(() => _selectedSymbol = value),
                         onReset: _resetFilters,
                         onApply: () => setState(() {}),
+                        attachedToHeader: true,
+                        customDateRange: _customDateRange,
+                        onCustomDateRangeChanged: (range) =>
+                            setState(() => _customDateRange = range),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       Expanded(
                         child: SameIPTable(
                           data: filteredData,

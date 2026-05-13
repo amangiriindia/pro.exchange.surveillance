@@ -110,6 +110,8 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
   Map<String, double> _columnWidths = {};
   final Set<String> _manuallyResizedColumns = {};
   String? _dragTargetColumnId;
+  String? _resizingColumnId;
+  int? _activeResizePointer;
   Timer? _keyboardSearchResetTimer;
   String _keyboardSearchBuffer = '';
   bool get _useInternalSort =>
@@ -158,6 +160,24 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
       final newWidth = (currentWidth + delta).clamp(minWidth, double.infinity);
       _columnWidths[columnId] = newWidth / scale;
       _manuallyResizedColumns.add(columnId);
+    });
+  }
+
+  void _startColumnResize(String columnId, int pointer) {
+    if (_resizingColumnId == columnId && _activeResizePointer == pointer) {
+      return;
+    }
+    setState(() {
+      _resizingColumnId = columnId;
+      _activeResizePointer = pointer;
+    });
+  }
+
+  void _stopColumnResize(int pointer) {
+    if (_activeResizePointer != pointer) return;
+    setState(() {
+      _resizingColumnId = null;
+      _activeResizePointer = null;
     });
   }
 
@@ -555,7 +575,9 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
                           : _buildDataRows(rowHeight, scale),
                     ),
                     if (widget.footerBuilder != null)
-                      _buildFooterRow(rowHeight, scale, isScrollableX),
+                      _buildFooterRow(rowHeight, scale, isScrollableX)
+                    else if (isScrollableX)
+                      SizedBox(height: 14.h),
                   ],
                 ),
               ),
@@ -586,7 +608,9 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
                 ? SizedBox(height: 150.h, child: _buildEmptyState())
                 : _buildDataRows(rowHeight, scale),
             if (widget.footerBuilder != null)
-              _buildFooterRow(rowHeight, scale, isScrollableX),
+              _buildFooterRow(rowHeight, scale, isScrollableX)
+            else if (isScrollableX)
+              SizedBox(height: 14.h),
           ],
         ),
       ),
@@ -741,19 +765,27 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
               right: 0,
               top: 0,
               bottom: 0,
-              width: 20.w,
+              width: 26.w,
               child: MouseRegion(
                 cursor: SystemMouseCursors.resizeColumn,
-                child: GestureDetector(
+                child: Listener(
                   behavior: HitTestBehavior.opaque,
-                  onHorizontalDragUpdate: (details) {
-                    _onColumnResize(
-                      column.id,
-                      details.delta.dx,
-                      originalWidth,
-                      scale,
-                    );
+                  onPointerDown: (event) {
+                    _startColumnResize(column.id, event.pointer);
                   },
+                  onPointerMove: (event) {
+                    if (_resizingColumnId == column.id &&
+                        _activeResizePointer == event.pointer) {
+                      _onColumnResize(
+                        column.id,
+                        event.delta.dx,
+                        originalWidth,
+                        scale,
+                      );
+                    }
+                  },
+                  onPointerUp: (event) => _stopColumnResize(event.pointer),
+                  onPointerCancel: (event) => _stopColumnResize(event.pointer),
                   child: Container(
                     alignment: Alignment.centerRight,
                     color: Colors.transparent,
@@ -786,6 +818,7 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
         return LongPressDraggable<String>(
           data: column.id,
           axis: Axis.horizontal,
+          maxSimultaneousDrags: _resizingColumnId == null ? 1 : 0,
           delay: const Duration(milliseconds: 150),
           feedback: Material(
             elevation: 4,
@@ -819,9 +852,7 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
       thumbVisibility: !widget.shrinkWrap,
       child: ListView.builder(
         controller: widget.shrinkWrap ? null : _verticalScrollController,
-        padding: EdgeInsets.only(
-          bottom: widget.footerBuilder != null ? 0 : 14.h,
-        ),
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         physics: widget.shrinkWrap
             ? const NeverScrollableScrollPhysics()
@@ -893,17 +924,24 @@ class _ViewDataTableState<T> extends State<ViewDataTable<T>> {
                 (column.isNumeric
                     ? Alignment.centerRight
                     : Alignment.centerLeft);
+            final isActionCol = column.id == 'action';
             return Container(
               width: colWidth,
               alignment: effectiveAlignment,
-              padding: EdgeInsets.only(
-                left:
-                    15.w +
-                    (effectiveAlignment == Alignment.centerLeft ? 8.w : 0),
-                right:
-                    (isLastColumn ? 14.w : 15.w) +
-                    (effectiveAlignment == Alignment.centerRight ? 8.w : 0),
-              ),
+              padding: isActionCol
+                  ? EdgeInsets.symmetric(horizontal: 6.w)
+                  : EdgeInsets.only(
+                      left:
+                          15.w +
+                          (effectiveAlignment == Alignment.centerLeft
+                              ? 8.w
+                              : 0),
+                      right:
+                          (isLastColumn ? 14.w : 15.w) +
+                          (effectiveAlignment == Alignment.centerRight
+                              ? 8.w
+                              : 0),
+                    ),
               child: _normalizeEmptyTextCell(widget.cellBuilder(item, column)),
             );
           }).toList(),

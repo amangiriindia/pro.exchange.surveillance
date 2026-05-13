@@ -45,7 +45,12 @@ class JobberTrackerTable extends StatelessWidget {
           ViewTableColumn(id: 'exchange', label: 'EXCH', width: 100),
           ViewTableColumn(id: 'symbol', label: 'SYMBOL', width: 220),
           ViewTableColumn(id: 'pnl', label: 'P/L', width: 140, isNumeric: true),
-          ViewTableColumn(id: 'action', label: 'Action', width: 120),
+          ViewTableColumn(
+            id: 'action',
+            label: 'Action',
+            width: 90,
+            alignment: Alignment.center,
+          ),
         ],
         data: data,
         idExtractor: (item) => item.id.toString(),

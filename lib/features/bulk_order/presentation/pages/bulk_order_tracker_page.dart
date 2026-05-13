@@ -51,6 +51,7 @@ class _BulkOrderTrackerViewState extends State<BulkOrderTrackerView> {
   BulkOrderEntity? selectedItem;
   bool _fetchPending = false;
   String? _selectedDate;
+  DateTimeRange? _customDateRange;
   String? _selectedExchange;
   String? _selectedSymbol;
 
@@ -81,7 +82,11 @@ class _BulkOrderTrackerViewState extends State<BulkOrderTrackerView> {
 
   List<BulkOrderEntity> _applyFilters(List<BulkOrderEntity> trades) {
     return trades.where((trade) {
-      return ListFilterUtils.matchesQuickDate(trade.time, _selectedDate) &&
+      return ListFilterUtils.matchesDateRangeOrQuick(
+            trade.time,
+            _selectedDate,
+            _customDateRange,
+          ) &&
           ListFilterUtils.matchesExact(trade.exchange, _selectedExchange) &&
           ListFilterUtils.matchesContains(trade.symbol, _selectedSymbol);
     }).toList();
@@ -97,7 +102,7 @@ class _BulkOrderTrackerViewState extends State<BulkOrderTrackerView> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(left: 24, top: 24, right: 24),
       child: selectedItem != null
           ? _buildDetailsView()
           : _buildListView(context),
@@ -123,6 +128,7 @@ class _BulkOrderTrackerViewState extends State<BulkOrderTrackerView> {
               height: 48,
             ),
           ],
+          hasFilterBelow: true,
         ),
         Expanded(
           child: BlocBuilder<BulkOrderBloc, BulkOrderState>(
@@ -134,8 +140,8 @@ class _BulkOrderTrackerViewState extends State<BulkOrderTrackerView> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 12),
                     PageFiltersBar(
+                      itemCount: filteredTrades.length,
                       selectedDate: _selectedDate,
                       selectedExchange: _selectedExchange,
                       selectedSymbol: _selectedSymbol,
@@ -148,8 +154,12 @@ class _BulkOrderTrackerViewState extends State<BulkOrderTrackerView> {
                           setState(() => _selectedSymbol = value),
                       onReset: _resetFilters,
                       onApply: () => setState(() {}),
+                      attachedToHeader: true,
+                      customDateRange: _customDateRange,
+                      onCustomDateRangeChanged: (range) =>
+                          setState(() => _customDateRange = range),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     Expanded(
                       child: BulkOrderTable(
                         trades: filteredTrades,

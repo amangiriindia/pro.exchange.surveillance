@@ -51,7 +51,12 @@ class BTSTTable extends StatelessWidget {
             label: 'ORDER DURATION',
             width: 180,
           ),
-          ViewTableColumn(id: 'action', label: 'Action', width: 120),
+          ViewTableColumn(
+            id: 'action',
+            label: 'Action',
+            width: 90,
+            alignment: Alignment.center,
+          ),
         ],
         data: data,
         idExtractor: (item) => item.id.toString(),

@@ -39,9 +39,14 @@ class SameDeviceTable extends StatelessWidget {
       child: ViewDataTable<SameDeviceEntity>(
         columns: const [
           ViewTableColumn(id: 'time', label: 'Time', width: 220),
-          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 600),
+          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 400),
           ViewTableColumn(id: 'device_id', label: 'DEVICE ID', width: 300),
-          ViewTableColumn(id: 'action', label: 'Action', width: 120),
+          ViewTableColumn(
+            id: 'action',
+            label: 'Action',
+            width: 90,
+            alignment: Alignment.center,
+          ),
         ],
         data: data,
         idExtractor: (item) => item.id.toString(),

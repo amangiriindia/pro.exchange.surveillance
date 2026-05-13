@@ -11,6 +11,7 @@ class PageHeader extends StatelessWidget {
   final List<Widget> extraActions;
   final VoidCallback? onNotificationTap;
   final bool showNotificationButton;
+  final bool hasFilterBelow;
 
   const PageHeader({
     super.key,
@@ -21,6 +22,7 @@ class PageHeader extends StatelessWidget {
     this.onNotificationTap,
     this.showNotificationButton = true,
     this.extraActions = const [],
+    this.hasFilterBelow = false,
   });
 
   @override
@@ -45,7 +47,9 @@ class PageHeader extends StatelessWidget {
                   const Color(0xFF1A3A52),
                 ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: hasFilterBelow
+            ? const BorderRadius.vertical(top: Radius.circular(12))
+            : BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF202D3B).withOpacity(0.35),

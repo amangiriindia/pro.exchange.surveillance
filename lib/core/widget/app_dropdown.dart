@@ -1,4 +1,3 @@
-import 'package:surveillance/core/widget/svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
@@ -625,11 +624,12 @@ class _AppDropdownState extends State<AppDropdown>
       child: Row(
         children: [
           SizedBox(width: 8.w),
-          SvgIcon(
-            assetPath: "",
-            isActive: _searchController.text.isNotEmpty,
+          Icon(
+            Icons.search,
             size: 16.w,
-            activeColor: _borderColor,
+            color: _searchController.text.isNotEmpty
+                ? _borderColor
+                : AppColors.supportiveTextColor(context),
           ),
           SizedBox(width: 6.w),
           Expanded(

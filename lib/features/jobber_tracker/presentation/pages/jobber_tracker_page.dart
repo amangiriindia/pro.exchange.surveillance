@@ -48,6 +48,7 @@ class _JobberTrackerViewState extends State<JobberTrackerView> {
   JobberTrackerEntity? selectedItem;
   bool _fetchPending = false;
   String? _selectedDate;
+  DateTimeRange? _customDateRange;
   String? _selectedExchange;
   String? _selectedSymbol;
 
@@ -78,7 +79,11 @@ class _JobberTrackerViewState extends State<JobberTrackerView> {
 
   List<JobberTrackerEntity> _applyFilters(List<JobberTrackerEntity> data) {
     return data.where((item) {
-      return ListFilterUtils.matchesQuickDate(item.time, _selectedDate) &&
+      return ListFilterUtils.matchesDateRangeOrQuick(
+            item.time,
+            _selectedDate,
+            _customDateRange,
+          ) &&
           ListFilterUtils.matchesExact(item.exchange, _selectedExchange) &&
           ListFilterUtils.matchesContains(item.symbol, _selectedSymbol);
     }).toList();
@@ -94,7 +99,7 @@ class _JobberTrackerViewState extends State<JobberTrackerView> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(left: 24, top: 24, right: 24),
       child: selectedItem != null
           ? JobberDetailsView(
               alertId: selectedItem!.id,
@@ -111,6 +116,7 @@ class _JobberTrackerViewState extends State<JobberTrackerView> {
                   onRefresh: _onRefresh,
                   onSettingsTap: widget.onSettingsTap,
                   onNotificationTap: widget.onNotificationTap,
+                  hasFilterBelow: true,
                 ),
                 Expanded(
                   child: BlocBuilder<JobberTrackerBloc, JobberTrackerState>(
@@ -122,8 +128,8 @@ class _JobberTrackerViewState extends State<JobberTrackerView> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 12),
                             PageFiltersBar(
+                              itemCount: filteredData.length,
                               selectedDate: _selectedDate,
                               selectedExchange: _selectedExchange,
                               selectedSymbol: _selectedSymbol,
@@ -136,8 +142,12 @@ class _JobberTrackerViewState extends State<JobberTrackerView> {
                                   setState(() => _selectedSymbol = value),
                               onReset: _resetFilters,
                               onApply: () => setState(() {}),
+                              attachedToHeader: true,
+                              customDateRange: _customDateRange,
+                              onCustomDateRangeChanged: (range) =>
+                                  setState(() => _customDateRange = range),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 8),
                             Expanded(
                               child: JobberTrackerTable(
                                 data: filteredData,

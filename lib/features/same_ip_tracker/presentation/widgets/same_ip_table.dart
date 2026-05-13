@@ -42,15 +42,19 @@ class SameIPTable extends StatelessWidget {
       child: ViewDataTable<SameIPEntity>(
         columns: const [
           ViewTableColumn(id: 'time', label: 'Time', width: 220),
-          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 560),
+          ViewTableColumn(id: 'u_name', label: 'U. NAME', width: 400),
           ViewTableColumn(id: 'ip_address', label: 'IP ADDRESS', width: 260),
           ViewTableColumn(id: 'city', label: 'CITY', width: 160),
-          ViewTableColumn(id: 'action', label: 'Action', width: 120),
+          ViewTableColumn(
+            id: 'action',
+            label: 'Action',
+            width: 90,
+            alignment: Alignment.center,
+          ),
         ],
         data: data,
         idExtractor: (item) => item.id.toString(),
-        autoFit: false,
-        rowHeight: 64,
+        autoFit: true,
         isDarkMode: AppColors.isDarkMode(context),
         rowBackgroundBuilder: (item, index) => index % 2 == 0
             ? AppColors.getTableRowBackground(context)

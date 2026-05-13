@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/list_filter_utils.dart';
 import '../../../../core/widget/page_filters_bar.dart';
 import '../../../../core/widget/page_header.dart';
@@ -43,6 +41,7 @@ class _GroupTradeViewState extends State<GroupTradeView> {
   GroupTradeEntity? selectedItem;
   bool _fetchPending = false;
   String? _selectedDate;
+  DateTimeRange? _customDateRange;
   String? _selectedExchange;
   String? _selectedSymbol;
 
@@ -73,7 +72,11 @@ class _GroupTradeViewState extends State<GroupTradeView> {
 
   List<GroupTradeEntity> _applyFilters(List<GroupTradeEntity> items) {
     return items.where((item) {
-      return ListFilterUtils.matchesQuickDate(item.time, _selectedDate) &&
+      return ListFilterUtils.matchesDateRangeOrQuick(
+            item.time,
+            _selectedDate,
+            _customDateRange,
+          ) &&
           ListFilterUtils.matchesExact(item.exchange, _selectedExchange) &&
           ListFilterUtils.matchesContains(item.symbol, _selectedSymbol);
     }).toList();
@@ -89,7 +92,7 @@ class _GroupTradeViewState extends State<GroupTradeView> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(left: 24, top: 24, right: 24),
       child: selectedItem != null
           ? _buildDetailsView()
           : _buildListView(context),
@@ -107,6 +110,7 @@ class _GroupTradeViewState extends State<GroupTradeView> {
           onRefresh: _onRefresh,
           onSettingsTap: widget.onSettingsTap,
           onNotificationTap: widget.onNotificationTap,
+          hasFilterBelow: true,
         ),
         Expanded(
           child: BlocBuilder<GroupTradeBloc, GroupTradeState>(
@@ -119,8 +123,8 @@ class _GroupTradeViewState extends State<GroupTradeView> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 12),
                     PageFiltersBar(
+                      itemCount: state.totalRecords,
                       selectedDate: _selectedDate,
                       selectedExchange: _selectedExchange,
                       selectedSymbol: _selectedSymbol,
@@ -133,12 +137,10 @@ class _GroupTradeViewState extends State<GroupTradeView> {
                           setState(() => _selectedSymbol = value),
                       onReset: _resetFilters,
                       onApply: () => setState(() {}),
-                    ),
-                    const SizedBox(height: 12),
-                    _RecordCounter(
-                      loaded: filteredItems.length,
-                      total: state.totalRecords,
-                      hasMore: state.hasMore,
+                      attachedToHeader: true,
+                      customDateRange: _customDateRange,
+                      onCustomDateRangeChanged: (range) =>
+                          setState(() => _customDateRange = range),
                     ),
                     const SizedBox(height: 8),
                     Expanded(
@@ -190,34 +192,6 @@ class _GroupTradeViewState extends State<GroupTradeView> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _RecordCounter extends StatelessWidget {
-  final int loaded;
-  final int total;
-  final bool hasMore;
-
-  const _RecordCounter({
-    required this.loaded,
-    required this.total,
-    required this.hasMore,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = AppColors.isDarkMode(context);
-    return Text(
-      hasMore
-          ? 'Showing $loaded of $total records  •  Scroll down to load more'
-          : 'Showing all $loaded records',
-      style: GoogleFonts.openSans(
-        fontSize: 12,
-        color: isDark
-            ? DarkThemeColors.supportiveTextColor
-            : LightThemeColors.supportiveTextColor,
-      ),
     );
   }
 }

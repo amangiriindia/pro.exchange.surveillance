@@ -70,7 +70,12 @@ class BulkOrderTable extends StatelessWidget {
         width: 110,
         isNumeric: true,
       ),
-      ViewTableColumn(id: 'action', label: 'Action', width: 120),
+      ViewTableColumn(
+        id: 'action',
+        label: 'Action',
+        width: 90,
+        alignment: Alignment.center,
+      ),
     ];
   }
 

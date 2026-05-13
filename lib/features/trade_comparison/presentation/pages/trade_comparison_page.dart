@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/list_filter_utils.dart';
 import '../../../../core/widget/app_dropdown.dart';
+import '../../../../core/widget/date_range_picker_dialog.dart';
 import '../../../../core/widget/page_header.dart';
 import '../../../../injection_container.dart';
 import '../bloc/trade_comparison_bloc.dart';
@@ -48,9 +49,9 @@ class TradeComparisonView extends StatefulWidget {
 class _TradeComparisonViewState extends State<TradeComparisonView> {
   List<String> _selectedUsers = const [];
   String? _selectedDate;
+  DateTimeRange? _customDateRange;
   String? _selectedExchange;
   String? _selectedSymbol;
-  String? _selectedType;
   bool _fetchPending = false;
 
   void _resetFilters() {
@@ -59,7 +60,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
       _selectedDate = null;
       _selectedExchange = null;
       _selectedSymbol = null;
-      _selectedType = null;
+      _customDateRange = null;
     });
   }
 
@@ -86,10 +87,13 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
     return data.where((item) {
       final combinedUser = '${item.uName} ${item.pUser}';
       return ListFilterUtils.matchesAnyContains(combinedUser, _selectedUsers) &&
-          ListFilterUtils.matchesQuickDate(item.orderDateTime, _selectedDate) &&
+          ListFilterUtils.matchesDateRangeOrQuick(
+            item.orderDateTime,
+            _selectedDate,
+            _customDateRange,
+          ) &&
           ListFilterUtils.matchesExact(item.exch, _selectedExchange) &&
-          ListFilterUtils.matchesContains(item.symbol, _selectedSymbol) &&
-          ListFilterUtils.matchesContains(item.type, _selectedType);
+          ListFilterUtils.matchesContains(item.symbol, _selectedSymbol);
     }).toList();
   }
 
@@ -110,12 +114,6 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
     return symbols;
   }
 
-  List<String> _typeItems(List<TradeComparisonEntity> data) {
-    final types = data.map((item) => item.type).toSet().toList();
-    types.sort();
-    return types;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -131,6 +129,7 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
             onRefresh: _onRefresh,
             onSettingsTap: widget.onSettingsTap,
             onNotificationTap: widget.onNotificationTap,
+            hasFilterBelow: true,
           ),
           Expanded(
             child: BlocBuilder<TradeComparisonBloc, TradeComparisonState>(
@@ -141,9 +140,8 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
                   final filteredData = _applyFilters(state.data);
                   return Column(
                     children: [
-                      const SizedBox(height: 12),
                       _buildFilters(state.data),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       Expanded(
                         child: TradeComparisonTable(
                           data: filteredData,
@@ -171,175 +169,218 @@ class _TradeComparisonViewState extends State<TradeComparisonView> {
     );
   }
 
+  Future<void> _onDateChanged(String? value) async {
+    if (value == 'Custom date') {
+      final range = await CustomDateRangePickerDialog.show(
+        context,
+        initialStartDate: _customDateRange?.start,
+        initialEndDate: _customDateRange?.end,
+        showSimpleUI: true,
+      );
+      if (range != null && mounted) {
+        setState(() {
+          _selectedDate = 'Custom date';
+          _customDateRange = range;
+        });
+      }
+    } else {
+      setState(() {
+        _selectedDate = value;
+        if (value == null) _customDateRange = null;
+      });
+    }
+  }
+
   Widget _buildFilters(List<TradeComparisonEntity> data) {
     final isDark = AppColors.isDarkMode(context);
     final borderCol = isDark
+        ? Colors.white.withOpacity(0.08)
+        : const Color(0xFFE2E8F0);
+    final dropBorderCol = isDark
         ? Colors.white.withOpacity(0.15)
         : const Color(0xFFCBD5E1);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
         color: isDark
             ? const Color(0xFF1C2535).withOpacity(0.85)
             : Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withOpacity(0.07)
-              : const Color(0xFFE2E8F0),
-          width: 1,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
+        border: Border(
+          left: BorderSide(color: borderCol, width: 1),
+          right: BorderSide(color: borderCol, width: 1),
+          bottom: BorderSide(color: borderCol, width: 1),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.2)
-                : Colors.black.withOpacity(0.05),
-            blurRadius: 12,
+                ? Colors.black.withOpacity(0.12)
+                : Colors.black.withOpacity(0.04),
+            blurRadius: 6,
             offset: const Offset(0, 3),
+            spreadRadius: -1,
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 3,
-                height: 14,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFFFF3B30), Color(0xFFFF8C00)],
-                  ),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+          Container(
+            width: 3,
+            height: 12,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFFF3B30), Color(0xFFFF8C00)],
               ),
-              const SizedBox(width: 8),
-              Text(
-                'FILTERS',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.4,
-                  color: isDark
-                      ? Colors.white.withOpacity(0.5)
-                      : const Color(0xFF64748B),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: isDark
-                      ? Colors.white.withOpacity(0.06)
-                      : const Color(0xFFE2E8F0),
-                ),
-              ),
-              const SizedBox(width: 8),
-              _ResetFiltersButton(onPressed: _resetFilters),
-            ],
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 160,
+            child: AppDropdown(
+              hintText: 'Search & Add',
+              height: 30,
+              type: AppDropdownType.multiSelect,
+              items: _userItems(data),
+              selectedValues: _selectedUsers,
+              onMultiChanged: (values) =>
+                  setState(() => _selectedUsers = values),
+              borderColor: dropBorderCol,
+              isDarkMode: isDark,
+            ),
+          ),
+          const SizedBox(width: 8),
+          if (_selectedDate == 'Custom date' && _customDateRange != null)
+            SizedBox(
+              width: 160,
+              height: 30,
+              child: GestureDetector(
+                onTap: () => _onDateChanged('Custom date'),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1E3145)
+                        : const Color(0xFFEFF6FF),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF3B82F6).withOpacity(0.5)
+                          : const Color(0xFF93C5FD),
+                    ),
+                  ),
                   child: Row(
                     children: [
-                      SizedBox(
-                        width: 150,
-                        child: AppDropdown(
-                          hintText: 'Search & Add',
-                          height: 36,
-                          type: AppDropdownType.multiSelect,
-                          items: _userItems(data),
-                          selectedValues: _selectedUsers,
-                          onMultiChanged: (values) =>
-                              setState(() => _selectedUsers = values),
-                          borderColor: borderCol,
-                          isDarkMode: isDark,
+                      Icon(
+                        Icons.date_range_rounded,
+                        size: 13,
+                        color: isDark
+                            ? const Color(0xFF60A5FA)
+                            : const Color(0xFF3B82F6),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          '${_customDateRange!.start.day.toString().padLeft(2, '0')} ${_monthAbbr(_customDateRange!.start.month)} → ${_customDateRange!.end.day.toString().padLeft(2, '0')} ${_monthAbbr(_customDateRange!.end.month)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFF93C5FD)
+                                : const Color(0xFF2563EB),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-
-                      const SizedBox(width: 10),
-
-                      SizedBox(
-                        width: 150,
-                        child: AppDropdown(
-                          hintText: 'Select Date',
-                          height: 36,
-                          value: _selectedDate,
-                          onChanged: (value) =>
-                              setState(() => _selectedDate = value),
-                          items: const ['Today', 'Yesterday'],
-                          borderColor: borderCol,
-                          isDarkMode: isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-
-                      SizedBox(
-                        width: 150,
-                        child: AppDropdown(
-                          hintText: 'Exchange',
-                          height: 36,
-                          value: _selectedExchange,
-                          onChanged: (value) =>
-                              setState(() => _selectedExchange = value),
-                          items: const ['ALL', 'NSE', 'MCX', 'CE/PE', 'CDS'],
-                          showAllOption: true,
-                          borderColor: borderCol,
-                          isDarkMode: isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-
-                      SizedBox(
-                        width: 150,
-                        child: AppDropdown(
-                          type: AppDropdownType.search,
-                          hintText: 'Symbol',
-                          height: 36,
-                          value: _selectedSymbol,
-                          onChanged: (value) =>
-                              setState(() => _selectedSymbol = value),
-                          items: _symbolItems(data),
-                          borderColor: borderCol,
-                          isDarkMode: isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-
-                      SizedBox(
-                        width: 150,
-                        child: AppDropdown(
-                          hintText: 'Type',
-                          height: 36,
-                          value: _selectedType,
-                          onChanged: (value) =>
-                              setState(() => _selectedType = value),
-                          items: _typeItems(data),
-                          borderColor: borderCol,
-                          isDarkMode: isDark,
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          _selectedDate = null;
+                          _customDateRange = null;
+                        }),
+                        child: Icon(
+                          Icons.close_rounded,
+                          size: 13,
+                          color: isDark
+                              ? Colors.white54
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-
-              _GradientApplyBtn(onPressed: () => setState(() {})),
-            ],
+            )
+          else
+            SizedBox(
+              width: 160,
+              child: AppDropdown(
+                hintText: 'Select Date',
+                height: 30,
+                value: _selectedDate,
+                onChanged: _onDateChanged,
+                items: const ['Today', 'Yesterday', 'Custom date'],
+                borderColor: dropBorderCol,
+                isDarkMode: isDark,
+              ),
+            ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 160,
+            child: AppDropdown(
+              hintText: 'Exchange',
+              height: 30,
+              value: _selectedExchange,
+              onChanged: (value) => setState(() => _selectedExchange = value),
+              items: const ['ALL', 'NSE', 'MCX', 'CE/PE', 'CDS'],
+              showAllOption: true,
+              borderColor: dropBorderCol,
+              isDarkMode: isDark,
+            ),
           ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 160,
+            child: AppDropdown(
+              type: AppDropdownType.search,
+              hintText: 'Symbol',
+              height: 30,
+              value: _selectedSymbol,
+              onChanged: (value) => setState(() => _selectedSymbol = value),
+              items: _symbolItems(data),
+              borderColor: dropBorderCol,
+              isDarkMode: isDark,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _ResetBtn(onPressed: _resetFilters),
+          const SizedBox(width: 8),
+          _GradientApplyBtn(onPressed: () => setState(() {})),
+          const Spacer(),
         ],
       ),
     );
+  }
+
+  String _monthAbbr(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return months[month - 1];
   }
 }
 
@@ -399,10 +440,10 @@ class _GradientApplyBtnState extends State<_GradientApplyBtn> {
   }
 }
 
-class _ResetFiltersButton extends StatelessWidget {
-  final VoidCallback onPressed;
+class _ResetBtn extends StatelessWidget {
+  final VoidCallback? onPressed;
 
-  const _ResetFiltersButton({required this.onPressed});
+  const _ResetBtn({this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -416,13 +457,13 @@ class _ResetFiltersButton extends StatelessWidget {
           onTap: onPressed,
           borderRadius: BorderRadius.circular(8),
           child: Ink(
-            width: 32,
-            height: 32,
+            width: 28,
+            height: 28,
             decoration: BoxDecoration(
               color: isDark
                   ? Colors.white.withOpacity(0.06)
                   : const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(7),
               border: Border.all(
                 color: isDark
                     ? Colors.white.withOpacity(0.08)
@@ -431,7 +472,7 @@ class _ResetFiltersButton extends StatelessWidget {
             ),
             child: Icon(
               Icons.refresh_rounded,
-              size: 18,
+              size: 15,
               color: isDark ? Colors.white70 : const Color(0xFF475569),
             ),
           ),
